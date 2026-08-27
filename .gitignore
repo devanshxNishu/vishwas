@@ -1,0 +1,36 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Generated weather data and model artifacts
+data/*.parquet
+data/features_parts/
+data/imd_cache/
+data/raw/*
+!data/raw/manifest.jsonl
+
+# Large generated outputs
+outputs/
+models/
+checkpoints/
+*.grib
+*.grib2
+*.idx
+*.nc
+*.npy
+*.npz
+

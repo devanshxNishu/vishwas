@@ -1,0 +1,12 @@
+s3fs
+xarray
+cfgrib
+netcdf4
+imdlib
+numpy
+pandas
+scikit-learn
+shap
+properscoring
+matplotlib
+cartopy

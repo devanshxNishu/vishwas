@@ -1,0 +1,369 @@
+# VISHWAS — Forecast Confidence Intelligence
+### Team Hellfire Labs · SIH26079 · Smart India Hackathon 2026
+विश्वास, "confidence" — knowing when not to trust the forecast.
+
+PROJECT: Ministry of Earth Sciences problem SIH26079, Smart India Hackathon
+2026. We are NOT building a weather forecast. We build a model that predicts
+WHEN the operational forecast will be badly wrong (a "forecast bust"). Output
+is a forecast-confidence map over India, lead times Day 1-10.
+
+SUCCESS CRITERION: Operational forecasters estimate confidence using ensemble
+spread, but the spread-skill relationship is weak (r typically 0.3-0.6). That
+weakness is our opening. Success = our learned confidence signal beats ensemble
+spread, measured by ROC-AUC, PR-AUC, and precision within the top-10% flagged.
+
+DATA (all public, anonymous S3, no credentials, no paid access):
+- GEFSv12 reforecast (ensemble): s3://noaa-gefs-retrospective/
+- GEFS operational (ensemble):   s3://noaa-gefs-pds/
+- ERA5 truth:                    s3://nsf-ncar-era5/   (no registration needed)
+- IMD gridded rainfall (historical): imdlib.get_data() — the truth source.
+  VERIFIED 2026-08-27, all four VERIFY-IMD conditions pass. See TRUTH
+  SOURCE below.
+- DO NOT plan around IMD AWS/ARG station data — IMD closed public portal
+  access around May 2025. Unavailable to us.
+
+TRUTH SOURCE — CORRECTED 2026-08-26. READ ALL OF THIS BEFORE TOUCHING TRUTH.
+
+There are TWO IMD endpoints and the earlier session tested only ONE of them.
+
+  WRONG ENDPOINT (correctly found unusable, tested 2026-08-25):
+    imdpune.gov.in/cmpg/Realtimedata/Rainfall/rain_ind0.25_%y_%m_%d.grd
+    Rolling REAL-TIME archive. Probed: 2015/2019/2020/2021 -> HTTP 404;
+    2022-2026 -> HTTP 200, 69660 bytes. Coverage starts ~2022, so it does
+    NOT overlap the 2000-2019 reforecast. imdlib.get_real_data() hits this.
+
+  RIGHT ENDPOINT (the truth source — VERIFIED 2026-08-27):
+    imdpune.gov.in/cmpg/Griddata/Rainfall_25_Bin.html
+    0.25 deg daily gridded rainfall, 1901-2024, yearly .grd files
+    (float32, ~25 MB/yr), 135 lon x 129 lat, first point 6.5N/66.5E,
+    last 38.5N/100.0E, units mm. imdlib.get_data() hits this one.
+
+WHY THE SWITCH IS WORTH MAKING:
+  - Full overlap with the reforecast (2000-2019).
+  - ~500 MB total instead of ~60 GB of ERA5.
+  - Gauge-based OBSERVATION, not reanalysis. Removes the "ERA5 assimilated
+    model physics that partly overlaps GEFS" weakness we would otherwise
+    have to disclose on every single number we report.
+  - It is MoES's own product, and MoES owns this problem statement.
+
+STATUS: VERIFIED IN CODE 2026-08-27. src/imd_truth.py is the loader,
+src/verify_imd.py re-runs the checks below on demand.
+
+VERIFY-IMD — all four passed 2026-08-27:
+  1. PASS. imdlib 0.1.21 installs clean on the venv (Python 3.9.6) from pure
+     wheels, no GDAL. (The older imddaily package needed GDAL and failed to
+     build; imdlib is a DIFFERENT package. requirements.txt now lists imdlib.)
+  2. PASS. imdlib.get_data("rain", 2015, 2015) returns a real 2015 grid,
+     25,425,900 bytes = 135 x 129 x 365 x 4, so the float32 decode divides
+     exactly. Values 0.00 to 679.22 mm. 2012 and 2018 also verified, and
+     2012 correctly reports 366 days.
+  3. PASS. Colocation is EXACT float equality, zero interpolation, asserted
+     in colocation_index(). BUT THE DOMAIN SHRINKS TWICE OVER:
+       - Geometry: IMD spans 6.5-38.5N / 66.5-100.0E, so our 5.0/5.5/6.0N
+         AND our 39.0/39.5/40.0N rows, plus 65.0/65.5/66.0E, fall outside.
+         NOTE THE NORTHERN EDGE — it is easy to remember only the south and
+         west. 621 of 5041 points drop on geometry alone (12.3%).
+       - Land mask: 1252 points survive, 24.8% of the full box, 28.3% of
+         the in-domain box.
+     WE STATE THE 24.8% OURSELVES. A judge must not be the one to find it.
+  4. PASS. Ocean/no-gauge points are undef -999 and become NaN in
+     imd_truth.daily_rain(). NEVER 0.0 — a -999 read as zero rainfall would
+     silently dry out the whole ocean half of the box. The undef footprint
+     is identical across sampled days, so the mask is time-invariant.
+  PHYSICS CHECK (beyond the four): July 2015 all-India mean 9.18 mm/day vs
+  January 0.27 mm/day, a factor of 35. The monsoon is present in the decode.
+
+IMD OPERATIONAL NOTE: imdpune.gov.in is flaky. The first get_data() call of
+a session may die with a TLS connection reset; an immediate retry works.
+The host also resets any client that offers HTTP/2 in ALPN (curl fails,
+Python's ssl does not). Wrap bulk downloads in a retry. One reset is NOT
+evidence that IMD is down. Transfer is ~25.4 MB/year at 1.2-3.0 MB/s, so a
+year lands in 9-21 seconds and the whole 2000-2019 record in about 8
+minutes.
+
+DOMAIN CHANGE IS A CONFOUND WHEN COMPARING TO OLD NUMBERS. The provisional
+conditional +0.076 was measured on ERA5, which carries values over ocean.
+IMD is land-only. Any IMD number therefore differs from +0.076 on TWO axes
+at once — truth source/domain AND whatever else changed. To attribute a
+move to seasonality, hold the domain fixed: run the ERA5 path restricted to
+the IMD land mask as the controlled comparison.
+
+ERA5 IS NOW OPTIONAL — KEEP IT WORKING, DO NOT DELETE IT. It stays the
+fallback if VERIFY-IMD fails, and it is the only route if we ever verify a
+non-rainfall variable. ERA5 facts, still true: total precipitation is
+LSP + CP (there is no single `tp` in e5.oper.fc.sfc.accumu); it is a
+REANALYSIS product carrying known biases over India, so any number built on
+it must say so; files are chunked (1, 12, 721, 1440) — one chunk is a whole
+global field, so India-box subsetting saves NO transfer. Pull whole files,
+use, delete. Budget ~510 MB per half-month per variable pair.
+
+NEVER MIX TRUTH SOURCES IN ONE COMPARISON. The baseline and the model must
+be scored against the SAME truth. A baseline measured on ERA5 against a
+model scored on IMD is not a comparison, and a meteorologist judge will
+say so out loud.
+
+REAL-TIME IS NOT NEEDED FOR THE CORE CLAIM. We train AND test entirely inside
+the 2000-2019 reforecast using a time-based split. Operational GEFS is for an
+OPTIONAL live dashboard only. If real-time access breaks, the result still
+stands. Do not let dashboard work block the evaluation.
+Its real layout is NOT gefs.YYYYMMDD/{HH}/pgrb2a/ — probed 2026-08-25: the
+2017-era files sit directly under {HH}/ with pgrb2a in the FILENAME
+(gec00.t00z.pgrb2af000), and the current era uses {HH}/atmos/pgrb2ap5/.
+Coverage starts 2017-01-01 and carries 31 members, so it neither overlaps nor
+is comparable to the 5-member 2000-2019 reforecast.
+ARCHIVE RANGE IS 2000-2019. reforecast/2020/ holds one misfiled 2010
+date. Never write range(2000, 2021).
+
+ENSEMBLE SIZE — WAS A KNOWN WEAKNESS, CHECKED 2026-08-27. See result below.
+The reforecast carries only 5 members (c00 + p01-p04), rising to 11 once
+weekly. Operational GEFS carries 31. A 5-member spread is therefore a NOISY
+estimate of true ensemble spread, and our baseline is built on it. That cuts
+both ways: a noisy baseline is easier to beat, and a judge will spot it.
+SENSITIVITY CHECK — DONE 2026-08-27, src/05_ensemble_size.py. Same 12 dates,
+same IMD truth, same metric, only the ensemble size varies:
+    5-member  (c00,p01-p04)   pooled +0.619   conditional +0.040
+                              95% CI +0.019 to +0.060
+    11-member (all)           pooled +0.663   conditional +0.041
+                              95% CI +0.016 to +0.065
+    CHANGE 5 -> 11:           pooled +0.044   conditional +0.001
+
+RESULT AS FIRST REPORTED: the conditional baseline moves +0.001, i.e. not a
+small-ensemble artefact.
+
+BUT THAT +0.001 IS THE SAME WET-FILTER ARTEFACT — CHECKED 2026-08-27.
+Re-run under the robust filters, 5 -> 11 does move the baseline:
+    OR filter, all bins (as reported)   5: +0.040   11: +0.041   d +0.001
+    OR filter, drop driest decile       5: +0.087   11: +0.099   d +0.012
+    both forecast AND truth > 0.5 mm    5: +0.079   11: +0.095   d +0.016
+    both forecast AND truth > 1.0 mm    5: +0.076   11: +0.089   d +0.013
+CORRECTED READING: more members DO make the baseline modestly better —
+about +0.015 on a base near +0.09, so roughly a 15-20% relative improvement
+from 5 to 11. That is small and does NOT threaten the conclusion (even a
+baseline at +0.12 is ~1.4% of variance), but it is NOT zero. Say "a small
+positive effect that does not change the conclusion", NOT "no effect" — the
+second version is refutable in one command and the first is not.
+
+STILL WORTH A SLIDE, because the shape of the story survives the correction:
+the POOLED number rises sharply with more members (+0.044) while the
+CONDITIONAL number rises only slightly (+0.001 to +0.016 depending on
+filter). More members clean up the estimate of the wet/dry gradient —
+which is what the pooled number mostly measures — but they add nothing to the
+within-regime information, which is what a confidence signal actually needs.
+
+CAVEAT THAT MUST BE STATED: 5 -> 11 is not 5 -> 31. Operational GEFS carries
+31 members. This bounds the direction and rough size of the effect over the
+range the reforecast can actually show us; it does not extrapolate to 31, and
+we must not claim it does.
+
+CONSTRAINTS: Subset aggressively — India domain only (lat 5-40N, lon 65-100E),
+5 ensemble members, few variables, START WITH 5 YEARS NOT 20 (the archive is
+terabytes). No GPU. Team is Semester 3 CSE/AI-ML + ECE — readable code, not
+clever code.
+
+FEATURE SOURCE RULE — HARD, NO EXCEPTIONS. ALL predictive features come from
+GEFS reforecast fields. ERA5 and IMD are TRUTH ONLY and must never appear as
+features. A feature drawn from the truth dataset is leakage: ERA5 is an
+analysis that assimilated the observations we are scoring against, so any
+ERA5-derived predictor lets the model peek at the answer. Precipitable water
+therefore comes from GEFS pwat_eatm, NOT ERA5 TCWV. The ERA5 TCWV plan is
+DROPPED.
+
+LEAKAGE — TWO LIVE RISKS, ONE ALREADY IN THE CODE. FIX BEFORE TRAINING.
+
+1. CLIMATOLOGY LEAK — PRESENT IN THE CODE NOW (02_features.py, finalize()).
+   finalize() builds the pwat/cape/precip anomalies against a climatology
+   taken over the ENTIRE concatenated table — training period AND test
+   period together. Every test row's anomaly therefore encodes the test
+   period's own mean. This is precisely what our time-based-split rule
+   exists to prevent, and it is INVISIBLE in the metrics: it inflates them
+   silently rather than failing loudly.
+   FIX: compute the climatology on the TRAIN window only, persist it, and
+   apply that stored climatology to the test window. A climatology is a
+   fitted parameter, not a description of the data you are scoring.
+
+2. ERROR-CLIMATOLOGY LEAK — PLANNED, NOT YET WRITTEN.
+   "regional error climatology" sits in the FEATURES list. It is derived
+   from |forecast - truth|, so it is a TRUTH-DERIVED feature and collides
+   head-on with the FEATURE SOURCE RULE above. It is defensible ONLY in one
+   form: "the error record we already had before the test period began" —
+   computed strictly on the training window and then frozen. Computed over
+   the whole record it is a direct read of the answer.
+   If it ships, it is train-only, frozen, and the report says so plainly.
+
+VARIABLE LIST — CORRECTED, PROBED 2026-08-25:
+  hgt_pres_abv700mb   500 hPa geopotential -> gradient feature
+  ugrd_pres_abv700mb  500 hPa u wind -> shear
+  vgrd_pres_abv700mb  500 hPa v wind -> shear
+  pwat_eatm           precipitable water (entire atmosphere)
+  cape_sfc            surface
+  apcp_sfc            surface, truth-adjacent — accumulated precipitation
+WARNING: the plain *_pres files (hgt_pres, ugrd_pres, vgrd_pres) stop at
+800 mb and contain NO 500 hPa data. Their .idx lists only 1000/975/950/925/
+900/850/800 mb. Everything at and above 700 mb is in the *_abv700mb files.
+Using the plain files would download terabytes and yield none of the 500 hPa
+fields the gradient and shear features are built on.
+
+FEATURES: ensemble spread (both a feature AND the baseline to beat), lead time,
+season, region, 500hPa geopotential gradient, precipitable water anomaly, wind
+shear, CAPE, regional error climatology.
+
+STORAGE — WE NEVER HOLD THE FULL ARCHIVE. The pipeline STREAMS each init
+date: fetch the thinned GRIB messages, compute features, append one row per
+(gridpoint, lead time) to the feature table, then DISCARD the raw GRIB.
+Peak disk is one init date (~310 MB), not the whole download. Persistent
+storage is the FEATURE TABLE ONLY — a few hundred MB. Nobody should plan
+around 87 GB or 323 GB of disk; those are TRANSFER volumes, not disk needs.
+
+WIND SHEAR — DECIDED 2026-08-26, IMPLEMENTED AND VERIFIED 2026-08-27.
+The feature list says "wind shear", and vertical shear needs TWO levels,
+so 500 hPa alone was never enough. flow500_deformation is horizontal
+deformation of the 500 hPa flow. That is a real predictor, it is correctly
+named in the code, and it must NEVER be relabelled "wind shear" in the
+report or on a slide — shear_500_850 is now the column that means shear.
+DECISION: add 850 hPa u/v from the PLAIN ugrd_pres/vgrd_pres files (850 mb
+sits below the 800 mb cutoff, so it IS in the plain files). True 500-850
+shear is meteorologically meaningful for convective organisation and for
+monsoon depression structure.
+STATUS: IMPLEMENTED 2026-08-27. 01_fetch.py fetches 850 mb via wanted_850mb();
+02_features.py emits u850_mean, v850_mean and shear_500_850. Verified on
+20000105: shear mean 11.1 m/s, and it has the right LATITUDE STRUCTURE for
+January — 5.0 m/s at 5-15N versus 15.5 m/s at 25-35N, which is the
+subtropical jet. Row count and grid alignment unchanged.
+
+COST — THE 1.6% ESTIMATE WAS WRONG BY A FACTOR OF ~35. MEASURED 2026-08-27:
+the addition costs +176 MB per date on a 292 MB baseline, i.e. +60%, not
++5 MB / +1.6%. Per date: 292 MB -> 468 MB.
+  WHY: the two file families are on DIFFERENT GRIDS. Decoded and confirmed —
+  *_abv700mb messages are 0.5 deg (361 x 720, ~0.15-0.21 MB each), the plain
+  *_pres messages are 0.25 deg (721 x 1440, ~0.79-0.84 MB each). So every
+  850 hPa message is ~4-5x the bytes of the 500 hPa message beside it.
+  WE THEN THROW 3/4 OF IT AWAY, because to_india_grid() colocates onto the
+  0.5 analysis grid. There is no way around this: a GRIB message is atomic,
+  so byte-range requests cannot subset inside one.
+  BULK RUN CONSEQUENCE: 5 years of Wednesdays (~261 dates) goes from ~76 GB
+  to ~122 GB, and at 4.5 MB/s from ~4.7 h to ~7.6 h. Re-plan P6 around the
+  larger number, and re-confirm the shear is worth 3 extra hours before
+  starting a 20-year run.
+THIS HAD TO LAND BEFORE THE BULK RUN. Adding it afterwards means refetching
+every date.
+
+LEAD-TIME RESOLUTION: the deliverable is a Day 1-10 confidence map, so DAILY
+steps (24h, 48h ... 240h) are enough. Do not pull the 3-hourly steps.
+
+SPREAD-SKILL RE-MEASURED 2026-08-27 — THIS IS THE DECK NUMBER.
+Sample: 12 init dates, ALL FOUR SEASONS, 3 years (2012/2015/2018), 11 members,
+daily precip, truth = IMD gauge-gridded rainfall, LAND ONLY, wet points only
+(>0.1 mm). 77,425 wet points. Produced by:
+  python src/03_spread_skill.py --truth imd --seasons JJAS,DJF,MAM,ON \
+      --years 2012,2015,2018 --dates-per-season 1 \
+      --out data/spread_skill_4season.parquet
+  python src/04_conditional.py --sample data/spread_skill_4season.parquet \
+      --bootstrap 2000
+
+  POOLED r                = +0.663   <- STILL NOT THE BASELINE. DO NOT QUOTE.
+  WEIGHTED CONDITIONAL r  = +0.041   <- the honest baseline
+  95% CI (cluster bootstrap, 12 dates, 2000 reps) = +0.016 to +0.065
+  per season: DJF -0.015 | MAM +0.041 | ON +0.062 | JJAS +0.069
+
++0.041 IS FRAGILE — DO NOT QUOTE IT ALONE. CHECKED 2026-08-27.
+The headline rests almost entirely on ONE decile. Bin 0 (the driest) has
+r = -0.474 and drags the weighted mean down by 0.058 on its own:
+    OR filter, all bins (the headline)      +0.041
+    OR filter, drop the driest decile       +0.093
+    both forecast AND truth > 0.5 mm        +0.095
+    both forecast AND truth > 1.0 mm        +0.089
+    both forecast AND truth > 2.0 mm        +0.084
+CAUSE: the wet filter is an OR — keep a point if EITHER side is wet. In the
+driest bin the median TRUTH is 0.00 mm and 38.6% of points got in only
+because it rained while the ensemble said nothing. Those are confidently-dry
+busts: narrow spread, huge error, hence a strong negative correlation.
+CONSEQUENCE: a reviewer who asks "what if both sides must be wet?" gets
++0.095, more than double the headline. Quoting +0.041 alone looks like
+cherry-picking once that is found.
+WHAT TO QUOTE INSTEAD — the variance framing, which is robust to the filter:
+    pooled explains 43.9% of the variance in log error
+    conditional explains 0.17% to 0.90%, depending on the wet filter
+  i.e. UNDER 1% HOWEVER YOU SLICE IT. That claim survives the question.
+The confidently-dry failure mode is a SEPARATE and better finding: when the
+ensemble is confidently dry and it rains, spread is actively MISLEADING, not
+merely uninformative. That is operationally usable — report it as its own
+result, not buried inside the headline.
+src/04_conditional.py now prints this panel on every run.
+
+VERDICT: the pitch stands as written. Conditional r is far below the ~0.15
+level that would have forced a rewording, and the WHOLE interval sits below
++0.07. The pooled -> conditional collapse (+0.663 -> +0.041) is larger than
+in the provisional measurement, so the structural finding got stronger.
+
+DO NOT OVERCLAIM THE SEASONAL RESULT. Every season is near zero and DJF is
+indistinguishable from zero. The honest reading is "spread carries almost no
+within-regime information in ANY season", which is a cleaner and more
+defensible claim than "it works in some regimes and not others". Do not build
+a regime slide on a 0.08 spread of near-zero numbers.
+
+THE MOVE FROM +0.076 TO +0.041 IS CONFOUNDED — SAY SO IF ASKED. It changed on
+two axes at once: seasons/years AND truth source/domain (ERA5 with ocean ->
+IMD land-only). It cannot be attributed to seasonality. The controlled
+comparison is implemented but NOT RUN: 03 --truth era5 --restrict-to-imd-land
+holds the domain fixed. The conclusion does not depend on it — both numbers
+are low — so this is a completeness item, not a blocker.
+
+DATE SELECTION MATTERS AND IS EASY TO GET WRONG. pick_inits() takes the CENTRE
+of each (year, season) block, not the first date in it. Taking the first would
+have sampled 6 June for JJAS in all three years — monsoon ONSET, wearing a
+JJAS label — and repeated that identical bias in every year.
+
+--- superseded, kept for provenance ---
+SPREAD-SKILL MEASURED 2026-08-25 (PROVISIONAL, SUPERSEDED BY THE ABOVE).
+Sample: 3 Wednesdays, JJAS 2015, 11 members, daily precip, truth = ERA5
+LSP+CP, wet points only (>0.1 mm). 136,513 points.
+  corr(log spread, log |ens_mean - truth|) POOLED = +0.588
+  (flat across leads: Day 1 +0.533 ... Day 10 +0.617)
+That looks like a strong baseline. IT IS MOSTLY AN ARTIFACT.
+Conditioning on precipitation magnitude (deciles of ensemble mean) collapses
+it to +0.076 weighted:
+  decile 0 (0.09 mm) -0.153 | decile 5 (4.9 mm) +0.053 | decile 9 (31 mm) +0.260
+So nearly all of the 0.588 is the wet/dry spatial gradient — wet places have
+big spread AND big error, dry places have small of both. Within a comparable
+rain regime, spread carries almost no information about error.
+
+CONSEQUENCES, ALL OF THEM IMPORTANT:
+1. Do NOT quote 0.588 as "the spread-skill correlation". It is not comparable
+   to the published 0.3-0.6 figures, which are not pooled across space this
+   way. Quoting it would overstate the baseline we claim to beat.
+2. Our headroom is LARGER than the simulation assumed, not smaller. Raw
+   spread is a weak discriminator once magnitude is controlled.
+3. THE TRAP: our model gets precip_mean as a feature, so it also earns credit
+   from the same wet/dry gradient. Comparing model-vs-raw-spread on pooled
+   data flatters BOTH. The fair baseline is spread conditioned on magnitude
+   (or stratified evaluation within magnitude bins). Build it that way or a
+   meteorologist judge will take the result apart.
+4. Caveats on this measurement: only 3 dates, one season, one year, and ERA5
+   truth is reanalysis whose model physics partly overlaps GEFS. RESOLVED
+   2026-08-27 by the four-season IMD re-measurement at the top of this
+   section, which supersedes these numbers as the deck figure.
+5. REPRODUCIBILITY: 03_spread_skill.py reports the POOLED number ONLY. The
+   conditional number is produced by src/04_conditional.py, which also
+   reports a CLUSTER-BOOTSTRAP confidence interval over init dates (the
+   independent unit is the forecast date, not the gridpoint — a row-level
+   bootstrap would report a falsely tight interval). Never quote a
+   conditional number that did not come out of 04.
+
+MODEL PLAN:
+1. Label: bust = |forecast - ERA5 truth| > 95th percentile, computed PER region
+   and PER lead time (a Day 10 error is not comparable to a Day 1 error).
+2. Baseline: rank by ensemble spread alone. Record ROC-AUC + PR-AUC.
+3. Model: HistGradientBoostingClassifier first. ConvLSTM only if time remains.
+4. Calibration matters — deliverable is a confidence indicator, so probabilities
+   must be calibrated. Reliability diagram + Brier decomposition.
+5. SHAP explanations (the PS explicitly requires explainable output).
+
+HONESTY RULES:
+- Split train/test BY TIME, never randomly. Weather is autocorrelated and a
+  random split inflates every metric.
+- Never report plain accuracy — base rate is ~5%, accuracy is meaningless.
+- PR-AUC will look low in absolute terms (~0.2-0.3). Report it anyway.
+- If we cannot beat ensemble spread, SAY SO. An honest negative result scores
+  better with meteorologist judges than an inflated claim.
+- Never write a fallback that silently generates synthetic data. If the real
+  data path breaks, I need to know.
