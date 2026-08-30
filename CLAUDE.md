@@ -2,6 +2,45 @@
 ### Team Hellfire Labs · SIH26079 · Smart India Hackathon 2026
 विश्वास, "confidence" — knowing when not to trust the forecast.
 
+PROBLEM-STATEMENT FIDELITY — FOUR OPEN ITEMS, RAISED 2026-08-27.
+
+THE PS TEXT IS NOT IN THIS REPO. Every statement about what the PS "requires"
+— including the explainability requirement the SHAP work is built around — is
+paraphrase from memory. PASTE THE VERBATIM PS TEXT INTO THIS FILE. It is ~200
+words and it ends the guessing permanently.
+
+Known identity (README): "AI-Based Forecast Bust Detection for Medium-Range
+Weather Forecasts", Ministry of Earth Sciences / NCMRWF, Software track.
+
+1. WE USE GEFS; NCMRWF RUNS NEPS/NCUM. The problem owner operates India's own
+   operational medium-range ensemble. We detect busts in an American one. This
+   is defensible — NEPS reforecast archives are not publicly accessible, GEFS
+   is the only publicly archived medium-range ensemble with a ~20-year
+   reforecast, and the method is ensemble-agnostic — but it is a SUBSTITUTION,
+   not a detail. State it before a judge asks, and say the pipeline points at
+   NEPS the day access exists. This is the most likely first question.
+2. THEME — RESOLVED 2026-08-27. SIH originally listed SIH26079 under
+   DISASTER MANAGEMENT and later RE-LISTED it under SMART AUTOMATION. Both
+   appear in our older docs because both were true at the time. SMART
+   AUTOMATION IS CURRENT and governs the submission.
+   This favours our actual result. The automation story is exact: forecasters
+   assess confidence today by eyeballing ensemble spread, we measured that
+   manual method against India's own gauge observations, and it explains under
+   1% of forecast error. We automate a judgement that currently has no
+   evidence behind it.
+   TECHNICAL CONSEQUENCE, NOT JUST FRAMING: under an automation framing FALSE
+   ALARMS COST MORE than missed events. An automated assistant that cries wolf
+   gets switched off, and then it helps nobody. When P14 picks the operating
+   point, weight FAR/precision more heavily than raw POD, and say why. Under a
+   disaster-management framing the trade-off would have gone the other way.
+3. DETECTION, NOT CORRECTION. The PS title says bust DETECTION. Paras's
+   metrics guide sketches an "AI-adjusted forecast" map. We do not adjust
+   forecasts and must not imply we do.
+4. OPERATIONAL VIABILITY IS PROBABLY SCORED. This file calls real-time an
+   "optional live dashboard". For an operational forecasting centre under a
+   Smart Automation theme, "could this run at NCMRWF tomorrow" is likely a
+   scoring question. The core claim still does not depend on it.
+
 PROJECT: Ministry of Earth Sciences problem SIH26079, Smart India Hackathon
 2026. We are NOT building a weather forecast. We build a model that predicts
 WHEN the operational forecast will be badly wrong (a "forecast bust"). Output
@@ -249,6 +288,286 @@ every date.
 
 LEAD-TIME RESOLUTION: the deliverable is a Day 1-10 confidence map, so DAILY
 steps (24h, 48h ... 240h) are enough. Do not pull the 3-hourly steps.
+
+MIXED-SCHEMA TRAP IN features_parts/ — FOUND 2026-08-29, NOT YET TRIGGERED.
+If the 5-year run fetches new dates WITHOUT the 850 hPa columns while the
+existing 104 parts have them, finalize() will NOT catch it: its guard checks
+only ANOMALY_COLUMNS + CLIMATOLOGY_KEYS, so the 850 columns fall outside it,
+pd.concat silently fills them with NaN for the new dates, and
+HistGradientBoostingClassifier handles NaN natively. Result: a feature that is
+real for 104 dates and NaN for 156, with no error anywhere.
+EITHER keep 850 hPa for every date (recommended — the parts are only 486 MB;
+the 27.4 GB is transfer time, ~1.7 h overnight, and skipping it destroys data
+already fetched) OR strip the three columns from the existing parts first so
+the schema stays uniform. NEVER mix.
+
+P11 ABLATIONS — 2026-08-29. All five, same split/labels/seed.
+  FULL 0.728 | drop month 0.722 (-0.006) | drop precip 0.731 (+0.003)
+  drop 850hPa 0.726 (-0.002) | spread only 0.562 (baseline 0.565)
+  MONTH PASSES: -0.0059, far under the 0.02 line fixed in advance. The model is
+  NOT learning the calendar; 0.728 is final, not provisional.
+  Two results worth quoting. Dropping the rainfall forecast entirely makes it
+  slightly BETTER — so the model does not ride the magnitude artefact. And a
+  learned model given ONLY spread scores 0.562 vs 0.565 for spread as a plain
+  ranking: none of our edge is gradient boosting being clever, all of it is
+  having more information.
+  Permutation importance: pwat_mean +0.086, precip_spread +0.066,
+  precip_mean +0.061 — moisture plus ensemble disagreement.
+
+FIRST TRAINED MODEL — 2026-08-29, 20:45. THE PROJECT NOW HAS A RESULT.
+Train 2018 (39 dates fitted, 13 held as validation) / test all 52 Wednesdays of
+2019. Labelled table 1,302,080 rows; the TEST SET is 651,040 of them over 1,252
+gauge-observed land gridpoints, Day 1-10. IMD gauge truth, region-scope bust
+thresholds, HistGradientBoostingClassifier, nothing tuned.
+
+                          baseline (spread)   model
+  ROC-AUC pooled                0.885         0.909   <- ARTEFACT, DO NOT QUOTE
+
+  "DO NOT QUOTE" REFINED 2026-08-30 — the absolute form was wrong. The rule
+  bars quoting the pooled pair AS A MEASURE OF PERFORMANCE; that is what would
+  commit, in our own work, the error this project accuses the incumbent of.
+
+  THE SANCTIONED EXCEPTION IS WITHDRAWN — 2026-08-30, P18. THE RULE IS AGAIN
+  ABSOLUTE: the pooled pair appears in NO figure, slide, table, abstract or
+  spoken line. It survives only in this file and in the audit trail, as the
+  thing being ruled against.
+    Earlier on 30 Aug this file granted fig4_inversion.png a licence to print
+    0.909 vs 0.885 in provenance text, on the argument that "+0.023" is
+    meaningless without them. THE PROJECT OWNER DECIDED OTHERWISE and the
+    shipped figure does not print them: it names only the stratified pair and
+    describes the left bar in words. Verified by opening the PNG and by
+    unzipping deck v17 — the pooled pair appears nowhere in the deck.
+    THIS PARAGRAPH IS WHY THE AMENDMENT MATTERS. A rule permitting what the
+    project has since decided against WILL be acted on by a future session,
+    which would quietly reintroduce the number into the figure. src/11_inversion.py
+    now renders the shipped footnote and carries the same warning at the call
+    site. If a future figure wants this licence, it does not have it.
+  ROC-AUC stratified            0.565         0.728   <- THE RESULT
+  PR-AUC lift over base rate    6.29x         7.60x
+
+  stratified margin +0.1634, 95% CI +0.1080 to +0.1926 (cluster bootstrap,
+  52 forecast dates). Entire interval above zero.
+
+THE FINDING IS THE INVERSION. Pooled, the model beats spread by only +0.023.
+Stratified, by +0.163 — seven times larger. Pooled scoring gives spread 0.885
+for free by letting it track rainfall amount; remove that and it collapses to
+0.565, barely above chance. The fair comparison FAVOURS us, which is rare and
+worth saying out loud.
+
+ROBUSTNESS. Ahead in all 8 rainfall bins (+0.079 to +0.252), largest edge in
+the driest conditions (0.835 vs 0.583 — the "confidently dry and it rained"
+failure), still +0.097 in the heaviest bin where 41% of forecasts bust.
+QUOTE +0.13 TO +0.16, not +0.163 alone. The "forecast AND truth > X mm"
+variants in the panel condition on the OUTCOME — they delete every
+forecast-said-dry-it-poured bust and every forecast-said-rain-nothing-came
+bust, so they understate the model for reasons unrelated to quality. Fair for
+the Phase-1 correlation, NOT fair for bust-prediction AUC.
+
+THE BIN-WEIGHTING QUESTION, AND ITS ONE-SENTENCE ANSWER — SETTLED 2026-08-30.
+A sharp judge will work this out and it deserves an answer that is ready, not
+derived on the spot. THE QUESTION: stratified_auc() is n-weighted, and bin 0
+holds 208,065 of 651,040 test rows because qcut collapsed the zero-rainfall
+mass into it. So roughly a THIRD of the headline 0.728 comes from the one bin
+where the incumbent is degenerate — ensemble spread is exactly 0.00 mm on 91%
+of that bin, only 64 distinct values across it. Is the margin an artefact of
+weighting a bin where the baseline cannot rank at all?
+  THE ANSWER, already computed — it is the "drop the driest bin" row of the
+  robustness panel (ablations/a_full.log), and it is where the published low
+  end of +0.132 comes from:
+      all bins (headline)   baseline 0.565   model 0.728   margin +0.1634
+      drop the driest bin   baseline 0.539   model 0.671   margin +0.1322
+  SAY THIS: "Drop the bin where spread is degenerate and the margin goes from
+  +0.163 to +0.132 — still an edge, and still ahead in every remaining bin."
+  THE RANGE SPANS TWO VARIANTS, NOT FIVE — CORRECTED 2026-08-30, P18. The panel
+  prints five rows but three are [truth-filtered] and excluded from the verdict
+  range for the reason stated just above. +0.13 to +0.16 is exactly these two:
+  "all bins" and "drop the driest bin". fig4's footnote said "five wet-point
+  definitions" and was wrong; it is corrected in src/11_inversion.py. NOTE THE
+  ASYMMETRY: Phase 1's 0.17-0.90% variance range DOES span five wet-point
+  definitions, because for a spread-error CORRELATION the truth-filtered
+  variants are a fair sensitivity check. Five is right on slide 6 and wrong on
+  fig4. Do not "fix" slide 6.
+  Note the baseline FALLS to 0.539 when that bin is removed, so the driest bin
+  was helping the incumbent's score, not ours. And it is not a hidden variant:
+  it is one of the two definitions the +0.13-to-+0.16 range is built from.
+  DO NOT concede the premise that bin 0 should be dropped. It is a third of
+  real forecasts, the busts in it are the confidently-dry failures this system
+  exists to catch, and the incumbent's inability to rank them is a finding
+  about the incumbent — not a reason to delete the cases from the evaluation.
+
+CLOSED 2026-08-29: the `month` ablation ran and PASSED (-0.0059, tolerance
+0.02). See P11 ABLATIONS above. 0.728 is final. Any document still calling it
+provisional or listing the month ablation as outstanding is stale.
+
+================================================================================
+PHASE 3 — COMPLETE 2026-08-30. Explainability, calibration, demo, metrics.
+================================================================================
+
+MODEL ARTIFACT — models/vishwas_model.joblib (07_model.py now persists it).
+Holds the fitted estimator, the 23 feature names IN ORDER, and the config
+(study window, validation dates, seed, sklearn version, row counts, timestamp).
+A fitted estimator without its column order is not reloadable, so they travel
+together. VERIFIED: it reloads and reproduces model_predictions.parquet to a
+max score difference of 0.00e+00 across all 651,040 test rows. models/ is
+gitignored. Nothing downstream needs to retrain; 09/10 load this file.
+
+DEMO DATE — CHOSEN EMPIRICALLY, NOT ASSUMED. src/08_pick_date.py ranks all 52
+test dates on TRUTH ALONE: observed bust rate, plus a spatial-coherence score
+(share of bust cells touching another bust cell — a real synoptic event is
+contiguous, scatter is not). Model AUC is printed as context and deliberately
+EXCLUDED from the ranking; ranking dates by our own skill and showing the
+winner is cherry-picking and a judge will ask.
+  PICK: init 20190731 (issued Wed 31 July 2019), Day 5, valid 5 Aug 2019.
+  Bust rate 36.3% (454/1252) at Day 5 — highest of the 52 dates, and highest
+  across all leads too (27.5%). Spatial coherence 0.99. Runner-up 20190724 at
+  28.0%. Monthly means confirm the Jul-Sep prior: Jul 23.9%, Sep 15.2%,
+  Aug 12.4%, against 0.2-1.0% in DJF.
+  OPERATING POINT ON THE MAP: p >= 0.1535, the global top-10% threshold fitted
+  ONCE on the whole test set and applied unchanged. NOT re-fitted per date —
+  that would manufacture a flattering picture. 547 flags, 395 hits, 152 false
+  alarms, 59 misses; precision 0.72, recall 0.87 ON THIS DATE ONLY.
+  CAVEAT TO HAVE READY: at Day 3 on this date the model is marginally BEHIND
+  spread (0.826 vs 0.831). Single-date per-lead numbers are noisy. Never
+  defend the date on its metrics — it was chosen on observed busts.
+  figures/fig6_confidence_map.png. Panel B uses IMD's own daily rainfall
+  classes, not a linear ramp: one 390 mm cell washes the map pale otherwise.
+
+SHAP — WORKED CLEANLY, NO SUBSTITUTION. shap 0.49.1 TreeExplainer supports
+HistGradientBoostingClassifier natively. Additivity verified against the raw
+log-odds to 4e-13. Sample 6,000 random test rows. src/09_shap.py.
+  GLOBAL, ranked by MEDIAN |SHAP|: precip_spread, precip_mean, pwat_mean —
+  the same top three as permutation importance, Spearman +0.775.
+  RANKED BY MEAN |SHAP| THEY DISAGREE, AND THE REASON IS THE POINT.
+  Mean promotes v850_mean to #2 and cape_anomaly to #4; permutation ranks them
+  #16 and #17 (+0.0022, +0.0015). For those features the top 1% of rows carry
+  71-83% of all |SHAP| mass, with single-row contributions up to 610 log-odds —
+  saturated tree leaves. For pwat_mean and precip_mean the top 1% carry 5-8%.
+  The mean ranks a feature by its rarest rows; the median by the typical
+  forecast. Spearman drops to +0.670 on the mean. fig7 plots both.
+  Permutation importance was RECOMPUTED here over all 23 features (CLAUDE.md
+  had only three recorded, not enough to answer "do they agree"). It
+  reproduces P11: pwat_mean +0.094 vs +0.086, precip_mean +0.067 vs +0.061,
+  precip_spread +0.065 vs +0.066.
+
+DRIEST-BIN SHAP CASES — THE BEST EXPLAINABILITY SLIDE WE HAVE.
+figures/fig8_shap_cases_driest.png, via `09_shap.py --case-driest-bin`.
+The driest precip_mean decile is 208,065 of 651,040 test cases, forecast
+rainfall 0.000-0.009 mm, bust base rate 0.15%. The three highest-confidence
+correct bust calls in it:
+    12 Jun 2019 D1  0.0 mm forecast -> 13.2 mm fell   p=0.17  (109x bin rate)
+     5 Jun 2019 D4  0.0 mm forecast -> 16.1 mm fell   p=0.14  ( 95x)
+    22 May 2019 D10 0.0 mm forecast -> 22.5 mm fell   p=0.12  ( 82x)
+  Ensemble spread is EXACTLY 0.00 mm on all three, tied with 189,758 other
+  test rows, so the incumbent cannot rank them at all.
+  THE SHAP STRUCTURE CARRIES THE ARGUMENT: in all three, pwat_mean is the
+  largest POSITIVE contributor (+2.80, +1.95, +2.47) and precip_spread = 0 is
+  the largest NEGATIVE one (-1.35, -1.28, -1.28). The model correctly learned
+  that zero spread argues against a bust, and flagged anyway because the
+  moisture signal overwhelmed it. That is the system overruling the incumbent
+  using information the incumbent does not have.
+  SAY p = 0.17 WITH ITS CONTEXT. In absolute terms it looks weak; against a
+  0.15% base rate it is ~109x. The caption states this so nobody has to
+  discover it.
+  The generic highest-confidence cases (fig8_shap_cases.png) are all the
+  "forecast said rain, less fell" mode. Prefer the driest-bin figure.
+
+CALIBRATION (P12) — src/10_calibration.py, figures/fig9_reliability.png.
+Isotonic and Platt fitted on the VALIDATION slice only (13 interleaved 2018
+dates, 162,760 rows, base rate 5.43%). Never on test.
+  Brier decomposed, 10 equal-width bins, 651,040 test rows:
+    uncalibrated   Brier 0.04218  REL 0.00014  RES 0.01777  BSS +0.3028
+    + ISOTONIC     Brier 0.04217  REL 0.00006  RES 0.01758  BSS +0.3029
+    + Platt        Brier 0.04218  REL 0.00015  RES 0.01778  BSS +0.3027
+    spread+isotonic Brier 0.04749 REL 0.00012  RES 0.01225  BSS +0.2148
+    climatology     Brier 0.06060 REL 0.00011  RES 0.00000  BSS -0.0018
+  THE BASELINE GETS THE IDENTICAL ISOTONIC FIT. Spread is in millimetres;
+  scoring a rainfall amount against a Brier score would hand us the win free.
+  WAS THE RAW MODEL ALREADY CALIBRATED? TWO-SIDED, BOTH HALVES MATTER.
+  In aggregate YES: REL 0.00014 against UNC 0.06049 is 0.23% of the total, and
+  Brier barely moves. Between p=0.0 and 0.8 the raw curve tracks the diagonal.
+  AT THE TAIL, NO. The raw model says p >= 0.9 on 72 test cases and only 5.6%
+  of them bust. Typical rows there have forecast 0.00 mm, spread 0.00 mm and
+  0.00 mm observed — maximally certain of a bust where nothing happened. These
+  are the SAME saturated leaves the SHAP tail diagnostic found; two independent
+  analyses landed on one defect. It is invisible in an average over 651,040
+  rows and it is the end of the scale a forecaster acts on hardest.
+  ISOTONIC WINS AND PLATT CANNOT. Isotonic caps output at 0.75 because PAVA
+  pools the violating region downward; Platt (slope 0.946, intercept -0.119,
+  near-identity) can rescale a monotone region but not flatten it, and still
+  emits p >= 0.9 on 67 cases of which 1.5% bust.
+  THE EMPTY 0.8-1.0 BINS ARE DELIBERATE, NOT MISSING DATA: the calibrated
+  system declines to claim a confidence it never earned on held-out data.
+  RESOLUTION is the informativeness term: 0.01758 vs 0.01225 for calibrated
+  spread, 1.4x. Calibration does NOT change the ranking, so 0.728 vs 0.565 is
+  untouched — what changes is whether the number can be believed.
+  The three-term identity BS = REL - RES + UNC is exact only for a discretised
+  forecast; the within-bin variance residual (~7e-04, five times REL) is
+  computed and labelled, not swept up as rounding.
+
+MET METRICS (P14) — src/08_met_metrics.py, imports src/met_metrics.py unchanged.
+Event = BUST, never rain. Operating point chosen on VALIDATION: top 10% is
+p >= 0.1271. Frozen onto test it fires at 11.62% (2019 is wetter: 6.47% vs
+5.43%), POD 0.673, FAR 0.625, CSI 0.317, ETS 0.278.
+  HEAD-TO-HEAD AT A MATCHED ALERT BUDGET, top 10% of test cases:
+    VISHWAS          POD 0.641  FAR 0.586  CSI 0.336  ETS 0.300
+    ensemble spread  POD 0.546  FAR 0.647  CSI 0.273  ETS 0.235
+  THE SENTENCE: "Given the same number of alerts a forecaster would tolerate,
+  VISHWAS catches 64% of busts against the current method's 55%." Stratified
+  within rainfall magnitude: 19% against 15%.
+  TIES ARE THE TRAP. Ensemble spread is exactly 0.00 mm on 189,758 test rows —
+  a third of the set is one tie, and in the driest decile it is 91.2% of the
+  bin with only 64 distinct values across 208,065 cases. A quantile cut of 0.00
+  flags the whole bin: the first run of this script reported the baseline
+  spending 38.78% of cases against a 10% budget, which silently voided the
+  comparison. Ties are now broken by RANDOM within-tie order on a fixed seed —
+  the only neutral choice, and the honest model of a score that cannot rank.
+  Pooled, no alert comes from the tied block (those rows sit at the BOTTOM of
+  the ranking); the tie only bites inside the driest bin.
+  PRECISION IS WEIGHTED OVER RECALL and the script says why: Smart Automation
+  theme, an assistant that cries wolf gets switched off. 5% budget buys +0.173
+  precision for -0.187 POD; 20% costs -0.158 precision for +0.151 POD.
+  cluster_bootstrap_margin() in 07_model.py is hardcoded to stratified_auc, so
+  it CANNOT compute a POD or CSI difference. 08 uses a metric-agnostic bootstrap
+  copying its design, AND imports the original unchanged for the AUC margin.
+  ETS IS computable from the four counts: H_rand = (H+FA)(H+M)/N. Paras's guide
+  says otherwise and is wrong on that point.
+
+FIGURES — CURRENT SET. fig1_collapse, fig2_deciles, fig3_map (reference visual
+language), fig4_inversion (REGENERATED 30 Aug, src/11_inversion.py),
+fig6_confidence_map, fig7_shap_global, fig8_shap_cases{,_driest,_20190731},
+fig9_reliability.
+  fig5_confidence_map.png DELETED 30 Aug — its caption read "initialised 26
+  July, valid 31 July" while carrying the numbers for init 31 July / valid
+  5 Aug. Both dates were five days early and 26 July 2019 was a Friday, not
+  one of the 52 Wednesday inits. Superseded by fig6.
+  fig4 was regenerated because it printed "+0.163" alone in 40pt type against
+  this file's own rule, and its footnote called the sample 1,302,080 when the
+  margin is computed on 651,040 test rows. Numbers were always correct.
+
+ONE GENERATOR PER FIGURE — ESTABLISHED 2026-08-30, P18. EVERY figure in
+figures/ is now reproducible from a committed script. It was not: fig1, fig2
+and fig3 had NO generator at all — the image carrying the project's headline
+finding could not be remade — and fig4's shipped PNG had been produced by an
+ad hoc script that was never committed and hardcoded its literals, while
+src/11_inversion.py rendered a DIFFERENT footnote. That divergence is closed:
+11_inversion.py now renders the shipped text and computes every number in it.
+  fig1  src/12_fig1_collapse.py   fig2  src/13_fig2_deciles.py
+  fig3  src/14_fig3_map.py        fig4  src/11_inversion.py
+  fig6  src/08_demo_map.py        fig7/fig8  src/09_shap.py
+  fig9  src/10_calibration.py
+  src/figstyle.py holds the shared palette and layout helpers. 11_inversion.py
+  predates it and keeps its own copy of the constants, deliberately, because it
+  is verified against the shipped deck image; migrate it when it next changes.
+  IF YOU ADD A FIGURE, ADD ITS SCRIPT IN THE SAME COMMIT. An uncommitted
+  generator is how fig4 ended up with two different captions and no way to tell
+  which one shipped.
+
+CAPTION TEXT IS NOT COVERED BY scripts/check_docs.py. The checker walks .md
+files; a wrong number or a stale claim baked into a PNG is invisible to it and
+always will be. Figure captions are checked by READING THE FIGURE. That is how
+the "five wet-point definitions" error in fig4's footnote was found (it is two;
+see below), and it is why every figure's numbers must come from its script
+rather than from a person retyping them.
 
 SPREAD-SKILL RE-MEASURED 2026-08-27 — THIS IS THE DECK NUMBER.
 Sample: 12 init dates, ALL FOUR SEASONS, 3 years (2012/2015/2018), 11 members,

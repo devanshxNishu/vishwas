@@ -1,4 +1,16 @@
-# VISHWAS — Work Plan & Claude Code Prompts
+# VISHWAS — Work Plan & Claude Code Prompts (Phase 1)
+
+> ⛔ **HISTORICAL PROMPT ARCHIVE — not a statement of current state.**
+> Phase 1 prompts P1-P7, written 26 Aug 2026.
+> All of this work is complete. For what is true now, read `CLAUDE.md` or
+> `docs/DECK-TECHNICAL-PACK.md`. Forward-looking wording below ("next",
+> "not yet", "no model exists") described the repository on the date this
+> file was written and is preserved deliberately. Banner added 30 Aug 2026
+> by the consistency audit (`docs/CONSISTENCY-AUDIT.md`).
+
+> **Phase 1 (P1–P7) is complete except the bulk run.** The modelling work
+> continues in `docs/PROMPTS-PHASE2-MODEL.md` (P8–P13) — start there for
+> anything involving labels, training, evaluation or the confidence map.
 
 **Written 26 Aug 2026.** Companion to `CLAUDE.md` (the project constitution) and
 `data/VISHWAS-HANDOFF.md` (project state).
