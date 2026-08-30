@@ -1,15 +1,24 @@
 # VISHWAS — Project Handoff
 
-**Team Hellfire Labs · SIH26079 · Ministry of Earth Sciences · Disaster Management**
+**Team Hellfire Labs · SIH26079 · Ministry of Earth Sciences / NCMRWF**
+**Theme: Smart Automation** (SIH re-listed this PS from Disaster Management to
+Smart Automation partway through; older notes saying Disaster Management are
+stale, not wrong-at-the-time). Track: Software.
 
 विश्वास, "confidence" — knowing when not to trust the forecast.
 
-> Read this file first. State of the project as of **27 August 2026**.
+> Read this file first. State of the project as of **30 August 2026**.
 > Supersedes the 26 August version, which described a truth source and a
 > headline number we have since replaced.
 >
-> Companions: `CLAUDE.md` (the technical constitution — read before any code)
-> and `docs/CLAUDE-CODE-PROMPTS.md` (the work plan, P1–P7).
+> **Updated 30 Aug (consistency audit).** Sections 1, 3, 5 and 8 are unchanged
+> and were always correct. Sections 2, 4, 6 and 7 described the bulk run and the
+> model as future work; **both are done**, and those sections have been
+> rewritten. §4a below is new.
+>
+> Companions: `CLAUDE.md` (the technical constitution — read before any code),
+> `docs/DECK-TECHNICAL-PACK.md` (every current number, for the deck) and
+> `docs/CLAUDE-CODE-PROMPTS.md` (the Phase 1 work plan, P1–P7).
 
 ---
 
@@ -28,13 +37,14 @@ spread**, which is what forecasters use today.
 
 | Date | What |
 |---|---|
-| **31 Aug 2026** | College internal PPT — **4 days away, this is the live deadline** |
-| 29 Aug | Internal cutoff — all team inputs to Mahika |
+| **31 Aug 2026** | College internal PPT — **tomorrow, this is the live deadline** |
+| ~~29 Aug~~ | ~~Internal cutoff — all team inputs to Mahika~~ — passed |
 | **20 Sep 2026** | SIH idea submission via SPOC (6 slides) |
 | Dec 2026 | Grand Finale (if selected) |
 
-The model does **not** need to be finished for either deadline. Both
-submissions are slides, and **the number they rest on is already measured.**
+The model did not *need* to be finished for either deadline — but **it is
+finished**, trained, ablated, calibrated and explained. Both submissions are
+slides, and every number they rest on is measured.
 
 ---
 
@@ -53,19 +63,51 @@ submissions are slides, and **the number they rest on is already measured.**
 
 ## 4. What changed since 26 August
 
-All seven planned work items except the bulk download are **done and verified.**
+All planned work items are **done and verified**, the bulk download included.
 
 | Item | Outcome |
 |---|---|
 | Truth source | Switched **ERA5 → IMD gauge-gridded rainfall**, verified end to end |
 | 850 hPa / true wind shear | Implemented; cost estimate corrected (it is **+60%**, not +1.6%) |
-| Four-season re-measurement | Done — this is the deck's number |
+| Four-season re-measurement | Done — this is the deck's Phase 1 number |
 | Climatology leak | Found and fixed; the leak was real and is proven fixed |
 | Ensemble-size sensitivity | Done — small effect, does not threaten the conclusion |
-| Bulk run | **Not started, deliberately.** Not needed for either deadline. |
+| Bulk run | ✅ **Complete 29 Aug** — 104 forecast dates, 2018–2019, 50.3 GB |
 
 **New code:** `src/imd_truth.py`, `src/verify_imd.py`, `src/04_conditional.py`,
-`src/05_ensemble_size.py`.
+`src/05_ensemble_size.py`, `src/06_label.py`, `src/07_model.py`,
+`src/08_demo_map.py`, `src/08_met_metrics.py`, `src/08_pick_date.py`,
+`src/09_shap.py`, `src/10_calibration.py`, `src/11_inversion.py`,
+`src/met_metrics.py`.
+
+---
+
+## 4a. The model — added 30 August
+
+Trained on 2018 (39 dates fitted, 13 held back as validation), tested on **all
+52 Wednesdays of 2019**, a year it never saw. **651,040 test rows** out of a
+1,302,080-row labelled table, over the same 1,252 gauge-observed land
+gridpoints, Day 1–10. Truth: IMD gauge-gridded rainfall.
+
+| | ensemble spread | VISHWAS |
+|---|---|---|
+| ROC-AUC, within like rainfall conditions | **0.565** | **0.728** |
+| PR-AUC lift over base rate | 6.29× | 7.60× |
+
+Margin **+0.1634**, 95% CI **+0.1080 to +0.1926** (cluster bootstrap over the 52
+dates). **Quote it as +0.13 to +0.16, never +0.163 alone.** Ahead in all **8**
+rainfall bins, by +0.079 to +0.252.
+
+**Do not quote the pooled ROC-AUC pair as the result** — it is the artefact this
+project exists to expose. See `docs/DECK-TECHNICAL-PACK.md` §7.
+
+**In operational terms:** given the same number of alerts a forecaster would
+tolerate, VISHWAS catches **64% of busts against the current method's 55%**.
+
+Also done: five ablations (`month` passed at −0.006, so the model is not
+learning the calendar), isotonic calibration, SHAP explanations, and a demo
+confidence map for init 31 July 2019, Day 5, valid 5 Aug. Every number is in
+`docs/DECK-TECHNICAL-PACK.md`, which is the current numbers document.
 
 ---
 
@@ -134,24 +176,34 @@ mode. Report it as its own finding rather than burying it in the headline.
 | Ensemble size (5→11 improves baseline ~+0.015) | Small, stated honestly; 5→31 remains unmeasurable from the reforecast |
 | Land-only domain (1252 of 5041 gridpoints, 24.8%) | Defensible — it is the gauge domain — but **state it before a judge finds it** |
 | Rare-event precision will look low in absolute terms | Report honestly; the comparison is what matters |
-| Bulk transfer now ~122 GB / ~7.6 h (was ~80 GB / ~5 h) | Not on the deadline path; run it after 31 Aug |
+| ~~Bulk transfer now ~122 GB / ~7.6 h~~ | **Closed.** The 2-year run completed 29 Aug at 50.3 GB over 104 dates. The ~122 GB figure was the 5-year estimate; that extension is now a mid-Sep item |
+| One test year (2019 only) | Stated openly. The interval is blind to year-to-year variation — treat it as a floor. The 5-year extension addresses it |
 
 ---
 
-## 7. Immediate next actions
+## 7. Immediate next actions — rewritten 30 Aug
 
-**Submission (everyone, by 29 Aug):**
-- Arnav — shortlist of documented Indian forecast failures
-- Dhruv — primary user + cost figures with citations
-- Paras — one-page plain-English metrics explainer, and own the stratified
-  (within-magnitude-bin) evaluation when the model is scored
-- Mahika — slide skeleton; **the headline number is ready, build against it**
+**Before the PPT tomorrow:**
 
-**Technical (Devansh + Ankit) — after 31 Aug, not before:**
-1. Bulk run. Start with `--years 2` (~3 h) to validate the pipeline end to end;
-   the resumable manifest means extending to `--years 5` later refetches
-   nothing. **One process only — the manifest has no locking.**
-2. Train the bust classifier; evaluate stratified within magnitude bins.
+Items 1–3 (slide 3's figure, slide 4's figure, slide 6's wording) were **all
+done in deck v17, built 30 Aug 15:59** — re-verified by hashing the deck's
+embedded media. Two remain:
+
+1. Paste the **Team ID** (slide 1, still a red placeholder).
+2. Confirm the **PS title** against the portal wording.
+
+**Present from `deck/VISHWAS_SIH.pdf`.** The superseded 29 Aug build has been
+moved to `deck/archive/` so there is only one presentable deck in `deck/`.
+
+**Technical (Devansh + Ankit) — after 31 Aug:**
+1. Extend the run from 2 years to 5. The resumable manifest refetches nothing.
+   **One process only — the manifest has no locking.**
+2. Decide the open `fig4` question in `docs/DECK-VERIFICATION.md` (the figure on
+   disk and `src/11_inversion.py` disagree about the footnote).
+
+**Still outstanding from the team:** Dhruv's cost figures re-angled for Smart
+Automation (forecaster time and decision quality, not flood damage), and Arnav's
+verified case study.
 
 ---
 

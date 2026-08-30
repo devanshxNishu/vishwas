@@ -20,6 +20,11 @@ VISHWAS does not generate a new weather forecast. It predicts when an existing m
 - Measured ensemble spread against forecast error using pooled and conditional correlations.
 - Added true 500-850 hPa wind shear feature support.
 - Added 5-member vs 11-member ensemble sensitivity analysis.
+- Built the labelled dataset: 1,302,080 rows over 104 forecast dates, 2018-2019.
+- Trained and evaluated the bust classifier on a time-based split (train 2018, test 2019).
+- Ran five ablations, SHAP explanations, isotonic calibration, and the demo confidence map.
+- Scored POD/FAR/CSI/ETS against ensemble spread at a matched alert budget.
+- Persisted the fitted model to `models/vishwas_model.joblib`.
 
 ## Key Result For The PPT
 
@@ -36,6 +41,27 @@ Verified baseline numbers:
 | Variance explained after fair control | 0.17% to 0.90% |
 | 5 to 11 ensemble sensitivity | Small positive effect; conclusion unchanged |
 
+### The trained model
+
+Train 2018 (39 dates fitted, 13 held back as validation), test all 52 Wednesdays
+of 2019 - a year the model never saw. 651,040 test rows over 1,252
+gauge-observed land gridpoints, Day 1-10. Truth: IMD gauge-gridded rainfall.
+
+| Metric | Ensemble spread | VISHWAS |
+| --- | --- | --- |
+| ROC-AUC, pooled (do not quote - see below) | 0.885 | 0.909 |
+| ROC-AUC, within like rainfall conditions | 0.565 | 0.728 |
+| PR-AUC lift over base rate | 6.29x | 7.60x |
+
+The margin is +0.1634, 95% CI +0.1080 to +0.1926 by cluster bootstrap over the
+52 forecast dates. Quote it as **+0.13 to +0.16**, never +0.163 alone. The
+pooled row is an artefact of letting ensemble spread track rainfall amount and
+must not be quoted as the result.
+
+Ahead in all **eight** rainfall bins, by +0.079 to +0.252. In operational terms,
+at a matched alert budget VISHWAS catches **64% of busts against ensemble
+spread's 55%**.
+
 ## Repository Layout
 
 ```text
@@ -45,16 +71,51 @@ src/
   03_spread_skill.py     Measure spread-skill relationship
   04_conditional.py      Conditional baseline and bootstrap analysis
   05_ensemble_size.py    5 vs 11 ensemble sensitivity
+  06_label.py            Bust labels, per region and lead time
+  07_model.py            Train and evaluate the bust classifier
+  08_demo_map.py         Demo confidence map (fig6)
+  08_met_metrics.py      POD/FAR/CSI/ETS at a matched alert budget
+  08_pick_date.py        Choose the demo date on observed busts alone
+  09_shap.py             SHAP explanations (fig7, fig8)
+  10_calibration.py      Isotonic/Platt calibration, reliability (fig9)
+  11_inversion.py        The pooled-to-stratified inversion (fig4)
+  met_metrics.py         Metrics library used by 08_met_metrics.py
   imd_truth.py           IMD rainfall truth loader
   verify_imd.py          IMD truth verification checks
+  watch_fetch.py         Progress monitor for a running fetch
+
+scripts/
+  check_docs.py          Documentation consistency check (see below)
 
 docs/
-  CLAUDE-CODE-PROMPTS.md Work plan and implementation prompts
+  DECK-TECHNICAL-PACK.md Every current number, for the deck
+  DECK-BRIEF.md          Framing, safe claims, the "do not claim" list
+  DECK-VERIFICATION.md   Claim-by-claim verification of the deck
+  DECK-BENCHMARK.md      What the selected SIH decks actually do
+  TECHNICAL-REFERENCE.md The engineering picture
+  CONSISTENCY-AUDIT.md   Documentation audit, 30 Aug 2026
+  SIH-COMPLIANCE.md      Template rule compliance
+  P11-ablations.md, P16-wrapup.md, CLAUDE-CODE-PROMPTS.md,
+  PROMPTS-PHASE2-MODEL.md, PROMPTS-PHASE3-DEMO.md   Prompt archives
 
+figures/                 Generated figures, fig1-fig9 (gitignored)
+ablations/               Ablation logs and permutation importance
 data/
   VISHWAS-HANDOFF.md     Project handoff and current results
   raw/manifest.jsonl     Small fetch manifest
 ```
+
+## Checking the documentation
+
+Numbers appear in many documents and drift silently. `scripts/check_docs.py`
+holds the canonical values and the known-stale claims as two literal tables and
+walks every `.md` in the repo:
+
+```bash
+python scripts/check_docs.py     # exits 0 if clean, 1 if anything is found
+```
+
+It reports and never rewrites. See `docs/CONSISTENCY-AUDIT.md`.
 
 Generated datasets, IMD cache files, raw forecast files, virtual environments, models, and outputs are intentionally excluded from git.
 
