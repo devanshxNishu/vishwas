@@ -52,8 +52,8 @@ slides, and every number they rest on is measured.
 
 | Person | Role | Feeds into |
 |---|---|---|
-| **Devansh** (lead) | model + evaluation, runs the agent sessions | everything |
-| **Ankit** | data pipeline, features | Devansh |
+| **Devansh** (lead) | data pipeline, model + evaluation, runs the agent sessions | everything |
+| **Ankit** | problem-statement tracking, option analysis | Devansh, Mahika |
 | **Arnav** | hunting a real Indian forecast-failure case study | Mahika (demo) |
 | **Paras** | metrics (ETS/CSI/POD/FAR/FSS) + evaluation integrity | Devansh, Mahika |
 | **Mahika** | slides, pitch, interview with a real official | the submission |

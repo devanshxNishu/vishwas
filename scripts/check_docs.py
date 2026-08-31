@@ -175,6 +175,28 @@ FORBIDDEN = [
      "The bulk run COMPLETED on 29 Aug: 104 forecast dates, 2018-2019, 50.3 GB.",
      None),
 
+    # CREDIT ATTRIBUTION - P23, 31 Aug. Ankit did not build the fetch and
+    # feature pipeline; Devansh did. The PRESENTED deck still carries the wrong
+    # line and is left alone on purpose as the record of what was in the room
+    # (deck/ is binary and this checker walks .md only, so it is never scanned).
+    # The corrected roster line is:
+    #   Devansh (data pipeline, model and evaluation) *
+    #   Ankit (problem-statement tracking, option analysis)
+    (r"Ankit[^.\n]{0,40}(data pipeline|feature pipeline)"
+     r"|(data pipeline|feature pipeline)[^.\n]{0,40}Ankit",
+     "Stale credit. Ankit did not build the data/feature pipeline - Devansh "
+     "did. Ankit's contributions are problem-statement tracking (he caught the "
+     "SIH re-listing from Disaster Management to Smart Automation, which "
+     "changed the primary user, the framing and the tuning) and the option "
+     "analysis against the secondary problem statement. Never replace a wrong "
+     "credit with a bare name and no role.",
+     None),
+
+    (r"Ankit[^.\n]{0,40}fetch|fetch[^.\n]{0,40}Ankit",
+     "Stale credit. The fetch pipeline (01_fetch.py) is Devansh's work, not "
+     "Ankit's. See the TEAM ROLES AND CREDIT block in CLAUDE.md.",
+     None),
+
     (r"catches X%|current method's Y%|X% of busts",
      "Placeholder left in place of the measured operational result: VISHWAS "
      "catches 64% of busts against the current method's 55% at a matched alert "
@@ -208,6 +230,17 @@ EXEMPT = {
     "docs/DECK-VERIFICATION.md":
         "Claim-by-claim verification log. Quotes rejected and corrected claims "
         "by design, each with its verdict beside it.",
+    # The presented deck. Binary, so this checker (which walks *.md) never
+    # reaches it; listed so the exemption already exists if the walk is ever
+    # widened. It must keep its original slide-6 credit line as a historical
+    # record - see TEAM ROLES AND CREDIT in CLAUDE.md.
+    "deck/VISHWAS_SIH.pptx":
+        "The deck as presented on 31 Aug 2026. A historical record; its "
+        "slide-6 credit line is corrected in the NEXT build, not this one.",
+    "deck/VISHWAS_SIH.pdf":
+        "The deck as presented on 31 Aug 2026. A historical record; its "
+        "slide-6 credit line is corrected in the NEXT build, not this one.",
+
     "CLAUDE.md":
         "The project constitution. States the rules by quoting the values they "
         "govern (e.g. the pooled pair, under DO NOT QUOTE).",

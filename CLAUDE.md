@@ -580,6 +580,40 @@ p >= 0.1271. Frozen onto test it fires at 11.62% (2019 is wetter: 6.47% vs
   ETS IS computable from the four counts: H_rand = (H+FA)(H+M)/N. Paras's guide
   says otherwise and is wrong on that point.
 
+TEAM ROLES AND CREDIT — CORRECTION PENDING THE 20 SEP REBUILD, P23 2026-08-31.
+
+Slide 6's B.Tech line in the PRESENTED deck reads:
+    Devansh (model and evaluation) · Ankit (data pipeline)
+Ankit did not build the fetch and feature pipeline; Devansh did. A rebuild
+carrying the fix was produced on 31 Aug and DELIBERATELY DISCARDED, because its
+only change was to move "data pipeline" to Devansh and leave Ankit with a bare
+name and no role at all. The presented deck is left unchanged as the record of
+what was actually in the room.
+
+THE NEXT BUILD MUST READ:
+    Devansh (data pipeline, model and evaluation) ·
+    Ankit (problem-statement tracking, option analysis)
+
+ANKIT'S ACTUAL CONTRIBUTIONS, which is what the corrected line is naming:
+  • Caught that SIH had re-listed SIH26079 from DISASTER MANAGEMENT to SMART
+    AUTOMATION — the save that stopped a deck built on flood framing from
+    going out. It changed the primary user, the framing, and the direction the
+    operating point is tuned (see item 2 of the PS fidelity block: under an
+    automation framing FALSE ALARMS COST MORE, which is why P14 weights
+    precision over POD).
+  • Ran the comparison against the secondary problem statement, which is how
+    the team knew what it was choosing against when it committed to this one.
+
+NEVER SHIP A ROSTER LINE WITH A NAME AND NO ROLE. Removing a wrong credit is
+only half the correction; the other half is naming what the person actually did.
+
+ALREADY APPLIED ELSEWHERE: site/index.html carries the corrected roster (Ankit
+= "scope & problem tracking"), and data/VISHWAS-HANDOFF.md's team table was
+fixed in the same commit. scripts/check_docs.py now forbids the stale string so
+it cannot come back, with deck/VISHWAS_SIH.pptx and .pdf EXEMPT — that file is
+a historical record and must keep its original text.
+
+
 FIGURES — CURRENT SET. fig1_collapse, fig2_deciles, fig3_map (reference visual
 language), fig4_inversion (REGENERATED 30 Aug, src/11_inversion.py),
 fig6_confidence_map, fig7_shap_global, fig8_shap_cases{,_driest,_20190731},
