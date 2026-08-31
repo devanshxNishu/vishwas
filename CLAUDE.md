@@ -4,13 +4,61 @@
 
 PROBLEM-STATEMENT FIDELITY — FOUR OPEN ITEMS, RAISED 2026-08-27.
 
-THE PS TEXT IS NOT IN THIS REPO. Every statement about what the PS "requires"
-— including the explainability requirement the SHAP work is built around — is
-paraphrase from memory. PASTE THE VERBATIM PS TEXT INTO THIS FILE. It is ~200
-words and it ends the guessing permanently.
+VERBATIM PS TEXT — RETRIEVED 2026-08-31 from https://www.sih.gov.in/sih2026PS
+(official SIH portal, "Problem Statement Details" modal for SIH26079). This is
+the authoritative text. Do not paraphrase it in any deck, doc or speaker note
+without checking it against this block first.
 
-Known identity (README): "AI-Based Forecast Bust Detection for Medium-Range
-Weather Forecasts", Ministry of Earth Sciences / NCMRWF, Software track.
+  Problem Statement ID:    26079
+  Problem Statement Title: AI-Based Forecast Bust Detection for Medium-Range
+                           Weather Forecasts
+  Organization:            Ministry of Earth Sciences (MoES)
+  Department:              National Centre for Medium Range Weather
+                           Forecasting (NCMRWF)
+  Category:                Software
+  Theme:                   Smart Automation
+  Youtube Link:            (blank)
+  Dataset Link:            (blank)
+  Contact info:            (blank)
+  Submitted Idea(s):       0/500
+  Deadline for Idea Submission: 20 September 2026
+
+  Description:
+  • Problem Statement Medium-range weather forecasts sometimes show large
+    errors during rapidly evolving systems such as monsoon depressions, heavy
+    rainfall events, western disturbances, cyclones, heat waves and
+    break/active monsoon phases. Such forecast failures, or 'forecast busts',
+    can affect operational decision-making.
+  • Challenge The challenge is to develop an AI/ML-based system that can
+    identify regions and lead times where the forecast is likely to have high
+    uncertainty or large error. The system should compare current NWP forecast
+    patterns with historical forecast error behaviour and provide a forecast
+    confidence indicator.
+
+  Expected Outcome - Description Forecast confidence map - Region-wise
+  confidence for Day 1 to Day 10 forecasts Forecast bust probability -
+  Probability of large forecast error over different regions Error-prone area
+  detection - Identification of areas where model forecast may be unreliable
+  Explainable output - Key meteorological reasons for low confidence Prototype
+  dashboard/API - Simple interface for operational use
+
+WHAT THE VERBATIM TEXT SETTLES:
+  • EXPLAINABILITY IS EXPLICIT. "Explainable output - Key meteorological
+    reasons for low confidence" is a named deliverable. The SHAP work is
+    required, not an embellishment.
+  • CONFIDENCE MAP IS EXPLICIT, and the required range is DAY 1 TO DAY 10.
+    Our evaluation is Day 5. State the lead-time scope honestly.
+  • BUST PROBABILITY IS EXPLICIT — "Probability of large forecast error over
+    different regions". Our calibrated probability output is on-spec.
+  • A PROTOTYPE DASHBOARD/API IS A NAMED DELIVERABLE. Not optional polish.
+  • "compare current NWP forecast patterns with historical forecast error
+    behaviour" is the method the PS asks for, and is what we built.
+  • THE PS DOES NOT NAME AN ENSEMBLE. It says "NWP forecast patterns", not
+    NEPS/NCUM. The GEFS substitution in item 1 is therefore not a deviation
+    from the letter of the PS — but NCMRWF is the department, so expect the
+    question anyway.
+  • THE PS DOES NOT NAME A VARIABLE, a region, a threshold, a metric or a
+    dataset. Our rainfall/IMD-gauge/64.5mm/Brier choices are ours to justify.
 
 1. WE USE GEFS; NCMRWF RUNS NEPS/NCUM. The problem owner operates India's own
    operational medium-range ensemble. We detect busts in an American one. This
