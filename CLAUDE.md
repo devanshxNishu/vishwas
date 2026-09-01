@@ -2,6 +2,16 @@
 ### Team Hellfire Labs · SIH26079 · Smart India Hackathon 2026
 विश्वास, "confidence" — knowing when not to trust the forecast.
 
+CHECKER STATE, until team selection on 3 Sep 2026.
+scripts/check_docs.py exits 1 by design. The Team ID guard fires on 7 hits
+across 3 files because the ID is issued only after selection at the internal
+hackathon. This is the rule working. DO NOT delete it, and do not "fix" the
+placeholders by inventing an ID.
+
+AFTER SELECTION: paste the real Team ID into the deck and the site footer, then
+delete this block. From that point the guard must NOT fire, and a hit means a
+build is carrying a placeholder — which is the failure it exists to catch.
+
 PROBLEM-STATEMENT FIDELITY — FOUR OPEN ITEMS, RAISED 2026-08-27.
 
 VERBATIM PS TEXT — RETRIEVED 2026-08-31 from https://www.sih.gov.in/sih2026PS
