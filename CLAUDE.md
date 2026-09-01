@@ -8,9 +8,17 @@ across 3 files because the ID is issued only after selection at the internal
 hackathon. This is the rule working. DO NOT delete it, and do not "fix" the
 placeholders by inventing an ID.
 
-AFTER SELECTION: paste the real Team ID into the deck and the site footer, then
-delete this block. From that point the guard must NOT fire, and a hit means a
-build is carrying a placeholder — which is the failure it exists to catch.
+AFTER SELECTION, in ONE commit — these four changes only make sense
+together, and split apart there is a window where this file and the
+checker disagree:
+  1. Paste the real Team ID into the deck, slide 1.
+  2. ADD a Team ID line to the site footer. It does not exist yet — this
+     is a new element, not a blank to fill. The site guard catches a blank
+     field, not a missing one, so nothing will remind you.
+  3. Flip the site assertion from "not blank" to "present", so from then
+     on absence is a failure.
+  4. Delete this block. The guard's meaning inverts here: a hit stops
+     being expected and becomes a real finding.
 
 PROBLEM-STATEMENT FIDELITY — FOUR OPEN ITEMS, RAISED 2026-08-27.
 
