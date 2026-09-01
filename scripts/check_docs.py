@@ -197,6 +197,28 @@ FORBIDDEN = [
      "Ankit's. See the TEAM ROLES AND CREDIT block in CLAUDE.md.",
      None),
 
+    # TEAM ID GUARD - P24, 1 Sep. The ID is issued after team selection on
+    # 3 Sep, so until then these rules FIRE ON PURPOSE and the run exits 1.
+    # That is the guard working, not a bug. DO NOT DELETE THESE RULES TO GET
+    # A GREEN RUN - the whole point is that a build still carrying the blank
+    # cannot reach the 20 September submission unnoticed. After the ID is
+    # pasted in, they go quiet on their own.
+    (r"paste (the )?\*{0,2}Team ID",
+     "Team ID placeholder. The ID is issued after team selection on 3 Sep; "
+     "paste it into slide 1 and this goes quiet. Expected to fire before "
+     "3 Sep - see the TEAM ID banner at the end of the run.",
+     None),
+
+    (r"Team ID\s*[–—-]\s*$",
+     "The Team ID field is present but EMPTY. A blank ID field on slide 1 is "
+     "how a placeholder reaches the submission unnoticed.",
+     None),
+
+    (r"Team ID[^\n]{0,40}(blank|placeholder)",
+     "Team ID still recorded as blank or a placeholder. Issued 3 Sep; paste "
+     "it into slide 1.",
+     None),
+
     (r"catches X%|current method's Y%|X% of busts",
      "Placeholder left in place of the measured operational result: VISHWAS "
      "catches 64% of busts against the current method's 55% at a matched alert "
@@ -245,6 +267,66 @@ EXEMPT = {
         "The project constitution. States the rules by quoting the values they "
         "govern (e.g. the pooled pair, under DO NOT QUOTE).",
 }
+
+# ---------------------------------------------------------------------------
+# TABLE 3b — SITE ASSERTIONS.
+#
+# Checked against site/index.html by counting OCCURRENCES with re.findall.
+#
+# Every number the page animates is wrapped in its own <span data-*-count>,
+# so a pattern spanning a number and its surrounding prose will NOT match a
+# correct build. Match the span attribute, or prose on one side of it —
+# never across it. Two verification recipes have already failed this way.
+#
+# Count with re.findall, not grep -c: the bundle is one long line and line
+# counting collapses three hits to one.
+#
+# The data-* counts are 2, not 1, and that is the correct value: each derived
+# number needs BOTH halves — one <span data-x> in the markup to write into,
+# and one querySelector('[data-x]') in the script to write it. If either half
+# goes missing the count drops to 1 and this fires, which is exactly the
+# failure worth catching (a span nothing fills, or a setter with no target).
+#
+# (pattern, expected_count, why)
+# ---------------------------------------------------------------------------
+
+# The Team ID rules, named so the run can explain itself. Until the ID is
+# issued on 3 Sep these fire and the check exits 1 BY DESIGN; main() prints a
+# banner saying so, precisely so nobody restores a green run by deleting them.
+TEAM_ID_PATTERNS = {
+    r"paste (the )?\*{0,2}Team ID",
+    r"Team ID\s*[–—-]\s*$",
+    r"Team ID[^\n]{0,40}(blank|placeholder)",
+}
+
+SITE_FILE = "site/index.html"
+
+SITE_ASSERTIONS = [
+    (r"p \u2265 0\.153", 3,
+     "Alert threshold, consistent across all captions. The operating point is "
+     "the global top-10% cut fitted once on the whole test set (p >= 0.1535), "
+     "never re-fitted per date."),
+
+    (r"0\.154(?!5)", 1,
+     "Threshold artifact; survives ONLY in the flagThresholds() comment, which "
+     "explains that probabilities are stored at three decimals so six cells "
+     "sit at exactly 0.154. The 0.1535/0.1545 per-cell split is deliberate and "
+     "is excluded by the (?!5). A bare 0.154 anywhere else means the artifact "
+     "has leaked into prose the reader can see."),
+
+    (r"data-plotted-count", 2,
+     "Plotted-point count is derived, not typed: one span, one querySelector. "
+     "A stale hand-typed n is how the caption drifted from the plot before."),
+
+    (r"data-total-count", 2,
+     "Sample total is derived, not typed: one span, one querySelector. The "
+     "rendered sentence must read '...computed on all 77,425'."),
+
+    (r"data-alert-label", 2,
+     "Flagged count derived from the outcome column: one span, one "
+     "querySelector. The label is rebuilt as alerts + ' of ' + cells + "
+     "' flagged', so the published 547 of 1,252 cannot drift."),
+]
 
 # ---------------------------------------------------------------------------
 # TABLE 4 — ABSOLVING CONTEXT.
@@ -325,7 +407,15 @@ def scan(path, root, use_absolve=True):
                 continue
             if context and not re.search(context, line, re.IGNORECASE):
                 continue
-            if forgiven:
+            # The Team ID guard is NOT absolvable. ABSOLVING exists for
+            # stale-CLAIM rules, where a document has to name the value it
+            # forbids. A blank Team ID is a STATE, not a claim about a value,
+            # so corrective vocabulary on a neighbouring line says nothing
+            # about whether the field is still empty. Measured 1 Sep: without
+            # this exemption, docs/DECK-BENCHMARK.md lines 118 and 158 were
+            # both suppressed because nearby lines contained "passed" and
+            # "~~" - i.e. the guard went quiet on two real placeholders.
+            if forgiven and pattern not in TEAM_ID_PATTERNS:
                 suppressed += 1
                 continue
             hits.append((n, line.strip(), "forbidden: %s" % pattern, why))
@@ -352,6 +442,37 @@ def scan(path, root, use_absolve=True):
             seen.add(key)
             unique.append(hit)
     return unique, suppressed
+
+
+def check_site(root):
+    """Check site/index.html against SITE_ASSERTIONS.
+
+    Returns (rows, problem). rows is a list of (pattern, expected, got, why);
+    problem is None, "missing" or "unreadable".
+
+    Counts OCCURRENCES with re.findall. Line counting (grep -c) is wrong here:
+    the built page is one long bundle line, so three hits collapse to one.
+    """
+    path = root / SITE_FILE
+    if not path.exists():
+        return [], "missing"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return [], "unreadable"
+
+    rows = [(pattern, expected, len(re.findall(pattern, text)), why)
+            for pattern, expected, why in SITE_ASSERTIONS]
+
+    # The Team ID guard applies to the built page too, not only the prose.
+    # The site carries no Team ID today, so this is forward cover: if one is
+    # ever added and left blank, it is caught here rather than at submission.
+    for pattern in sorted(TEAM_ID_PATTERNS):
+        got = len(re.findall(pattern, text, re.MULTILINE | re.IGNORECASE))
+        if got:
+            rows.append((pattern, 0, got,
+                         "Team ID placeholder in the built site. Issued 3 Sep."))
+    return rows, None
 
 
 def main():
@@ -417,11 +538,58 @@ def main():
                 print("      | %s" % (line[:150] or "(blank)"))
             print()
 
+    # ---- site build -------------------------------------------------------
+    site_rows, site_problem = check_site(root)
+    site_bad = [r for r in site_rows if r[1] != r[2]]
+
+    print("\nSITE BUILD — %s" % SITE_FILE)
+    if site_problem == "missing":
+        print("  NOT FOUND. Nothing to check; the site is committed, so this")
+        print("  means it was deleted or moved.")
+    elif site_problem == "unreadable":
+        print("  UNREADABLE.")
+    elif site_bad:
+        print("  %d of %d assertions FAILED\n" % (len(site_bad), len(site_rows)))
+        for pattern, expected, got, why in site_bad:
+            print("    %-26s expected %d, found %d" % (pattern, expected, got))
+            print("      -> %s" % why)
+    else:
+        print("  %d assertions pass." % len(site_rows))
+
     n_fail = sum(len(v) for v in failing.values())
     n_note = sum(len(v) for v in noted.values())
     print("=" * 72)
-    print("%d finding(s) in %d file(s); %d noted in %d exempt file(s)."
-          % (n_fail, len(failing), n_note, len(noted)))
+    print("%d finding(s) in %d file(s); %d noted in %d exempt file(s); "
+          "%d site assertion(s) failed."
+          % (n_fail, len(failing), n_note, len(noted), len(site_bad)))
+
+    # Is every prose finding just the Team ID guard doing its job?
+    team_hits = sum(
+        1 for hits in failing.values() for _n, _l, rule, _w in hits
+        if any(pat in rule for pat in TEAM_ID_PATTERNS))
+    if team_hits:
+        print("")
+        print("-" * 72)
+        print("TEAM ID GUARD FIRED — %d hit(s). THIS IS EXPECTED UNTIL 3 SEP." % team_hits)
+        print("The ID is issued after team selection on 3 September 2026. Until")
+        print("then this check exits 1 on purpose, so that a build still carrying")
+        print("the blank cannot reach the 20 September submission unnoticed.")
+        print("DO NOT delete the rule to get a green run. Paste the ID into")
+        print("slide 1 and the guard goes quiet on its own.")
+        print("-" * 72)
+
+    if site_problem:
+        print("\nFAIL — %s could not be checked (%s)." % (SITE_FILE, site_problem))
+        print("It is a committed file, so this means it was deleted, moved or")
+        print("corrupted. Restore it before pushing.")
+        return 1
+
+    if site_bad:
+        print("\nFAIL — the site build does not match its assertions.")
+        print("Every animated number is filled from a <span data-*-count> by a")
+        print("querySelector, so a count of 1 where 2 is expected means one half")
+        print("is gone: a span nothing fills, or a setter with no target.")
+        return 1
 
     if n_fail:
         print("\nFAIL. Fix the prose, never the data. If a script contradicts a")
