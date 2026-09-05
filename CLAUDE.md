@@ -635,7 +635,7 @@ a historical record and must keep its original text.
 FIGURES — CURRENT SET. fig1_collapse, fig2_deciles, fig3_map (reference visual
 language), fig4_inversion (REGENERATED 30 Aug, src/11_inversion.py),
 fig6_confidence_map, fig7_shap_global, fig8_shap_cases{,_driest,_20190731},
-fig9_reliability.
+fig9_reliability, fig10_lead_curve (P26, 5 Sep — ROC-AUC per lead day).
   fig5_confidence_map.png DELETED 30 Aug — its caption read "initialised 26
   July, valid 31 July" while carrying the numbers for init 31 July / valid
   5 Aug. Both dates were five days early and 26 July 2019 was a Friday, not
@@ -654,7 +654,7 @@ src/11_inversion.py rendered a DIFFERENT footnote. That divergence is closed:
   fig1  src/12_fig1_collapse.py   fig2  src/13_fig2_deciles.py
   fig3  src/14_fig3_map.py        fig4  src/11_inversion.py
   fig6  src/08_demo_map.py        fig7/fig8  src/09_shap.py
-  fig9  src/10_calibration.py
+  fig9  src/10_calibration.py    fig10 src/16_lead_curve.py
   src/figstyle.py holds the shared palette and layout helpers. 11_inversion.py
   predates it and keeps its own copy of the constants, deliberately, because it
   is verified against the shipped deck image; migrate it when it next changes.
