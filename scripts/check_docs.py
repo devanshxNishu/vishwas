@@ -69,8 +69,17 @@ CANONICAL = [
     ("operational", "64% of busts caught vs 55%, matched alert budget", [], None),
     ("demo date", "init 20190731, Day 5, valid 5 Aug 2019", [], None),
     ("demo bust rate", "454/1,252 = 36.3%", [], None),
-    ("demo operating point", "p >= 0.1535 (exact 0.153471), fixed on the full "
-                             "test set; 395 / 152 / 59 / 646; prec 0.72 rec 0.87",
+    # P28, 5 Sep: the constant is the quantile, 0.153471. It used to be
+    # recorded here as "p >= 0.1535 (exact 0.153471)", which read as though
+    # 0.1535 were the operating point and 0.153471 a footnote. It is the other
+    # way round, and the rounding is what produced the 546/547 split.
+    ("demo operating point", "0.1534712256035554 = the global 90th percentile "
+                             "of test scores, fixed on the full test set and "
+                             "pinned in src/confidence.py; quote in prose as "
+                             "p >= 0.153, and use NO shortened form as a "
+                             "constant (0.1535 gives 546, 0.153471 flips a "
+                             "Day 4 cell); 547 flagged = "
+                             "395 / 152 / 59 / 646; prec 0.72 rec 0.87",
      [], None),
     ("forecast decay", "GEFS detects 23% of heavy-rain events at Day 1, "
                        "0.2% at Day 10", [], None),
@@ -169,6 +178,25 @@ FORBIDDEN = [
      "fig4_inversion.png does NOT print the pooled pair, and src/11_inversion.py "
      "no longer renders it either (P18, 30 Aug). Any claim that the figure "
      "carries it is stale.",
+     None),
+
+    # THE OPERATING POINT IS 0.153471, NOT ITS FOUR-DECIMAL DISPLAY - P28,
+    # 5 Sep. 0.1535 is a display rounding and was never the constant. Rounding
+    # UP excludes one cell scoring 0.1534840, which is exactly where the
+    # 546/547 discrepancy came from: the deck and CLAUDE.md said 547 (computed
+    # at the quantile) while anything recomputing at 0.1535 got 546. Prose
+    # should say "p >= 0.153"; the machine-readable form is
+    # site/dashboard-data.json meta.threshold plus the per-cell stored verdict.
+    # It appears legitimately nowhere as a constant, so the pattern is bare.
+    # Lines that NAME the rounding to forbid it are absolved in the usual way.
+    (r"\b0\.1535\b",
+     "0.1535 is a DISPLAY ROUNDING of the operating point, never the constant. "
+     "The threshold is the global 90th percentile of test scores, 0.153471, "
+     "and that is what every published count was computed at (547 flagged on "
+     "20190731 Day 5 = 395 hits + 152 false alarms). Rounding up drops one "
+     "cell scoring 0.1534840 and yields 546. Quote prose as \"p >= 0.153\"; "
+     "read site/dashboard-data.json meta.threshold, or a cell's stored "
+     "verdict, for the machine-readable form.",
      None),
 
     (r"bulk (run|download)[^.\n]{0,60}(not started|not yet|after 31 Aug)",

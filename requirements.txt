@@ -10,3 +10,5 @@ shap
 properscoring
 matplotlib
 cartopy
+fastapi
+uvicorn

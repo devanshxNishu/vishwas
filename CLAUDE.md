@@ -488,10 +488,29 @@ winner is cherry-picking and a judge will ask.
   across all leads too (27.5%). Spatial coherence 0.99. Runner-up 20190724 at
   28.0%. Monthly means confirm the Jul-Sep prior: Jul 23.9%, Sep 15.2%,
   Aug 12.4%, against 0.2-1.0% in DJF.
-  OPERATING POINT ON THE MAP: p >= 0.1535, the global top-10% threshold fitted
-  ONCE on the whole test set and applied unchanged. NOT re-fitted per date —
-  that would manufacture a flattering picture. 547 flags, 395 hits, 152 false
-  alarms, 59 misses; precision 0.72, recall 0.87 ON THIS DATE ONLY.
+  OPERATING POINT. The alert threshold is the global 90th percentile of
+  predicted scores over the test set: 0.1534712256035554. It is fitted ONCE on
+  the whole test set and applied unchanged — NOT re-fitted per date, which
+  would manufacture a flattering picture. This is the value every published
+  count was computed at: 547 flagged on 20190731 Day 5, being 395 hits and 152
+  false alarms, with 59 misses; precision 0.72, recall 0.87 ON THIS DATE ONLY.
+  Quote it in prose as "p >= 0.153". DO NOT use a shortened form as a constant
+  anywhere — NEITHER 0.1535 NOR 0.153471. Both are display roundings. 0.1535
+  rounds up past one cell scoring 0.1534840 and yields 546, which is where the
+  546/547 discrepancy came from; 0.153471 truncates below one cell scoring
+  0.15347109047316893 (20190731 Day 4) and flips it from uncertain to high
+  risk. No published count depends on Day 4, so correcting it moved nothing.
+  The constant lives in src/confidence.py, pinned in full double precision and
+  NEVER recomputed at import: a different test set has a different 90th
+  percentile, and adopting one means republishing every downstream count
+  deliberately and all at once.
+  THE MACHINE-READABLE FORM IS site/dashboard-data.json meta.threshold, and
+  every cell there carries a stored VERDICT (0 reliable, 1 uncertain, 2 high
+  risk) computed upstream at the exact threshold. Consumers read the verdict;
+  they must never re-derive a class from the published four-decimal p, because
+  scores either side of the threshold both display as 0.1535. api/main.py reads
+  both from that file. Corrected P28, 5 Sep 2026 — no number changed meaning,
+  547 was always 547.
   CAVEAT TO HAVE READY: at Day 3 on this date the model is marginally BEHIND
   spread (0.826 vs 0.831). Single-date per-lead numbers are noisy. Never
   defend the date on its metrics — it was chosen on observed busts.
