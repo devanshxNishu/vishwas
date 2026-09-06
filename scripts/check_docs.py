@@ -327,40 +327,64 @@ TEAM_ID_PATTERNS = {
     r"Team ID[^\n]{0,40}(blank|placeholder)",
 }
 
-SITE_FILE = "site/index.html"
+# The two built pages. BOTH are checked. The dashboard is the page that
+# actually classifies cells, so a reintroduced threshold comparison would do
+# more damage there than on the case page -- and until P33 it was unguarded.
+CASE = "site/index.html"
+DASH = "site/dashboard/index.html"
+SITE_FILES = [CASE, DASH]
 
+# (pattern, {file: expected count}, why)
+#
+# Expectations are PER FILE, not one number aggregated over both pages. A
+# failure in one page and a pass in the other must stay two separate lines.
+# A file omitted from a rule's dict is NOT asserted against that page: several
+# rules are genuinely one-page rules, and asserting them everywhere would
+# force markup into a page that has no reason to carry it.
 SITE_ASSERTIONS = [
-    (r"p \u2265 0\.153", 3,
+    (r"p \u2265 0\.153", {CASE: 3},
      "Alert threshold, consistent across all captions. The operating point is "
      "the global top-10% cut fitted once on the whole test set (p >= 0.1535), "
-     "never re-fitted per date."),
+     "never re-fitted per date. CASE ONLY -- the console renders its own "
+     "label from meta.threshold at run time, so it carries no typed caption."),
 
     # The old rule pinned a comment explaining a six-cell artifact at three
     # decimals. That code was deliberately removed: colour now comes from the
     # stored verdict and aug5.json carries four-decimal p. Asserting ZERO
     # threshold constants pins the behaviour rather than prose about it, and
     # cannot be satisfied by a comment.
-    (r"0\.1535", 0,
+    (r"0\.1535", {CASE: 0, DASH: 0},
      "No threshold constant in the built pages."),
 
-    (r"0\.153471(?!2)", 0,
+    (r"0\.153471(?!2)", {CASE: 0, DASH: 0},
      "No short-form threshold constant either."),
 
-    (r"verdict column", 1,
-     "Classification is upstream, not a p comparison."),
+    # THE POSITIVE RULE IS PER FILE BECAUSE THE TWO PAGES SAY IT DIFFERENTLY.
+    # P33 assumed the dashboard held "verdict column" and the case page might
+    # not; it is the other way round. The case page says "Colour comes from the
+    # verdict column"; the console says "every cell carries its verdict at
+    # index 3, decided upstream at full precision". Rather than force either
+    # wording into the other page by hand, each page is pinned on its own.
+    (r"verdict column", {CASE: 1},
+     "Classification is upstream, not a p comparison (case page wording)."),
 
-    (r"data-plotted-count", 2,
+    (r"verdict at index 3", {DASH: 1},
+     "Classification is upstream, not a p comparison (console wording: the "
+     "verdict travels in the cell, decided at full precision)."),
+
+    (r"data-plotted-count", {CASE: 2},
      "Plotted-point count is derived, not typed: one span, one querySelector. "
-     "A stale hand-typed n is how the caption drifted from the plot before."),
+     "A stale hand-typed n is how the caption drifted from the plot before. "
+     "CASE ONLY -- the console has no such span."),
 
-    (r"data-total-count", 2,
+    (r"data-total-count", {CASE: 2},
      "Sample total is derived, not typed: one span, one querySelector. The "
-     "rendered sentence must read '...computed on all 77,425'."),
+     "rendered sentence must read '...computed on all 77,425'. CASE ONLY."),
 
-    (r"data-alert-label", 2,
+    (r"data-alert-label", {CASE: 2},
      "Flagged count derived from the outcome column: one span, one "
      "querySelector. The label is rebuilt as alerts + ' of ' + cells + "
-     "' flagged', so the published 547 of 1,252 cannot drift."),
+     "' flagged', so the published 547 of 1,252 cannot drift. CASE ONLY."),
 ]
 
 # ---------------------------------------------------------------------------
@@ -480,34 +504,49 @@ def scan(path, root, use_absolve=True):
 
 
 def check_site(root):
-    """Check site/index.html against SITE_ASSERTIONS.
+    """Check every page in SITE_FILES against SITE_ASSERTIONS.
 
-    Returns (rows, problem). rows is a list of (pattern, expected, got, why);
-    problem is None, "missing" or "unreadable".
+    Returns (rows, problems). rows is a list of
+    (path, pattern, expected, got, why), carrying the file so the report can
+    name it instead of aggregating two pages into one line. problems is a
+    list of (path, "missing" | "unreadable").
+
+    A MISSING FILE IS A FAILURE, NOT A SKIP. A guard that goes quiet when its
+    subject disappears is the exact failure mode this checker keeps
+    rediscovering, so an absent page is reported and fails the run.
 
     Counts OCCURRENCES with re.findall. Line counting (grep -c) is wrong here:
     the built page is one long bundle line, so three hits collapse to one.
     """
-    path = root / SITE_FILE
-    if not path.exists():
-        return [], "missing"
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return [], "unreadable"
+    rows, problems = [], []
+    for rel in SITE_FILES:
+        path = root / rel
+        if not path.exists():
+            problems.append((rel, "missing"))
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            problems.append((rel, "unreadable"))
+            continue
 
-    rows = [(pattern, expected, len(re.findall(pattern, text)), why)
-            for pattern, expected, why in SITE_ASSERTIONS]
+        for pattern, expected_by_file, why in SITE_ASSERTIONS:
+            if rel not in expected_by_file:
+                continue
+            rows.append((rel, pattern, expected_by_file[rel],
+                         len(re.findall(pattern, text)), why))
 
-    # The Team ID guard applies to the built page too, not only the prose.
-    # The site carries no Team ID today, so this is forward cover: if one is
-    # ever added and left blank, it is caught here rather than at submission.
-    for pattern in sorted(TEAM_ID_PATTERNS):
-        got = len(re.findall(pattern, text, re.MULTILINE | re.IGNORECASE))
-        if got:
-            rows.append((pattern, 0, got,
-                         "Team ID placeholder in the built site. Issued 3 Sep."))
-    return rows, None
+        # The Team ID guard applies to the built pages too, not only the
+        # prose. They carry no Team ID today, so this is forward cover: if one
+        # is ever added and left blank, it is caught here rather than at
+        # submission.
+        for pattern in sorted(TEAM_ID_PATTERNS):
+            got = len(re.findall(pattern, text, re.MULTILINE | re.IGNORECASE))
+            if got:
+                rows.append((rel, pattern, 0, got,
+                             "Team ID placeholder in the built site. "
+                             "Issued 3 Sep."))
+    return rows, problems
 
 
 def main():
@@ -574,22 +613,30 @@ def main():
             print()
 
     # ---- site build -------------------------------------------------------
-    site_rows, site_problem = check_site(root)
-    site_bad = [r for r in site_rows if r[1] != r[2]]
+    site_rows, site_problems = check_site(root)
+    site_bad = [r for r in site_rows if r[2] != r[3]]
 
-    print("\nSITE BUILD — %s" % SITE_FILE)
-    if site_problem == "missing":
-        print("  NOT FOUND. Nothing to check; the site is committed, so this")
-        print("  means it was deleted or moved.")
-    elif site_problem == "unreadable":
-        print("  UNREADABLE.")
-    elif site_bad:
-        print("  %d of %d assertions FAILED\n" % (len(site_bad), len(site_rows)))
-        for pattern, expected, got, why in site_bad:
-            print("    %-26s expected %d, found %d" % (pattern, expected, got))
-            print("      -> %s" % why)
-    else:
-        print("  %d assertions pass." % len(site_rows))
+    print("\nSITE BUILD — %d page(s)" % len(SITE_FILES))
+    # Reported per file. Two pages must never average into one line: a pass
+    # on the case page cannot be allowed to hide a failure in the console.
+    problem_by_file = dict(site_problems)
+    for rel in SITE_FILES:
+        mine = [r for r in site_rows if r[0] == rel]
+        bad = [r for r in mine if r[2] != r[3]]
+        print("\n  %s" % rel)
+        if problem_by_file.get(rel) == "missing":
+            print("    NOT FOUND — FAILURE, not a skip. It is a committed")
+            print("    file, so this means it was deleted or moved.")
+        elif problem_by_file.get(rel) == "unreadable":
+            print("    UNREADABLE — FAILURE, not a skip.")
+        elif bad:
+            print("    %d of %d assertions FAILED\n" % (len(bad), len(mine)))
+            for _rel, pattern, expected, got, why in bad:
+                print("      %-42s expected %d, found %d"
+                      % (pattern, expected, got))
+                print("        -> %s" % why)
+        else:
+            print("    %d assertions pass." % len(mine))
 
     n_fail = sum(len(v) for v in failing.values())
     n_note = sum(len(v) for v in noted.values())
@@ -613,10 +660,12 @@ def main():
         print("slide 1 and the guard goes quiet on its own.")
         print("-" * 72)
 
-    if site_problem:
-        print("\nFAIL — %s could not be checked (%s)." % (SITE_FILE, site_problem))
-        print("It is a committed file, so this means it was deleted, moved or")
-        print("corrupted. Restore it before pushing.")
+    if site_problems:
+        for rel, why in site_problems:
+            print("\nFAIL — %s could not be checked (%s)." % (rel, why))
+        print("These are committed files, so this means one was deleted, moved")
+        print("or corrupted. Restore it before pushing. A missing page is a")
+        print("FAILURE and never a silent skip.")
         return 1
 
     if site_bad:
