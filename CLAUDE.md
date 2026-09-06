@@ -488,6 +488,27 @@ weighting a bin where the baseline cannot rank at all?
   exists to catch, and the incumbent's inability to rank them is a finding
   about the incumbent — not a reason to delete the cases from the evaluation.
 
+THE CI IN ablations/a_full.log IS NOT THE PUBLISHED CI, AND BOTH ARE RIGHT —
+CHECKED 2026-09-07. The log cited just above prints, at line 30:
+    95% CI, cluster bootstrap over 52 forecast dates: +0.1026 to +0.1910
+The canonical interval — here, in README.md, the deck, the site and
+check_docs.py — is +0.1080 to +0.1926. ONLY THE INTERVAL DIFFERS. The margin
++0.1634 and every per-bin number in that log match the publication exactly.
+CAUSE: ablations/run.sh line 11 passes --bootstrap 500, chosen so five variants
+would finish; the headline run used 2000. Same seed 0, same data, same code.
+cluster_bootstrap_margin() resamples forecast dates and reads the 2.5/97.5
+percentiles off the draws, so THE POINT ESTIMATE IS DETERMINISTIC AND THE
+INTERVAL IS NOT — 500 draws pin a tail percentile less tightly than 2000.
+Reproduced from data/pred_a_full.parquet with the project's own code,
+evaluation only: 500 -> +0.1026 to +0.1910, 2000 -> +0.1080 to +0.1926, both to
+four decimals. That agreement also confirms the stored predictions are the ones
+the log and the publication came from.
+THE LOG IS CORRECT AS PRINTED. DO NOT EDIT A LOG TO AGREE WITH A DOCUMENT — a
+log edited to match is worthless as an audit trail. Do not quote +0.1026 to
++0.1910 as the project's CI either; check_docs.py now forbids that pair in
+Markdown, absolving ablations/README.md, which quotes it in order to explain it.
+The full account, with the snippet, is in ablations/README.md.
+
 CLOSED 2026-08-29: the `month` ablation ran and PASSED (-0.0059, tolerance
 0.02). See P11 ABLATIONS above. 0.728 is final. Any document still calling it
 provisional or listing the month ablation as outstanding is stale.

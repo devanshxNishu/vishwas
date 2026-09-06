@@ -154,6 +154,23 @@ FORBIDDEN = [
      "that does not exist in the data. Superseded by fig6_confidence_map.png.",
      None),
 
+    # P36, 7 Sep — the 500-replicate ablation CI. ablations/a_full.log line 30
+    # prints +0.1026 to +0.1910 because run.sh passes --bootstrap 500 while the
+    # headline run used 2000; same seed, same data, and the point estimate is
+    # identical because it is deterministic. The LOG is correct and is never
+    # edited. This rule catches the pair leaking into a DOCUMENT as though it
+    # were the project's interval.
+    # NOTE ON SCOPE: this checker walks *.md only, so ablations/*.log is never
+    # scanned and needs no exemption. ablations/README.md is EXEMPT because it
+    # quotes the pair inside fenced code blocks in order to explain it, and
+    # absolved() only inspects one line either side — a fence carries no
+    # corrective vocabulary, so ABSOLVING alone would not reach it.
+    (r"\+?0\.1026\s*(?:to|-|–|→)\s*\+?0\.1910",
+     "That is the 500-replicate ablation CI from ablations/a_full.log, never "
+     "the published one — that is +0.1080 to +0.1926. Both are correct; they "
+     "differ only in --bootstrap 500 vs 2000. See ablations/README.md.",
+     None),
+
     (r"\+0\.035",
      "Never quote a margin range containing +0.035. It came from a "
      "'forecast AND truth > X mm' filter, which conditions on the OUTCOME and "
@@ -329,6 +346,9 @@ EXEMPT = {
     "docs/P16-wrapup.md":
         "Historical prompt archive. Quotes the stale-claim hunt list verbatim, "
         "so it necessarily contains the strings this script hunts.",
+    "ablations/README.md":
+        "Explains why ablations/a_full.log's 500-replicate CI differs from the "
+        "published 2000-replicate one, so it must quote the pair it forbids.",
     "docs/CONSISTENCY-AUDIT.md":
         "The audit report itself. Quotes every stale claim in order to record "
         "what was fixed.",
