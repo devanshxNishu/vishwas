@@ -335,12 +335,19 @@ SITE_ASSERTIONS = [
      "the global top-10% cut fitted once on the whole test set (p >= 0.1535), "
      "never re-fitted per date."),
 
-    (r"0\.154(?!5)", 1,
-     "Threshold artifact; survives ONLY in the flagThresholds() comment, which "
-     "explains that probabilities are stored at three decimals so six cells "
-     "sit at exactly 0.154. The 0.1535/0.1545 per-cell split is deliberate and "
-     "is excluded by the (?!5). A bare 0.154 anywhere else means the artifact "
-     "has leaked into prose the reader can see."),
+    # The old rule pinned a comment explaining a six-cell artifact at three
+    # decimals. That code was deliberately removed: colour now comes from the
+    # stored verdict and aug5.json carries four-decimal p. Asserting ZERO
+    # threshold constants pins the behaviour rather than prose about it, and
+    # cannot be satisfied by a comment.
+    (r"0\.1535", 0,
+     "No threshold constant in the built pages."),
+
+    (r"0\.153471(?!2)", 0,
+     "No short-form threshold constant either."),
+
+    (r"verdict column", 1,
+     "Classification is upstream, not a p comparison."),
 
     (r"data-plotted-count", 2,
      "Plotted-point count is derived, not typed: one span, one querySelector. "
