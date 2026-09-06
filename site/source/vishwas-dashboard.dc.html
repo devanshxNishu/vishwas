@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="site/dashboard-data.json" data-resource-id="dash" />
+<meta name="ext-resource-dependency" content="site/skill-by-lead.json" data-resource-id="skill" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>VISHWAS · Operational Dashboard</title>
+<link rel="icon" href="assets/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #050506; color: #f2f0ee; font-family: "IBM Plex Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: #8cc4fb; text-decoration: none; }
+  a:hover { color: #cde2fb; }
+  ::selection { background: #ff5a17; color: #0b0709; }
+  @keyframes dcRow { from { opacity: 0; transform: translateY(7px) } }
+  @keyframes dcBar { from { width: 0 } }
+  @keyframes dcRise { from { opacity: 0; transform: translateY(4px) } }
+  @keyframes dcBreathe { 0%, 100% { opacity: .35 } 50% { opacity: .9 } }
+  @keyframes dcScan { 0% { transform: translateY(-100%) } 100% { transform: translateY(2400%) } }
+  @keyframes dcEnter { from { opacity: 0; transform: translateY(6px) } }
+  @keyframes navShimmer { 0% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
+  @keyframes navRise { from { opacity: 0; transform: translateY(8px) } }
+  input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(90deg, #16386e, #2a78d6); border-radius: 2px; }
+  input[type=range]::-moz-range-track { height: 3px; background: linear-gradient(90deg, #16386e, #2a78d6); border-radius: 2px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -5px; border-radius: 50%; background: #f2f0ee; border: 2px solid #050506; box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 0 10px rgba(140,196,251,0.5); cursor: grab; transition: box-shadow .18s ease; }
+  input[type=range]:active::-webkit-slider-thumb { box-shadow: 0 0 0 1px rgba(255,255,255,0.7), 0 0 16px rgba(140,196,251,0.85); cursor: grabbing; }
+  input[type=range]::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: #f2f0ee; border: 2px solid #050506; box-shadow: 0 0 0 1px rgba(255,255,255,0.5); cursor: grab; }
+  [data-scroll]::-webkit-scrollbar { width: 7px; }
+  [data-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); border-radius: 4px; }
+  [data-scroll]::-webkit-scrollbar-track { background: transparent; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important } }
+</style>
+</helmet>
+
+<div data-shell="" style="display:flex; flex-direction:column; height:100vh; min-height:620px; background:#050506; overflow:hidden; animation:dcEnter .4s cubic-bezier(.2,.7,.2,1) both">
+
+  <header style="flex:0 0 auto; position:relative; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:9px clamp(12px,1.6vw,22px); border-bottom:1px solid rgba(255,255,255,0.10); background:linear-gradient(180deg,#0a0a0d,#08080a)">
+    <div style="display:flex; align-items:center; gap:12px; min-width:0">
+      <img src="assets/flame-mark.svg" alt="" style="height:22px; width:auto; display:block; filter:drop-shadow(0 0 10px rgba(255,90,23,0.45))" />
+      <div style="display:flex; flex-direction:column; gap:2px; min-width:0">
+        <div style="display:flex; align-items:baseline; gap:9px">
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:15px; letter-spacing:-0.01em; color:#f7f5f3">VISHWAS</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(242,240,238,0.42)">bust-risk console</span>
+        </div>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:rgba(242,240,238,0.32)">HELLFIRE LABS · SIH 2026</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:clamp(8px,1.4vw,18px); flex-wrap:wrap; justify-content:flex-end">
+      <span style="display:flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:rgba(242,240,238,0.5)"><span style="width:5px; height:5px; border-radius:50%; background:#ff5a17; animation:dcBreathe 2.8s ease-in-out infinite"></span>FLAGS FORECAST FAILURE · DOES NOT ALTER THE FORECAST</span>
+      <a href="../index.html" style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 10px; border:1px solid rgba(255,255,255,0.14); border-radius:2px; color:rgba(242,240,238,0.72); transition:border-color .2s ease, color .2s ease" style-hover="border-color:rgba(255,255,255,0.34); color:#f7f5f3">← Project site</a>
+    </div>
+    <span style="position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.55), rgba(140,196,251,0.35), rgba(255,255,255,0))"></span>
+  </header>
+
+  <div style="flex:0 0 auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:6px clamp(12px,1.6vw,22px); background:rgba(255,255,255,0.04); border-bottom:1px solid rgba(255,255,255,0.08); font-family:'IBM Plex Mono',monospace; font-size:9.5px; line-height:1.5; letter-spacing:0.05em; color:rgba(242,240,238,0.6)">
+    <span style="flex:0 0 auto; white-space:nowrap; padding:2px 7px; border:1px solid rgba(255,255,255,0.22); border-radius:2px; letter-spacing:0.18em; color:rgba(242,240,238,0.85)">PROTOTYPE</span>
+    <span style="flex:1 1 320px; min-width:0">Replaying archived 2019 GEFS reforecast dates — not a live feed, and no observed rainfall is shown anywhere in this interface. A forecaster at Day 5 has observed nothing yet.</span>
+  </div>
+
+  <sc-if value="{{ placeholder }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:0 0 auto; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding:6px clamp(12px,1.6vw,22px); background:rgba(140,196,251,0.07); border-bottom:1px solid rgba(140,196,251,0.2); font-family:'IBM Plex Mono',monospace; font-size:9.5px; line-height:1.5; letter-spacing:0.05em; color:rgba(205,226,251,0.82)">
+      <span style="flex:0 0 auto; white-space:nowrap; padding:2px 7px; border:1px solid rgba(205,226,251,0.4); border-radius:2px; letter-spacing:0.18em">STAND-IN DATA</span>
+      <span style="flex:1 1 320px; min-width:0">{{ placeholderNote }}</span>
+    </div>
+  </sc-if>
+
+  <main data-grid="" style="flex:1 1 auto; min-height:0; display:grid; grid-template-columns:244px minmax(0,1fr) 366px; gap:1px; background:rgba(255,255,255,0.09)">
+
+    <aside data-scroll="" style="min-width:0; min-height:0; overflow-y:auto; background:#08080a; padding:13px clamp(11px,1.1vw,15px) 15px; display:flex; flex-direction:column; gap:15px">
+
+      <div style="display:flex; flex-direction:column; gap:7px">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(242,240,238,0.44)">Forecast initialised</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; color:rgba(242,240,238,0.3)">{{ dateCount }}</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px">
+          <sc-for list="{{ dateRows }}" as="row" hint-placeholder-count="6">
+            <button type="button" onClick="{{ row.pick }}" style="cursor:pointer; position:relative; overflow:hidden; display:flex; align-items:baseline; justify-content:space-between; gap:8px; width:100%; text-align:left; padding:6px 9px; border-radius:2px; border:1px solid {{ row.bd }}; background:{{ row.bg }}; color:inherit; font-family:inherit; transition:background .18s ease, border-color .18s ease, transform .18s cubic-bezier(.2,.7,.2,1)" style-hover="transform:translateX(2px)">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.02em; color:{{ row.fg }}; transition:color .18s ease">{{ row.label }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.08em; text-transform:uppercase; color:{{ row.dim }}; transition:color .18s ease">{{ row.season }}</span>
+              <span style="position:absolute; left:0; top:0; bottom:0; width:2px; background:{{ row.mark }}; transition:background .18s ease"></span>
+            </button>
+          </sc-for>
+        </div>
+        <p style="margin:2px 0 0; font-size:10.5px; line-height:1.5; color:rgba(242,240,238,0.4); text-wrap:pretty">{{ dateRule }}</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:7px">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(242,240,238,0.44)">Lead day</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; color:rgba(242,240,238,0.3)">{{ leadCount }}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:3px">
+          <sc-for list="{{ leadRows }}" as="row" hint-placeholder-count="10">
+            <button type="button" onClick="{{ row.pick }}" title="{{ row.title }}" style="cursor:pointer; position:relative; overflow:hidden; padding:9px 0 7px; border-radius:2px; border:1px solid {{ row.bd }}; background:{{ row.bg }}; color:{{ row.fg }}; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.02em; transition:background .18s ease, border-color .18s ease, color .18s ease">
+              <span style="position:absolute; left:0; right:0; bottom:0; height:{{ row.fillH }}; background:{{ row.fill }}; transition:height .45s cubic-bezier(.2,.7,.2,1), background .18s ease"></span>
+              <span style="position:relative">{{ row.n }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <button type="button" onClick="{{ togglePlay }}" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:1px; padding:7px 0; border-radius:2px; border:1px solid {{ playBd }}; background:{{ playBg }}; color:{{ playFg }}; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; transition:background .18s ease, border-color .18s ease, color .18s ease">
+          <span style="width:0; height:0; border-style:solid; border-width:{{ playIcon }}"></span>{{ playLabel }}
+        </button>
+        <p style="margin:1px 0 0; font-size:11px; line-height:1.5; color:rgba(242,240,238,0.46); text-wrap:pretty">{{ leadStatement }}</p>
+
+        <sc-if value="{{ skill.show }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:7px; margin-top:3px; padding:10px 10px 11px; border-radius:2px; background:rgba(140,196,251,0.045); border:1px solid rgba(140,196,251,0.16)">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(205,226,251,0.8)">{{ skill.head }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:0.06em; color:rgba(242,240,238,0.34)">{{ skill.metric }}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px">
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; gap:8px">
+                <span style="font-size:11px; color:rgba(242,240,238,0.86)">{{ skill.modelLabel }}</span>
+                <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:15px; line-height:1; letter-spacing:-0.01em; color:#cde2fb">{{ skill.modelValue }}</span>
+              </div>
+              <span style="display:block; height:2px; border-radius:1px; background:rgba(255,255,255,0.07)">
+                <span style="display:block; height:2px; border-radius:1px; width:{{ skill.modelW }}; background:#8cc4fb; transition:width .45s cubic-bezier(.2,.7,.2,1)"></span>
+              </span>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; gap:8px">
+                <span style="font-size:11px; color:rgba(242,240,238,0.6)">{{ skill.baseLabel }}</span>
+                <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:15px; line-height:1; letter-spacing:-0.01em; color:rgba(242,240,238,0.72)">{{ skill.baseValue }}</span>
+              </div>
+              <span style="display:block; height:2px; border-radius:1px; background:rgba(255,255,255,0.07)">
+                <span style="display:block; height:2px; border-radius:1px; width:{{ skill.baseW }}; background:rgba(242,240,238,0.42); transition:width .45s cubic-bezier(.2,.7,.2,1)"></span>
+              </span>
+            </div>
+            <div style="position:relative; height:34px; margin:1px 0 0">
+              <canvas data-skill="" style="position:absolute; inset:0; width:100%; height:100%; display:block"></canvas>
+            </div>
+            <p style="margin:0; font-size:10.5px; line-height:1.5; color:rgba(242,240,238,0.52); text-wrap:pretty">{{ skill.lede }}</p>
+            <button type="button" onClick="{{ skill.toggle }}" style="cursor:pointer; align-self:flex-start; padding:0; border:0; background:transparent; color:rgba(205,226,251,0.7); font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.13em; text-transform:uppercase; text-align:left; transition:color .18s ease" style-hover="color:#cde2fb">{{ skill.toggleLabel }}</button>
+            <sc-if value="{{ skill.open }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:6px; animation:dcRise .22s ease both">
+                <p style="margin:0; font-size:10.5px; line-height:1.5; color:rgba(242,240,238,0.5); text-wrap:pretty">{{ skill.note }}</p>
+                <p style="margin:0; font-size:10.5px; line-height:1.5; color:rgba(242,240,238,0.5); text-wrap:pretty">{{ skill.note2 }}</p>
+                <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:8.5px; line-height:1.6; letter-spacing:0.03em; color:rgba(242,240,238,0.32); text-wrap:pretty">{{ skill.note3 }}</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+    </aside>
+
+    <section style="min-width:0; min-height:0; background:#08080a; display:flex; flex-direction:column; padding:13px clamp(12px,1.3vw,18px) 12px">
+      <div style="flex:0 0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:10px">
+        <div style="display:flex; align-items:baseline; gap:11px">
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(26px,2.5vw,36px); line-height:0.9; letter-spacing:-0.03em; color:#ff8a32; text-shadow:0 0 26px rgba(255,90,23,0.35)">{{ flaggedCount }}</span>
+          <span style="font-size:12px; line-height:1.4; color:rgba(242,240,238,0.62)">gridpoints flagged HIGH RISK<br /><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.06em; color:rgba(242,240,238,0.4)">of {{ gridCount }} land gridpoints · {{ headStamp }}</span></span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px">
+          <sc-for list="{{ bands }}" as="b" hint-placeholder-count="3">
+            <span style="display:flex; align-items:center; gap:6px; padding:5px 9px; border-radius:2px; background:rgba(255,255,255,0.035); border:1px solid {{ b.bd }}; transition:border-color .25s ease">
+              <span style="width:8px; height:8px; flex:0 0 8px; background:{{ b.swatch }}; box-shadow:{{ b.shadow }}"></span>
+              <span style="display:flex; flex-direction:column; gap:2px">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.13em; white-space:nowrap; color:{{ b.fg }}">{{ b.name }} <span style="letter-spacing:0.04em; color:rgba(242,240,238,0.4)">{{ b.range }}</span></span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.04em; white-space:nowrap; color:rgba(242,240,238,0.62)">{{ b.count }} gridpoints</span>
+              </span>
+            </span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div data-mapwrap="" style="flex:1 1 auto; min-height:0; position:relative; overflow:hidden; border-radius:2px">
+        <canvas data-map="" style="position:absolute; inset:0; width:100%; height:100%; display:block; cursor:crosshair; touch-action:none"></canvas>
+        <span style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 38%, rgba(3,4,8,0.55) 100%)"></span>
+
+        <div style="position:absolute; top:8px; right:8px; display:flex; flex-direction:column; gap:3px">
+          <button type="button" onClick="{{ zoomIn }}" title="Zoom in" style="cursor:pointer; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:2px; border:1px solid rgba(255,255,255,0.14); background:rgba(8,10,16,0.78); backdrop-filter:blur(8px); color:rgba(242,240,238,0.8); font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1; transition:background .18s ease, border-color .18s ease" style-hover="background:rgba(20,26,40,0.9); border-color:rgba(255,255,255,0.3)">+</button>
+          <button type="button" onClick="{{ zoomOut }}" title="Zoom out" style="cursor:pointer; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:2px; border:1px solid rgba(255,255,255,0.14); background:rgba(8,10,16,0.78); backdrop-filter:blur(8px); color:rgba(242,240,238,0.8); font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1; transition:background .18s ease, border-color .18s ease" style-hover="background:rgba(20,26,40,0.9); border-color:rgba(255,255,255,0.3)">−</button>
+          <button type="button" onClick="{{ zoomReset }}" title="Fit India" style="cursor:pointer; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:2px; border:1px solid {{ fitBd }}; background:rgba(8,10,16,0.78); backdrop-filter:blur(8px); color:{{ fitFg }}; font-family:'IBM Plex Mono',monospace; font-size:9px; line-height:1; transition:background .18s ease, border-color .18s ease, color .18s ease" style-hover="background:rgba(20,26,40,0.9)">FIT</button>
+        </div>
+
+        <sc-if value="{{ tip.show }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; left:{{ tip.x }}; top:{{ tip.y }}; transform:translate(-50%,-100%); margin-top:-9px; pointer-events:none; padding:5px 8px; border-radius:2px; border:1px solid {{ tip.bd }}; background:rgba(6,8,14,0.92); backdrop-filter:blur(8px); box-shadow:0 6px 22px rgba(0,0,0,0.5); transition:left .13s cubic-bezier(.2,.7,.2,1), top .13s cubic-bezier(.2,.7,.2,1); animation:dcRise .18s ease both; white-space:nowrap">
+            <span style="display:flex; align-items:baseline; gap:8px">
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:14px; line-height:1; color:{{ tip.fg }}">{{ tip.pText }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:{{ tip.fg }}">{{ tip.band }}</span>
+            </span>
+            <span style="display:block; margin-top:3px; font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.06em; color:rgba(242,240,238,0.55)">{{ tip.coord }} · {{ tip.region }}</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <div data-budget="" style="flex:0 0 auto; display:grid; grid-template-columns:auto minmax(150px,1fr) minmax(0,240px); align-items:center; gap:clamp(10px,1.8vw,22px); margin-top:10px; padding:10px 12px; border-radius:2px; background:rgba(255,255,255,0.028); border:1px solid rgba(255,255,255,0.08)">
+        <div style="display:flex; flex-direction:column; gap:3px; min-width:0">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; white-space:nowrap; color:rgba(242,240,238,0.44)">Alerts on this run</span>
+          <span style="display:flex; align-items:baseline; gap:7px">
+            <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:24px; line-height:1; letter-spacing:-0.02em; color:{{ budgetFg }}">{{ budgetCount }}</span>
+            <span style="font-size:10.5px; line-height:1.3; white-space:nowrap; color:rgba(242,240,238,0.5)">high risk of {{ gridCount }}<br />{{ budgetPct }} of the grid</span>
+          </span>
+        </div>
+        <div style="position:relative; height:46px; min-width:0">
+          <canvas data-curve="" style="position:absolute; inset:0; width:100%; height:100%; display:block; cursor:pointer"></canvas>
+          <span style="position:absolute; left:0; bottom:-11px; font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:0.06em; color:rgba(242,240,238,0.3); white-space:nowrap">{{ mixCaption }}</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; min-width:0">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; white-space:nowrap; color:rgba(255,138,50,0.9)">Decision line · p ≥ {{ opText }}</span>
+          <span style="font-size:9px; line-height:1.45; text-align:right; color:rgba(242,240,238,0.4); text-wrap:pretty">{{ precisionNote }}</span>
+        </div>
+      </div>
+
+      <div style="flex:0 0 auto; display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:9px; font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.06em; color:rgba(242,240,238,0.36)">
+        <span>0.5° GRID · {{ gridSpan }} · CLICK A GRIDPOINT FOR DRIVERS · SCROLL TO ZOOM, DRAG TO PAN</span>
+        <span style="display:flex; gap:12px"><span style="color:{{ zoomFg }}">{{ zoomLabel }}</span><span>{{ cursorReadout }}</span></span>
+      </div>
+    </section>
+
+    <aside style="min-width:0; min-height:0; background:#08080a; display:flex; flex-direction:column">
+
+      <div data-scroll="" style="flex:0 0 auto; max-height:56%; overflow-y:auto; padding:14px clamp(11px,1.1vw,15px) 15px; border-bottom:1px solid rgba(255,255,255,0.09)">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:11px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(242,240,238,0.44)">Why this gridpoint</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.06em; color:rgba(242,240,238,0.28)">{{ featureCount }} features scored</span>
+        </div>
+
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; flex-direction:column; gap:7px; animation:dcRise .26s cubic-bezier(.2,.7,.2,1) both">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; font-weight:600; letter-spacing:0.16em; white-space:nowrap; padding:3px 8px; border-radius:2px; color:{{ sel.stateFg }}; background:{{ sel.stateBg }}; border:1px solid {{ sel.stateBd }}">{{ sel.stateName }}</span>
+                <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:24px; line-height:1; letter-spacing:-0.02em; color:#f7f5f3">{{ sel.pText }}</span>
+                <span style="font-size:11px; line-height:1.3; color:rgba(242,240,238,0.5)">bust<br />probability</span>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:4px 14px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.04em; color:rgba(242,240,238,0.62)">
+                <span>{{ sel.dayText }}</span>
+                <span>{{ sel.coordText }}</span>
+                <span style="color:rgba(242,240,238,0.42)">{{ sel.regionText }}</span>
+              </div>
+            </div>
+
+            <sc-if value="{{ sel.hasDrivers }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-size:12px; color:rgba(242,240,238,0.78)">{{ sel.driverHead }}</span>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <sc-for list="{{ sel.drivers }}" as="d" hint-placeholder-count="3">
+                    <div style="position:relative; overflow:hidden; display:flex; flex-direction:column; gap:6px; padding:8px 9px; border-radius:2px; background:rgba(255,255,255,0.035); border-left:2px solid {{ d.accent }}; animation:dcRow .34s cubic-bezier(.2,.7,.2,1) both; animation-delay:{{ d.delay }}">
+                      <div style="display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:9px">
+                        <span style="font-size:11.5px; line-height:1.35; color:rgba(242,240,238,0.9); text-wrap:pretty">{{ d.label }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.03em; white-space:nowrap; color:rgba(242,240,238,0.6)">{{ d.pctText }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.09em; white-space:nowrap; color:{{ d.accent }}">{{ d.bar }}</span>
+                      </div>
+                      <span style="display:block; height:2px; border-radius:1px; background:rgba(255,255,255,0.08)">
+                        <span style="display:block; height:2px; border-radius:1px; width:{{ d.pctW }}; background:{{ d.accent }}; animation:dcBar .62s cubic-bezier(.2,.7,.2,1) both; animation-delay:{{ d.delay }}"></span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+                <p style="margin:1px 0 0; font-family:'IBM Plex Mono',monospace; font-size:8.5px; line-height:1.6; letter-spacing:0.04em; color:rgba(242,240,238,0.34); text-wrap:pretty">▮▮▮ strongest push toward a bust · ▮ weaker · ◁ pushes toward reliable. The bar is this gridpoint's percentile against the whole grid for that feature.</p>
+              </div>
+            </sc-if>
+            <sc-if value="{{ sel.noDrivers }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; font-size:12px; line-height:1.55; color:rgba(242,240,238,0.6); text-wrap:pretty">{{ sel.noDriverText }}</p>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noSel }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0; font-size:12px; line-height:1.55; color:rgba(242,240,238,0.5); text-wrap:pretty">Click a gridpoint on the map, or a row in the ranked list below, to read why VISHWAS distrusts that forecast.</p>
+        </sc-if>
+      </div>
+
+      <div style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; padding:14px clamp(11px,1.1vw,15px) 0">
+        <div style="flex:0 0 auto; display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:9px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(242,240,238,0.44)">Most error-prone areas</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.06em; color:rgba(242,240,238,0.28)">{{ triageStamp }}</span>
+        </div>
+        <div data-scroll="" style="flex:1 1 auto; min-height:0; overflow-y:auto; padding-bottom:13px; display:flex; flex-direction:column; gap:2px">
+          <sc-for list="{{ triage }}" as="t" hint-placeholder-count="10">
+            <button type="button" onClick="{{ t.pick }}" style="cursor:pointer; position:relative; overflow:hidden; display:grid; grid-template-columns:17px minmax(0,1fr) auto; align-items:center; gap:9px; width:100%; text-align:left; padding:6px 8px; border-radius:2px; border:1px solid {{ t.bd }}; background:{{ t.bg }}; color:inherit; font-family:inherit; transition:background .18s ease, border-color .18s ease, transform .18s cubic-bezier(.2,.7,.2,1)" style-hover="transform:translateX(2px)">
+              <span style="position:absolute; left:0; top:0; bottom:0; width:{{ t.barW }}; background:{{ t.barBg }}; transition:width .5s cubic-bezier(.2,.7,.2,1)"></span>
+              <span style="position:relative; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:rgba(242,240,238,0.34)">{{ t.rank }}</span>
+              <span style="position:relative; display:flex; flex-direction:column; gap:1px; min-width:0">
+                <span style="font-size:11.5px; line-height:1.25; color:rgba(242,240,238,0.88); overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ t.region }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.05em; color:rgba(242,240,238,0.38)">{{ t.coord }}</span>
+              </span>
+              <span style="position:relative; display:flex; align-items:center; gap:7px">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; color:{{ t.fg }}">{{ t.pText }}</span>
+                <span style="width:7px; height:7px; flex:0 0 7px; background:{{ t.dot }}; box-shadow:{{ t.glow }}"></span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#050506">
+      <span style="position:relative; width:132px; height:2px; overflow:hidden; background:rgba(255,255,255,0.09)">
+        <span style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(255,90,23,0), #ff5a17, rgba(140,196,251,0.9), rgba(255,90,23,0)); animation:dcBreathe 1.5s ease-in-out infinite"></span>
+      </span>
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(242,240,238,0.5)">{{ loadingText }}</span>
+    </div>
+  </sc-if>
+</div>
+
+<template id="__bundler_thumbnail" data-bg-color="#050506">
+  <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="300" fill="#050506"></rect>
+    <g transform="translate(120,90)">
+      <rect x="0" y="0" width="24" height="24" fill="#16386e"></rect>
+      <rect x="28" y="0" width="24" height="24" fill="#2a78d6"></rect>
+      <rect x="56" y="0" width="24" height="24" fill="#16386e"></rect>
+      <rect x="0" y="28" width="24" height="24" fill="#2a78d6"></rect>
+      <rect x="28" y="28" width="24" height="24" fill="#ff5a17"></rect>
+      <rect x="56" y="28" width="24" height="24" fill="#2a78d6"></rect>
+      <rect x="0" y="56" width="24" height="24" fill="#0d2c60"></rect>
+      <rect x="28" y="56" width="24" height="24" fill="#16386e"></rect>
+      <rect x="56" y="56" width="24" height="24" fill="#0d2c60"></rect>
+      <rect x="100" y="28" width="60" height="6" fill="#ff8a32"></rect>
+      <rect x="100" y="42" width="42" height="6" fill="rgba(242,240,238,0.4)"></rect>
+      <rect x="100" y="56" width="52" height="6" fill="rgba(242,240,238,0.25)"></rect>
+    </g>
+  </svg>
+</template>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showRegions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Readout&quot;},&quot;triageSeparation&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:0,&quot;max&quot;:8,&quot;step&quot;:1,&quot;unit&quot;:&quot;cells&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Readout&quot;},&quot;cellGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.14,&quot;min&quot;:0,&quot;max&quot;:0.5,&quot;step&quot;:0.02,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Map&quot;}}">
+class Component extends DCLogic {
+  state = { data: null, err: null, di: 0, lead: 1, thr: null, sel: null, cur: null, playing: false, zoom: 1 };
+
+  // Resolves to an inlined blob URL in the standalone build, the plain path otherwise.
+  assetUrl(id, fallback) {
+    const r = typeof window !== 'undefined' && window.__resources;
+    return (r && r[id]) || fallback;
+  }
+
+  componentDidMount() {
+    this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // View transform: z/ox/oy are targets, the *A pair is what is drawn, eased
+    // toward the target every frame so wheel, pinch and jump-to-cell all glide.
+    this.z = 1; this.ox = 0; this.oy = 0;
+    this.zA = 1; this.oxA = 0; this.oyA = 0;
+    this.disp = new Map(); this.tw = null; this.cross = new Map();
+    this.ptrs = new Map(); this.dragged = false;
+    this.revealT0 = null; this.selT0 = 0; this.curveT0 = 0;
+
+    const grab = (id, path, required) => fetch(this.assetUrl(id, path))
+      .then(r => { if (!r.ok) throw new Error(path + ': HTTP ' + r.status); return r.json(); })
+      .catch(e => { if (required) throw e; return null; });
+
+    Promise.all([grab('dash', 'site/dashboard-data.json', true), grab('skill', 'site/skill-by-lead.json', false)])
+      .then(([d, sk]) => {
+        this.skill = sk;
+        this.setState({ data: d, di: 0, lead: this.clampLead(1, d), thr: d.meta.threshold }, () => {
+          this.seedDisp(); this.revealT0 = performance.now(); this.curveT0 = performance.now();
+          this.applyLayout(); this.sizeMap(); this.paint(performance.now());
+        });
+      })
+      .catch(e => this.setState({ err: String(e.message || e) }));
+
+    this._vis = () => { if (!document.hidden) { this.sizeMap(); this.paint(performance.now()); } };
+    addEventListener('visibilitychange', this._vis);
+
+    // sizeMap() reassigns canvas width/height, which blanks the backing store, so
+    // every sizing path has to repaint — rAF cannot be relied on to do it.
+    this._rz = () => { this.applyLayout(); this.sizeMap(); this.paint(performance.now()); };
+    addEventListener('resize', this._rz);
+    this._key = e => {
+      if (!this.state.data) return;
+      const n = this.leadKeys().length, nd = this.state.data.dates.length;
+      if (e.key === 'ArrowRight') { this.setLead(Math.min(n, this.state.lead + 1)); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { this.setLead(Math.max(1, this.state.lead - 1)); e.preventDefault(); }
+      else if (e.key === 'ArrowDown' || e.key === ']') { this.setDate(Math.min(nd - 1, this.state.di + 1)); e.preventDefault(); }
+      else if (e.key === 'ArrowUp' || e.key === '[') { this.setDate(Math.max(0, this.state.di - 1)); e.preventDefault(); }
+      else if (e.key === ' ') { this.togglePlay(); e.preventDefault(); }
+      else if (e.key === '0') this.zoomReset();
+      else if (e.key === 'Escape') this.setState({ sel: null });
+    };
+    addEventListener('keydown', this._key);
+    this.initNavFx();
+    this.bindCanvas();
+    this.applyLayout();
+    this._t = performance.now();
+    this._raf = requestAnimationFrame(t => this.tick(t));
+  }
+
+  componentWillUnmount() {
+    removeEventListener('resize', this._rz);
+    removeEventListener('keydown', this._key);
+    removeEventListener('visibilitychange', this._vis);
+    document.removeEventListener('click', this._navFx);
+    cancelAnimationFrame(this._raf);
+  }
+
+  // Mirror of the site's handoff, so going back is the same motion in reverse
+  // rather than a hard cut.
+  initNavFx() {
+    this._navFx = e => {
+      const a = e.target && e.target.closest && e.target.closest('a[href$="../index.html"]');
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const href = a.getAttribute('href');
+      if (this.reduced || document.querySelector('[data-navfx]')) { window.location.href = href; return; }
+      const ov = document.createElement('div');
+      ov.setAttribute('data-navfx', '');
+      ov.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#050506;opacity:0;transition:opacity .24s ease';
+      // The header mark is already inlined by the bundler; reuse its resolved src
+      // so the overlay works offline instead of refetching a path that is gone.
+      const src = (document.querySelector('header img') || {}).src || '';
+      const mark = document.createElement('img');
+      if (src) mark.src = src;
+      mark.alt = '';
+      mark.style.cssText = 'height:34px;width:auto;display:block;filter:drop-shadow(0 0 22px rgba(255,90,23,0.45));animation:navRise .3s ease both';
+      const label = document.createElement('span');
+      label.textContent = 'BACK TO THE PROJECT SITE';
+      label.style.cssText = "font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.24em;color:rgba(242,240,238,0.55);animation:navRise .3s ease .05s both";
+      const track = document.createElement('span');
+      track.style.cssText = 'position:relative;width:128px;height:2px;overflow:hidden;background:rgba(255,255,255,0.09)';
+      const bar = document.createElement('span');
+      bar.style.cssText = 'position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,90,23,0),#ff5a17,rgba(140,196,251,0.9),rgba(255,90,23,0));animation:navShimmer 1s linear infinite';
+      track.appendChild(bar);
+      if (src) ov.appendChild(mark);
+      ov.appendChild(label); ov.appendChild(track);
+      document.body.appendChild(ov);
+      requestAnimationFrame(() => { ov.style.opacity = '1'; });
+      setTimeout(() => { window.location.href = href; }, 290);
+    };
+    document.addEventListener('click', this._navFx);
+  }
+
+  // Every canvas repaint goes through here, so the same code runs from the frame
+  // loop, from a resize, and on becoming visible again — rAF is paused while the
+  // document is hidden, and a canvas that only ever drew from rAF stayed blank.
+  paint(now) {
+    // View easing lives in the frame loop, which is paused while hidden; snap the
+    // animated values so a zoom or jump requested off-screen is still honoured.
+    if (document.hidden || this.reduced) { this.zA = this.z; this.oxA = this.ox; this.oyA = this.oy; }
+    try { this.drawMap(now); this.drawCurve(now); this.drawSkill(now); }
+    catch (e) { if (!this._drawErr) { this._drawErr = 1; console.error('VISHWAS draw failed:', e && e.stack || e); } }
+  }
+
+  componentDidUpdate(pp, ps) {
+    if (!this.state.data) return;
+    this.sizeMap();
+    if (ps.di !== this.state.di || ps.lead !== this.state.lead) this.startTween();
+    if (ps.di !== this.state.di) this.curveT0 = performance.now();
+    if (ps.lead !== this.state.lead) this.curveT0 = performance.now();
+    if (ps.di !== this.state.di || ps.lead !== this.state.lead) this.markVerdictChanges(ps.di, ps.lead);
+    if (ps.sel !== this.state.sel && this.state.sel) this.selT0 = performance.now();
+    this.paint(performance.now());
+  }
+
+  // ---------- data access ----------
+
+  clampLead(l, d) { const k = Object.keys((d || this.state.data).dates[0].leads).map(Number).sort((a, b) => a - b); return Math.max(k[0], Math.min(k[k.length - 1], l)); }
+  leadKeys() { const d = this.state.data; return d ? Object.keys(d.dates[0].leads).map(Number).sort((a, b) => a - b) : []; }
+  // meta.threshold is for labelling only. Nothing here re-derives a verdict from
+  // it: every cell carries its verdict at index 3, decided upstream at full
+  // precision, and that is the only thing this console colours or counts by.
+  opLabel(dp) { const d = this.state.data; return d ? d.meta.threshold.toFixed(dp == null ? 3 : dp) : ''; }
+  cellsFor(di, lead) { const d = this.state.data; if (!d || !d.dates[di]) return []; return d.dates[di].leads[String(lead)] || []; }
+  bandStats() {
+    const key = this.state.di + ':' + this.state.lead;
+    if (this._bsKey === key) return this._bs;
+    const lo = [1, 1, 1], hi = [0, 0, 0];
+    for (const c of this.cells()) { const v = c[3] | 0; if (c[2] < lo[v]) lo[v] = c[2]; if (c[2] > hi[v]) hi[v] = c[2]; }
+    this._bsKey = key; this._bs = { lo, hi };
+    return this._bs;
+  }
+  cells() { const d = this.state.data; if (!d) return []; return d.dates[this.state.di].leads[String(this.state.lead)] || []; }
+  lonlat(ix, iy) { const g = this.state.data.meta.grid; return [g.lon0 + ix * g.step, g.lat0 + iy * g.step]; }
+  coordText(ix, iy) { const c = this.lonlat(ix, iy); return c[1].toFixed(1) + 'N ' + c[0].toFixed(1) + 'E'; }
+  index() {
+    const key = this.state.di + ':' + this.state.lead;
+    if (this._ixKey !== key) {
+      const m = new Map();
+      for (const c of this.cells()) m.set(c[0] * 1000 + c[1], c);
+      this._ixKey = key; this._ix = m;
+    }
+    return this._ix;
+  }
+  countAt(cellList, v) { let n = 0; for (const c of cellList) if ((c[3] | 0) === v) n++; return n; }
+
+  setDate(di) { this.stopPlay(); this.setState({ di, sel: null }); }
+  setLead(lead) {
+    const s = this.state.sel;
+    // Keep the pin when stepping through lead days — watching one place's risk
+    // change with lead time is the point.
+    this.setState({ lead, sel: s ? { ix: s.ix, iy: s.iy } : null });
+  }
+
+  // ---------- animation ----------
+
+  seedDisp() { this.disp = new Map(); for (const c of this.cells()) this.disp.set(c[0] * 1000 + c[1], c[2]); }
+
+  startTween() {
+    if (this.reduced) { this.seedDisp(); return; }
+    const from = new Map(this.disp), to = new Map();
+    for (const c of this.cells()) to.set(c[0] * 1000 + c[1], c[2]);
+    this.tw = { from, to, t0: performance.now(), dur: 620 };
+  }
+
+  // Outlines the gridpoints whose verdict actually changed when the lead day or
+  // date changed — what a forecaster is watching for while stepping days.
+  markVerdictChanges(prevDi, prevLead) {
+    if (this.reduced) return;
+    const prev = this.cellsFor(prevDi, prevLead);
+    if (!prev.length) return;
+    const was = new Map();
+    for (const c of prev) was.set(c[0] * 1000 + c[1], c[3] | 0);
+    const now = performance.now();
+    for (const c of this.cells()) {
+      const k = c[0] * 1000 + c[1];
+      if (was.has(k) && was.get(k) !== (c[3] | 0)) this.cross.set(k, now);
+    }
+  }
+
+  togglePlay() {
+    if (this.state.playing) { this.stopPlay(); return; }
+    const k = this.leadKeys();
+    this._playAcc = 0;
+    this.setState({ playing: true, lead: k[0] });
+  }
+  stopPlay() { if (this.state.playing) this.setState({ playing: false }); }
+
+  tick(now) {
+    const dt = Math.min(64, now - this._t); this._t = now;
+    if (!document.hidden && this.state.data) {
+      if (this.tw) {
+        const t = (now - this.tw.t0) / this.tw.dur;
+        const e = t >= 1 ? 1 : t * t * (3 - 2 * t);
+        for (const [k, to] of this.tw.to) {
+          const fr = this.tw.from.has(k) ? this.tw.from.get(k) : to;
+          this.disp.set(k, fr + (to - fr) * e);
+        }
+        if (t >= 1) this.tw = null;
+      }
+      const k = 1 - Math.pow(0.0006, dt / 1000);
+      this.zA += (this.z - this.zA) * (this.reduced ? 1 : k);
+      this.oxA += (this.ox - this.oxA) * (this.reduced ? 1 : k);
+      this.oyA += (this.oy - this.oyA) * (this.reduced ? 1 : k);
+      if (Math.abs(this.zA - this.z) < 0.0015) this.zA = this.z;
+      if (this.state.playing) {
+        this._playAcc += dt;
+        if (this._playAcc >= 760) {
+          this._playAcc = 0;
+          const ks = this.leadKeys(), i = ks.indexOf(this.state.lead);
+          if (i >= ks.length - 1) this.stopPlay(); else this.setLead(ks[i + 1]);
+        }
+      }
+      const zi = Math.round(this.zA * 10) / 10;
+      if (zi !== this.state.zoom) this.setState({ zoom: zi });
+      this.paint(now);
+    }
+    this._raf = requestAnimationFrame(t => this.tick(t));
+  }
+
+  // ---------- geometry ----------
+
+  applyLayout() {
+    const shell = document.querySelector('[data-shell]'), grid = document.querySelector('[data-grid]');
+    if (!shell || !grid) return;
+    const W = shell.clientWidth || innerWidth;
+    const narrow = W < 980;
+    grid.style.gridTemplateColumns = narrow ? 'minmax(0,1fr)' : (W < 1240 ? '218px minmax(0,1fr) 320px' : '244px minmax(0,1fr) 366px');
+    shell.style.height = narrow ? 'auto' : '100vh';
+    shell.style.minHeight = narrow ? '100vh' : '620px';
+    shell.style.overflow = narrow ? 'visible' : 'hidden';
+    const wrap = document.querySelector('[data-mapwrap]');
+    if (wrap) { wrap.style.height = narrow ? '78vw' : 'auto'; wrap.style.minHeight = narrow ? '320px' : '0'; }
+    if (narrow) document.querySelectorAll('[data-scroll]').forEach(p => { p.style.maxHeight = 'none'; p.style.overflowY = 'visible'; });
+  }
+
+  sizeMap() {
+    const g = this.state.data && this.state.data.meta.grid;
+    const cv = document.querySelector('[data-map]'), wrap = document.querySelector('[data-mapwrap]');
+    if (g && cv && wrap) {
+      const w = wrap.clientWidth, h = wrap.clientHeight;
+      if (w > 8 && h > 8) {
+        const dpr = Math.min(2, devicePixelRatio || 1);
+        if (cv.width !== Math.round(w * dpr)) cv.width = Math.round(w * dpr);
+        if (cv.height !== Math.round(h * dpr)) cv.height = Math.round(h * dpr);
+        this.mw = w; this.mh = h; this.dpr = dpr;
+        this.cell0 = Math.min(w / g.nx, h / g.ny) * 0.97;
+      }
+    }
+    const cc = document.querySelector('[data-curve]');
+    if (cc) {
+      const w = cc.clientWidth, h = cc.clientHeight;
+      if (w > 8 && h > 8) {
+        const dpr = Math.min(2, devicePixelRatio || 1);
+        if (cc.width !== Math.round(w * dpr)) cc.width = Math.round(w * dpr);
+        if (cc.height !== Math.round(h * dpr)) cc.height = Math.round(h * dpr);
+        this.cw = w; this.ch = h;
+      }
+    }
+    const sc = document.querySelector('[data-skill]');
+    if (sc) {
+      const w = sc.clientWidth, h = sc.clientHeight;
+      if (w > 8 && h > 8) {
+        const dpr = Math.min(2, devicePixelRatio || 1);
+        if (sc.width !== Math.round(w * dpr)) sc.width = Math.round(w * dpr);
+        if (sc.height !== Math.round(h * dpr)) sc.height = Math.round(h * dpr);
+        this.sw = w; this.sh = h;
+      }
+    }
+  }
+
+  // Measured skill at every lead day. Two lines, the current lead marked, and a
+  // dashed chance line — it shows the advantage holding across the whole horizon
+  // without asserting anything about how it varies.
+  drawSkill(now) {
+    const sc = document.querySelector('[data-skill]');
+    if (!sc || !this.skill || !this.sw) return;
+    const cx = sc.getContext('2d'), sk = this.skill;
+    const ks = Object.keys(sk.leads).map(Number).sort((a, b) => a - b);
+    const w = this.sw, h = this.sh, padY = 5;
+    cx.setTransform(this.dpr || 1, 0, 0, this.dpr || 1, 0, 0);
+    cx.clearRect(0, 0, w, h);
+    let lo = Infinity, hi = -Infinity;
+    for (const k of ks) { const r = sk.leads[k]; lo = Math.min(lo, r.baseline, sk.chance); hi = Math.max(hi, r.model); }
+    lo -= 0.02; hi += 0.02;
+    const X = i => (i / (ks.length - 1)) * (w - 2) + 1;
+    const Y = v => h - padY - ((v - lo) / (hi - lo)) * (h - padY * 2);
+
+    cx.setLineDash([2, 3]);
+    cx.strokeStyle = 'rgba(242,240,238,0.18)'; cx.lineWidth = 1;
+    cx.beginPath(); cx.moveTo(0, Y(sk.chance)); cx.lineTo(w, Y(sk.chance)); cx.stroke();
+    cx.setLineDash([]);
+    cx.font = '7.5px "IBM Plex Mono", monospace';
+    cx.fillStyle = 'rgba(242,240,238,0.3)';
+    cx.fillText('chance', 1, Y(sk.chance) - 3);
+
+    const line = (key, col, wid) => {
+      cx.beginPath();
+      ks.forEach((k, i) => { const x = X(i), y = Y(sk.leads[k][key]); i ? cx.lineTo(x, y) : cx.moveTo(x, y); });
+      cx.strokeStyle = col; cx.lineWidth = wid; cx.stroke();
+    };
+    line('baseline', 'rgba(242,240,238,0.36)', 1);
+    line('model', 'rgba(140,196,251,0.95)', 1.4);
+
+    const i = Math.max(0, ks.indexOf(this.state.lead));
+    const x = X(i);
+    cx.strokeStyle = 'rgba(255,255,255,0.22)'; cx.lineWidth = 1;
+    cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, h); cx.stroke();
+    const dot = (v, col, r) => { cx.fillStyle = col; cx.beginPath(); cx.arc(x, Y(v), r, 0, 6.2832); cx.fill(); };
+    dot(sk.leads[ks[i]].baseline, 'rgba(242,240,238,0.6)', 2.2);
+    dot(sk.leads[ks[i]].model, '#cde2fb', 3);
+  }
+
+  // Base offset for the current zoom: centred while the grid fits, clamped to the
+  // grid edges once it overflows, so panning can never lose the country.
+  base() {
+    const g = this.state.data.meta.grid;
+    const gw = this.cell0 * g.nx * this.zA, gh = this.cell0 * g.ny * this.zA;
+    const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    return {
+      bx: gw <= this.mw ? (this.mw - gw) / 2 : cl(this.oxA, this.mw - gw, 0),
+      by: gh <= this.mh ? (this.mh - gh) / 2 : cl(this.oyA, this.mh - gh, 0),
+      cs: this.cell0 * this.zA, gw, gh
+    };
+  }
+
+  setZoom(nz, cx, cy) {
+    const g = this.state.data && this.state.data.meta.grid;
+    if (!g || !this.cell0) return;
+    const z0 = this.z, z1 = Math.max(1, Math.min(14, nz));
+    if (z1 === z0) return;
+    const b = this.base();
+    const mx = cx == null ? this.mw / 2 : cx, my = cy == null ? this.mh / 2 : cy;
+    const u = (mx - b.bx) / (this.cell0 * z0), v = (my - b.by) / (this.cell0 * z0);
+    this.z = z1;
+    this.ox = mx - u * this.cell0 * z1;
+    this.oy = my - v * this.cell0 * z1;
+    if (z1 === 1) { this.ox = 0; this.oy = 0; }
+  }
+  zoomIn() { this.setZoom(this.z * 1.6); }
+  zoomOut() { this.setZoom(this.z / 1.6); }
+  zoomReset() { this.z = 1; this.ox = 0; this.oy = 0; }
+
+  // Centres a gridpoint, pulling in to a readable zoom if the map is still fitted.
+  jumpTo(ix, iy) {
+    const g = this.state.data.meta.grid;
+    const z = Math.max(this.z, 2.6);
+    this.z = z;
+    this.ox = this.mw / 2 - (ix + 0.5) * this.cell0 * z;
+    this.oy = this.mh / 2 - (g.ny - 0.5 - iy) * this.cell0 * z;
+  }
+
+  cellAt(clientX, clientY) {
+    const cv = document.querySelector('[data-map]');
+    if (!cv || !this.cell0 || !this.state.data) return null;
+    const r = cv.getBoundingClientRect(), g = this.state.data.meta.grid, b = this.base();
+    const ix = Math.floor((clientX - r.left - b.bx) / b.cs);
+    const row = Math.floor((clientY - r.top - b.by) / b.cs);
+    const iy = g.ny - 1 - row;
+    if (ix < 0 || ix >= g.nx || iy < 0 || iy >= g.ny) return null;
+    return this.index().get(ix * 1000 + iy) ? { ix, iy } : null;
+  }
+
+  bindCanvas() {
+    const cv = document.querySelector('[data-map]');
+    if (cv && !cv._bound) {
+      cv._bound = true;
+      const local = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+      cv.addEventListener('wheel', e => {
+        e.preventDefault();
+        const [x, y] = local(e);
+        this.setZoom(this.z * Math.pow(1.0022, -e.deltaY), x, y);
+      }, { passive: false });
+      cv.addEventListener('pointerdown', e => {
+        cv.setPointerCapture(e.pointerId);
+        this.ptrs.set(e.pointerId, local(e));
+        this.dragged = false;
+        this._panFrom = { ox: this.ox, oy: this.oy, z: this.z, ptr: local(e) };
+        if (this.ptrs.size === 2) {
+          const [a, b] = [...this.ptrs.values()];
+          this._pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: this.z, mid: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] };
+        }
+      });
+      cv.addEventListener('pointermove', e => {
+        const pos = local(e);
+        if (this.ptrs.has(e.pointerId)) {
+          this.ptrs.set(e.pointerId, pos);
+          if (this.ptrs.size === 2 && this._pinch) {
+            const [a, b] = [...this.ptrs.values()];
+            const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+            this.setZoom(this._pinch.z * (d / Math.max(1, this._pinch.d)), this._pinch.mid[0], this._pinch.mid[1]);
+            this.dragged = true;
+          } else if (this._panFrom) {
+            const dx = pos[0] - this._panFrom.ptr[0], dy = pos[1] - this._panFrom.ptr[1];
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) this.dragged = true;
+            if (this.dragged && this.z > 1) {
+              this.ox = this._panFrom.ox + dx; this.oy = this._panFrom.oy + dy;
+              this.oxA = this.ox; this.oyA = this.oy;
+            }
+          }
+          cv.style.cursor = this.dragged ? 'grabbing' : (this.z > 1 ? 'grab' : 'crosshair');
+          if (this.dragged) { if (this._curKey) { this._curKey = null; this.setState({ cur: null }); } return; }
+        }
+        const c = this.cellAt(e.clientX, e.clientY);
+        const k = c ? c.ix + ',' + c.iy : null;
+        if (k !== this._curKey) { this._curKey = k; this.setState({ cur: c }); }
+        if (!this.ptrs.size) cv.style.cursor = c ? 'pointer' : (this.z > 1 ? 'grab' : 'crosshair');
+      });
+      const end = e => {
+        this.ptrs.delete(e.pointerId);
+        if (this.ptrs.size < 2) this._pinch = null;
+        if (!this.ptrs.size) { this._panFrom = null; cv.style.cursor = this.z > 1 ? 'grab' : 'crosshair'; }
+      };
+      cv.addEventListener('pointerup', e => {
+        if (!this.dragged) {
+          const c = this.cellAt(e.clientX, e.clientY);
+          if (c) this.setState({ sel: c });
+        }
+        end(e);
+      });
+      cv.addEventListener('pointercancel', end);
+      cv.addEventListener('pointerleave', () => { this._curKey = null; this.setState({ cur: null }); });
+      cv.addEventListener('dblclick', e => { e.preventDefault(); this.zoomReset(); });
+    }
+    const cc = document.querySelector('[data-curve]');
+    if (cc && !cc._bound) {
+      cc._bound = true;
+      const set = e => {
+        const r = cc.getBoundingClientRect(), ks = this.leadKeys();
+        if (!ks.length) return;
+        const u = Math.max(0, Math.min(0.999, (e.clientX - r.left) / r.width));
+        const k = ks[Math.floor(u * ks.length)];
+        if (k !== this.state.lead) { this.stopPlay(); this.setLead(k); }
+      };
+      cc.addEventListener('pointerdown', e => { cc.setPointerCapture(e.pointerId); this._curveDrag = true; set(e); });
+      cc.addEventListener('pointermove', e => { if (this._curveDrag) set(e); });
+      cc.addEventListener('pointerup', () => { this._curveDrag = false; });
+      cc.addEventListener('pointercancel', () => { this._curveDrag = false; });
+    }
+  }
+
+  // ---------- palette ----------
+
+  // Hue comes from the verdict, never from a comparison against the threshold.
+  // p only sets depth inside the band it was already assigned to, scaled against
+  // that band's own range on screen, so no cutoff is baked into the palette.
+  depth(p, v) {
+    const b = this.bandStats(), lo = b.lo[v], hi = b.hi[v];
+    return hi - lo < 1e-9 ? 0.5 : Math.max(0, Math.min(1, (p - lo) / (hi - lo)));
+  }
+  colorFor(p, v) {
+    const u = this.depth(p, v);
+    if (v === 2) return [255, 90 + 78 * u, 23 + 42 * u, 0.93 + 0.07 * u];
+    if (v === 1) return [30 + 96 * u, 82 + 104 * u, 152 + 94 * u, 0.6 + 0.32 * u];
+    const st = [[8, 24, 56], [14, 40, 84], [22, 62, 124], [32, 88, 162]];
+    const x = u * (st.length - 1), i = Math.min(st.length - 2, Math.floor(x)), f = x - i;
+    const c = [0, 1, 2].map(k => st[i][k] + (st[i + 1][k] - st[i][k]) * f);
+    return [c[0], c[1], c[2], 0.34 + 0.4 * u];
+  }
+
+  // ---------- map ----------
+
+  drawMap(now) {
+    const cv = document.querySelector('[data-map]');
+    if (!cv || !this.state.data || !this.cell0) return;
+    this.bindCanvas();
+    const cx = cv.getContext('2d'), g = this.state.data.meta.grid;
+    const b = this.base(), cs = b.cs;
+    cx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    cx.clearRect(0, 0, this.mw, this.mh);
+
+    let rev = 1;
+    if (this.revealT0 == null) rev = 0;
+    // rAF is paused while hidden, so an entrance started in a background tab would
+    // freeze part-drawn; skip straight to the finished state instead.
+    else if (!this.reduced && !document.hidden) rev = Math.min(1, (now - this.revealT0) / 1150);
+    const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+
+    // graticule
+    cx.save();
+    cx.beginPath(); cx.rect(0, 0, this.mw, this.mh); cx.clip();
+    cx.lineWidth = 1;
+    cx.font = '8px "IBM Plex Mono", monospace';
+    cx.fillStyle = 'rgba(242,240,238,0.22)';
+    for (let lon = Math.ceil(g.lon0 / 5) * 5; lon <= g.lon0 + g.nx * g.step; lon += 5) {
+      const x = b.bx + ((lon - g.lon0) / g.step) * cs;
+      if (x < -20 || x > this.mw + 20) continue;
+      cx.strokeStyle = 'rgba(140,196,251,0.055)';
+      cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, this.mh); cx.stroke();
+      cx.fillText(lon + '°E', x + 3, this.mh - 4);
+    }
+    for (let lat = Math.ceil(g.lat0 / 5) * 5; lat <= g.lat0 + g.ny * g.step; lat += 5) {
+      const y = b.by + (g.ny - 1 - (lat - g.lat0) / g.step) * cs;
+      if (y < -20 || y > this.mh + 20) continue;
+      cx.strokeStyle = 'rgba(140,196,251,0.055)';
+      cx.beginPath(); cx.moveTo(0, y); cx.lineTo(this.mw, y); cx.stroke();
+      cx.fillText(lat + '°N', 4, y - 3);
+    }
+    cx.restore();
+
+    const gap = Math.max(0, Number(this.props.cellGap ?? 0.14));
+    const breathe = this.reduced ? 0 : (Math.sin(now / 1400) * 0.5 + 0.5);
+    const sel = this.state.sel, cur = this.state.cur;
+    const list = this.cells();
+
+    // Additive glow pass first, so clusters of alerts bloom into each other and
+    // the eye finds the hot regions before reading any individual cell.
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    for (const c of list) {
+      const p = this.disp.get(c[0] * 1000 + c[1]);
+      if (p == null || (c[3] | 0) !== 2) continue;
+      const pr = rev >= 1 ? 1 : smooth((rev - (1 - c[1] / g.ny) * 0.4) / 0.6);
+      if (pr <= 0.01) continue;
+      const x = b.bx + c[0] * cs, y = b.by + (g.ny - 1 - c[1]) * cs;
+      if (x < -cs * 3 || x > this.mw + cs * 3 || y < -cs * 3 || y > this.mh + cs * 3) continue;
+      const a = (0.055 + 0.075 * this.depth(p, 2)) * pr * (0.72 + 0.28 * breathe);
+      cx.fillStyle = 'rgba(255,90,23,' + a.toFixed(3) + ')';
+      cx.fillRect(x - cs * 1.1, y - cs * 1.1, cs * 3.2, cs * 3.2);
+    }
+    cx.restore();
+
+    for (const c of list) {
+      const key = c[0] * 1000 + c[1];
+      const p = this.disp.get(key);
+      if (p == null) continue;
+      const pr = rev >= 1 ? 1 : smooth((rev - (1 - c[1] / g.ny) * 0.4) / 0.6);
+      if (pr <= 0.01) continue;
+      const x0 = b.bx + c[0] * cs, y0 = b.by + (g.ny - 1 - c[1]) * cs;
+      if (x0 < -cs || x0 > this.mw + cs || y0 < -cs || y0 > this.mh + cs) continue;
+      const hovered = cur && cur.ix === c[0] && cur.iy === c[1];
+      let scale = (1 - gap) * (0.55 + 0.45 * pr);
+      if (hovered) scale = Math.min(1.18, scale * 1.3);
+      const sz = Math.max(1.2, cs * scale);
+      const x = x0 + (cs - sz) / 2, y = y0 + (cs - sz) / 2;
+      const col = this.colorFor(p, c[3] | 0);
+      cx.fillStyle = 'rgba(' + col[0].toFixed(0) + ',' + col[1].toFixed(0) + ',' + col[2].toFixed(0) + ',' + (col[3] * pr).toFixed(3) + ')';
+      cx.fillRect(x, y, sz, sz);
+      const ct = this.cross.get(key);
+      if (ct != null) {
+        const k = 1 - (now - ct) / 620;
+        if (k <= 0) this.cross.delete(key);
+        else {
+          cx.strokeStyle = 'rgba(255,255,255,' + (0.72 * k).toFixed(3) + ')';
+          cx.lineWidth = 1;
+          cx.strokeRect(x - 0.5, y - 0.5, sz + 1, sz + 1);
+        }
+      }
+    }
+
+    if (cur && (!sel || cur.ix !== sel.ix || cur.iy !== sel.iy)) {
+      cx.strokeStyle = 'rgba(242,240,238,0.6)'; cx.lineWidth = 1;
+      cx.strokeRect(b.bx + cur.ix * cs + 0.5, b.by + (g.ny - 1 - cur.iy) * cs + 0.5, cs - 1, cs - 1);
+    }
+
+    if (sel) {
+      const x = b.bx + sel.ix * cs, y = b.by + (g.ny - 1 - sel.iy) * cs;
+      const mx = x + cs / 2, my = y + cs / 2;
+      const st = this.reduced ? 1 : Math.min(1, (now - this.selT0) / 520);
+      if (st < 1) {
+        const e = 1 - Math.pow(1 - st, 3);
+        cx.strokeStyle = 'rgba(247,245,243,' + (0.55 * (1 - st)).toFixed(3) + ')';
+        cx.lineWidth = 1.6;
+        cx.beginPath(); cx.arc(mx, my, Math.max(2, cs * 0.6 + e * cs * 5), 0, 6.2832); cx.stroke();
+      }
+      cx.strokeStyle = '#f7f5f3'; cx.lineWidth = 1.4;
+      cx.strokeRect(x - 1.4, y - 1.4, cs + 2.8, cs + 2.8);
+      cx.strokeStyle = 'rgba(247,245,243,0.32)'; cx.lineWidth = 1;
+      const r = Math.max(9, cs * 2.6);
+      cx.beginPath();
+      cx.moveTo(mx - r, my); cx.lineTo(mx - cs * 0.95, my);
+      cx.moveTo(mx + cs * 0.95, my); cx.lineTo(mx + r, my);
+      cx.moveTo(mx, my - r); cx.lineTo(mx, my - cs * 0.95);
+      cx.moveTo(mx, my + cs * 0.95); cx.lineTo(mx, my + r);
+      cx.stroke();
+    }
+
+    if (this.zA > 1.02) {
+      // Minimap: which part of the country the viewport is currently over.
+      const mmw = 62, mmh = Math.round(62 * g.ny / g.nx);
+      const mxp = this.mw - mmw - 8, myp = this.mh - mmh - 8;
+      cx.fillStyle = 'rgba(6,8,14,0.8)';
+      cx.fillRect(mxp, myp, mmw, mmh);
+      cx.strokeStyle = 'rgba(255,255,255,0.16)'; cx.lineWidth = 1;
+      cx.strokeRect(mxp + 0.5, myp + 0.5, mmw - 1, mmh - 1);
+      const dx = mmw / g.nx, dy = mmh / g.ny;
+      for (const c of list) {
+        if ((c[0] + c[1]) % 2) continue;
+        const p = this.disp.get(c[0] * 1000 + c[1]);
+        if (p == null) continue;
+        const v = c[3] | 0;
+        cx.fillStyle = v === 2 ? 'rgba(255,90,23,0.85)' : (v === 1 ? 'rgba(42,120,214,0.5)' : 'rgba(42,120,214,0.26)');
+        cx.fillRect(mxp + c[0] * dx, myp + (g.ny - 1 - c[1]) * dy, Math.max(1, dx * 2), Math.max(1, dy * 2));
+      }
+      const sx = mmw / b.gw, sy = mmh / b.gh;
+      const vx = mxp + Math.max(0, -b.bx) * sx, vy = myp + Math.max(0, -b.by) * sy;
+      const vw = Math.min(mmw - (vx - mxp), this.mw * sx), vh = Math.min(mmh - (vy - myp), this.mh * sy);
+      cx.strokeStyle = 'rgba(247,245,243,0.9)'; cx.lineWidth = 1;
+      cx.strokeRect(vx + 0.5, vy + 0.5, Math.max(2, vw - 1), Math.max(2, vh - 1));
+    }
+  }
+
+  // ---------- alert-budget curve ----------
+
+  curveData() {
+    const key = String(this.state.di);
+    if (this._cvKey === key) return this._cv;
+    const rows = this.leadKeys().map(k => {
+      const cs = this.cellsFor(this.state.di, k);
+      return { lead: k, high: this.countAt(cs, 2), unc: this.countAt(cs, 1) };
+    });
+    const max = Math.max(1, ...rows.map(r => r.high + r.unc));
+    this._cvKey = key; this._cv = { rows, max };
+    return this._cv;
+  }
+
+  drawCurve(now) {
+    const cc = document.querySelector('[data-curve]');
+    if (!cc || !this.state.data || !this.cw) return;
+    const cx = cc.getContext('2d'), d = this.curveData();
+    const w = this.cw, h = this.ch, pad = 3;
+    cx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    cx.clearRect(0, 0, w, h);
+    const rv = this.reduced ? 1 : Math.min(1, (now - this.curveT0) / 620);
+    const ease = rv * rv * (3 - 2 * rv);
+    const n = d.rows.length, bw = w / n, gp = Math.min(3, bw * 0.24);
+    const span = h - pad * 2;
+    for (let i = 0; i < n; i++) {
+      const r = d.rows[i], on = r.lead === this.state.lead;
+      const x = i * bw + gp / 2, cw = Math.max(1, bw - gp);
+      const hh = (span * r.high / d.max) * ease, uh = (span * r.unc / d.max) * ease;
+      cx.fillStyle = on ? 'rgba(42,120,214,0.6)' : 'rgba(42,120,214,0.26)';
+      cx.fillRect(x, h - pad - hh - uh, cw, uh);
+      cx.fillStyle = on ? 'rgb(255,90,23)' : 'rgba(255,90,23,0.5)';
+      cx.fillRect(x, h - pad - hh, cw, hh);
+      if (on) {
+        const pulse = this.reduced ? 0 : (Math.sin(now / 700) * 0.5 + 0.5);
+        cx.strokeStyle = 'rgba(247,245,243,' + (0.5 + 0.35 * pulse).toFixed(3) + ')';
+        cx.lineWidth = 1;
+        cx.strokeRect(x - 0.5, 0.5, cw + 1, h - 1);
+      }
+    }
+    cx.font = '7.5px "IBM Plex Mono", monospace';
+    cx.fillStyle = 'rgba(242,240,238,0.34)';
+    cx.fillText('D' + d.rows[0].lead, 1.5, h - 1);
+    const lab = 'D' + d.rows[n - 1].lead;
+    cx.fillText(lab, w - cx.measureText(lab).width - 1.5, h - 1);
+  }
+
+  // ---------- labels ----------
+
+  // Approximate meteorological-subdivision boxes; the coordinate shown beside the
+  // name stays the authoritative readout.
+  region(lon, lat) {
+    const R = [
+      ['Western Himalaya', 29, 37, 72, 81], ['Punjab–Haryana plains', 28.5, 32.5, 73.5, 77.5],
+      ['West Rajasthan', 23, 30, 68, 75.5], ['Gangetic plain (UP)', 24.5, 29, 77, 84.5],
+      ['Bihar–Jharkhand', 21.5, 27.5, 83, 88.5], ['Northeast India', 23, 29.5, 88.5, 97],
+      ['Bengal–Odisha coast', 17.5, 23.5, 84, 89], ['Gujarat–Saurashtra', 20, 24.5, 68, 74.5],
+      ['Central India (MP–Chhattisgarh)', 20.5, 26, 74.5, 84], ['Konkan–Goa coast', 14.5, 20.5, 72.5, 74.5],
+      ['Interior Maharashtra', 16, 21.5, 74.5, 80.5], ['Telangana–Vidarbha', 16, 20.5, 76.5, 82],
+      ['Coastal Andhra', 13, 19, 79.5, 85.5], ['Interior Karnataka', 12, 18, 74.5, 78.5],
+      ['Kerala–coastal Karnataka', 8, 14.5, 74, 77.5], ['Tamil Nadu', 8, 13.5, 77, 80.5]
+    ];
+    let best = null, bd = Infinity, near = null, nd = Infinity;
+    for (const r of R) {
+      const dd = Math.hypot(lat - (r[1] + r[2]) / 2, lon - (r[3] + r[4]) / 2);
+      if (dd < nd) { nd = dd; near = r[0]; }
+      if (lat < r[1] || lat > r[2] || lon < r[3] || lon > r[4]) continue;
+      if (dd < bd) { bd = dd; best = r[0]; }
+    }
+    return best || ('near ' + near);
+  }
+
+  ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+
+  renderVals() {
+    const d = this.state.data;
+    if (!d) {
+      return {
+        loading: true, loadingText: this.state.err ? 'dashboard-data.json unavailable — ' + this.state.err : 'Loading grid…',
+        placeholder: false, hasSel: false, noSel: false, dateRows: [], leadRows: [], triage: [], bands: [],
+        placeholderNote: '', dateCount: '', leadCount: '', featureCount: '', leadStatement: '',
+        gridCount: '', flaggedCount: '', headStamp: '', triageStamp: '', gridSpan: '', cursorReadout: '',
+        opText: '', precisionNote: '', mixCaption: '',
+        budgetCount: '', budgetPct: '', budgetFg: '#f7f5f3',
+        sel: {}, tip: { show: false }, skill: { show: false }, dateRule: '',
+        playLabel: '', playBd: 'rgba(255,255,255,0.08)', playBg: 'transparent', playFg: 'rgba(242,240,238,0.4)', playIcon: '4px 0 4px 6px',
+        togglePlay: () => {}, zoomIn: () => {}, zoomOut: () => {}, zoomReset: () => {},
+        zoomLabel: '', zoomFg: 'rgba(242,240,238,0.36)', fitBd: 'rgba(255,255,255,0.14)', fitFg: 'rgba(242,240,238,0.5)'
+      };
+    }
+    const m = d.meta, cells = this.cells(), floor = m.uncertain_floor, opText = this.opLabel();
+    const nf = n => n.toLocaleString('en-US');
+    const dt = d.dates[this.state.di];
+    const leadKeys = this.leadKeys();
+    const counts = [0, 0, 0];
+    for (const c of cells) counts[c[3] | 0]++;
+    const showRegions = this.props.showRegions ?? true;
+
+    const dateRows = d.dates.map((x, i) => {
+      const on = i === this.state.di;
+      return {
+        label: x.label, season: x.season || '', pick: () => this.setDate(i),
+        bg: on ? 'rgba(140,196,251,0.13)' : 'rgba(255,255,255,0.03)',
+        bd: on ? 'rgba(140,196,251,0.5)' : 'rgba(255,255,255,0.08)',
+        fg: on ? '#eaf3ff' : 'rgba(242,240,238,0.7)',
+        dim: on ? 'rgba(205,226,251,0.6)' : 'rgba(242,240,238,0.3)',
+        mark: on ? '#8cc4fb' : 'transparent'
+      };
+    });
+
+    const leadFlags = leadKeys.map(n => this.countAt(dt.leads[String(n)] || [], 2));
+    const maxFlag = Math.max(1, ...leadFlags);
+    const leadRows = leadKeys.map((n, i) => {
+      const on = n === this.state.lead;
+      return {
+        n: String(n), pick: () => { this.stopPlay(); this.setLead(n); },
+        title: 'Day ' + n + ' — ' + nf(leadFlags[i]) + ' gridpoints called high risk',
+        bg: on ? 'rgba(140,196,251,0.16)' : 'rgba(255,255,255,0.03)',
+        bd: on ? 'rgba(140,196,251,0.55)' : 'rgba(255,255,255,0.08)',
+        fg: on ? '#eaf3ff' : 'rgba(242,240,238,0.62)',
+        fillH: (leadFlags[i] / maxFlag * 100).toFixed(1) + '%',
+        fill: on ? 'rgba(140,196,251,0.28)' : 'rgba(255,90,23,0.16)'
+      };
+    });
+
+    const bands = [
+      { name: 'RELIABLE', range: 'p < ' + floor, count: nf(counts[0]), swatch: 'rgb(20,54,104)', shadow: 'none', fg: 'rgba(140,196,251,0.8)', bd: 'rgba(255,255,255,0.08)' },
+      { name: 'UNCERTAIN', range: floor + '–' + opText, count: nf(counts[1]), swatch: 'rgb(42,120,214)', shadow: '0 0 8px rgba(42,120,214,0.6)', fg: 'rgba(140,196,251,0.95)', bd: 'rgba(140,196,251,0.22)' },
+      { name: 'HIGH RISK', range: 'p ≥ ' + opText, count: nf(counts[2]), swatch: 'rgb(255,90,23)', shadow: '0 0 10px rgba(255,90,23,0.75)', fg: '#ff8a32', bd: 'rgba(255,138,50,0.35)' }
+    ];
+
+    // Ranked by p within the flagged set, thinned so entries are ≥1.5° apart and one per named area —
+    // otherwise the worst ten gridpoints are all one coastline.
+    const sep = Math.max(0, Math.round(Number(this.props.triageSeparation ?? 3)));
+    const byP = cells.slice().sort((a, b) => b[2] - a[2]);
+    const far = (list, c) => sep === 0 || !list.some(r => Math.abs(r[0] - c[0]) < sep && Math.abs(r[1] - c[1]) < sep);
+    const ranked = [], used = new Set();
+    for (const c of byP) {
+      if (ranked.length >= 10) break;
+      const ll = this.lonlat(c[0], c[1]), name = this.region(ll[0], ll[1]);
+      if (used.has(name) || !far(ranked, c)) continue;
+      used.add(name); ranked.push(c);
+    }
+    for (const c of byP) {
+      if (ranked.length >= 10) break;
+      if (ranked.indexOf(c) >= 0 || !far(ranked, c)) continue;
+      ranked.push(c);
+    }
+    ranked.sort((a, b) => b[2] - a[2]);
+    const topP = ranked.length ? ranked[0][2] : 1;
+
+    const s = this.state.sel;
+    const triage = ranked.map((c, i) => {
+      const ll = this.lonlat(c[0], c[1]);
+      const on = s && s.ix === c[0] && s.iy === c[1];
+      const band = c[3] | 0;
+      return {
+        rank: String(i + 1).padStart(2, '0'),
+        region: showRegions ? this.region(ll[0], ll[1]) : this.coordText(c[0], c[1]),
+        coord: showRegions ? this.coordText(c[0], c[1]) : 'grid ' + c[0] + ',' + c[1],
+        pText: c[2].toFixed(3),
+        pick: () => { this.setState({ sel: { ix: c[0], iy: c[1] } }); this.jumpTo(c[0], c[1]); },
+        bg: on ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.025)',
+        bd: on ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.06)',
+        fg: band === 2 ? '#ff8a32' : 'rgba(205,226,251,0.9)',
+        dot: band === 2 ? 'rgb(255,90,23)' : (band === 1 ? 'rgb(42,120,214)' : 'rgb(20,54,104)'),
+        glow: band === 2 ? '0 0 8px rgba(255,90,23,0.7)' : 'none',
+        barW: (c[2] / topP * 100).toFixed(1) + '%',
+        barBg: band === 2 ? 'rgba(255,90,23,0.055)' : 'rgba(42,120,214,0.055)'
+      };
+    });
+
+    let selVals = null;
+    if (s) {
+      const c = this.index().get(s.ix * 1000 + s.iy);
+      if (c) {
+        const band = c[3] | 0;
+        const ll = this.lonlat(c[0], c[1]);
+        // Drivers live at index 4 and exist exactly when the verdict is 1 or 2.
+        const raw = c[4] || [];
+        const top = raw.length ? Math.max.apply(null, raw.map(x => Math.abs(x[1]))) : 1;
+        selVals = {
+          stateName: ['RELIABLE', 'UNCERTAIN', 'HIGH RISK'][band],
+          stateFg: band === 2 ? '#ff8a32' : (band === 1 ? '#cde2fb' : 'rgba(140,196,251,0.85)'),
+          stateBg: band === 2 ? 'rgba(255,90,23,0.14)' : 'rgba(140,196,251,0.1)',
+          stateBd: band === 2 ? 'rgba(255,138,50,0.45)' : 'rgba(140,196,251,0.3)',
+          pText: c[2].toFixed(3),
+          dayText: 'Day ' + this.state.lead + ' of ' + leadKeys.length,
+          coordText: this.coordText(c[0], c[1]),
+          regionText: this.region(ll[0], ll[1]),
+          hasDrivers: raw.length > 0,
+          noDrivers: raw.length === 0,
+          driverHead: band === 2 ? 'Flagged because' : 'Watch-listed because',
+          noDriverText: 'No drivers — VISHWAS calls this forecast reliable, so it does not score its failure modes here.',
+          drivers: raw.map((x, i) => {
+            const pos = x[1] >= 0;
+            const rel = Math.abs(x[1]) / (top || 1);
+            const pips = rel > 0.7 ? 3 : rel > 0.38 ? 2 : 1;
+            return {
+              label: m.labels[m.features[x[0]]] || m.features[x[0]],
+              pctText: this.ordinal(Math.round(x[2])) + ' percentile',
+              bar: pos ? '▮'.repeat(pips) : '◁'.repeat(pips),
+              pctW: Math.max(2, Math.min(100, x[2])) + '%',
+              delay: (i * 70) + 'ms',
+              accent: pos ? (band === 2 ? '#ff8a32' : '#6aa9f0') : 'rgba(140,196,251,0.45)'
+            };
+          })
+        };
+      }
+    }
+
+    const cur = this.state.cur;
+    let tip = { show: false };
+    if (cur && this.cell0) {
+      const cc = this.index().get(cur.ix * 1000 + cur.iy);
+      if (cc) {
+        const b = this.base(), g = m.grid, band = cc[3] | 0;
+        const ll = this.lonlat(cur.ix, cur.iy);
+        tip = {
+          show: true,
+          x: (b.bx + (cur.ix + 0.5) * b.cs).toFixed(1) + 'px',
+          y: (b.by + (g.ny - 1 - cur.iy) * b.cs).toFixed(1) + 'px',
+          pText: cc[2].toFixed(3),
+          band: ['RELIABLE', 'UNCERTAIN', 'HIGH RISK'][band],
+          coord: this.coordText(cur.ix, cur.iy),
+          region: this.region(ll[0], ll[1]),
+          fg: band === 2 ? '#ff8a32' : (band === 1 ? '#cde2fb' : 'rgba(140,196,251,0.85)'),
+          bd: band === 2 ? 'rgba(255,138,50,0.45)' : 'rgba(140,196,251,0.28)'
+        };
+      }
+    }
+
+    // Fifth element: the model's own measured skill at the lead day on screen.
+    // Every figure here is read from skill-by-lead.json, including the sentences'
+    // numbers, so the copy cannot drift from the table.
+    const sk = this.skill;
+    let skill = { show: false };
+    const skKey = String(this.state.lead);
+    if (sk && sk.leads && sk.leads[skKey]) {
+      const r = sk.leads[skKey];
+      const ks = Object.keys(sk.leads).map(Number).sort((a, b) => a - b);
+      const first = ks[0], last = ks[ks.length - 1];
+      const lastRow = sk.leads[String(last)];
+      // Bar scale runs from the table's own chance level to its best measured
+      // value, so nothing about this element's geometry is typed in.
+      const lo = sk.chance;
+      const span = Math.max(1e-6, Math.max.apply(null, ks.map(k => sk.leads[k].model)) - lo);
+      skill = {
+        show: true,
+        head: 'Day ' + this.state.lead + ' · measured skill',
+        metric: sk.metric,
+        modelLabel: sk.model_label, modelValue: r.model.toFixed(3),
+        baseLabel: sk.baseline_label, baseValue: r.baseline.toFixed(3),
+        modelW: (Math.max(0, (r.model - lo) / span) * 100).toFixed(1) + '%',
+        baseW: (Math.max(0, (r.baseline - lo) / span) * 100).toFixed(1) + '%',
+        open: !!this.state.skillOpen,
+        toggle: () => this.setState({ skillOpen: !this.state.skillOpen }),
+        toggleLabel: this.state.skillOpen ? '− how to read this' : '+ how to read this',
+        lede: sk.model_label + ' is ahead of ' + sk.baseline_label + ' at every lead, Day ' + first + ' to Day ' + last + '.',
+        note: sk.model_label + ' is ahead at every lead from Day ' + first + ' to Day ' + last +
+          ' — ' + sk.holds + '. At Day ' + this.state.lead + ' the margin is +' + r.margin.toFixed(3) +
+          (r.margin_lo != null ? ' (95% interval ' + r.margin_lo.toFixed(3) + '–' + r.margin_hi.toFixed(3) + ')' : '') +
+          '. The margin at long range is not distinguishable from the margin at short range.',
+        note2: 'By Day ' + last + ', ' + sk.baseline_label + ' is at ' + lastRow.baseline.toFixed(3) +
+          ' — near chance. The method in use today stops working exactly where a ten-day forecast most needs a confidence signal.',
+        note3: 'A per-lead-day figure. Not comparable with ' + sk.not_comparable_with + ' — splitting by lead day is an easier question, not a better result.'
+      };
+    }
+
+    // The per-season selection rule is a claim about the real date list, so it is
+    // gated on the same flag as every other honesty-sensitive string here — a
+    // stand-in file only gets to state which seasons it actually contains.
+    const seasons = [];
+    for (const x of d.dates) if (x.season && seasons.indexOf(x.season) < 0) seasons.push(x.season);
+    // Each date already carries its season on its own button, so the rule line
+    // does not repeat the list.
+    const dateRule = m.placeholder
+      ? 'Stand-in dates — not the selected test set.'
+      : 'Chosen by a rule fixed in advance: the most active date in each season, plus the median monsoon date. The system is visible on a quiet winter day as well as the worst day of the monsoon.';
+
+    const zoomed = this.state.zoom > 1.05;
+
+    return {
+      loading: false, loadingText: '',
+      placeholder: !!m.placeholder,
+      placeholderNote: m.placeholder_note || 'Stand-in field — replace with the pipeline output.',
+      gridCount: nf(cells.length),
+      dateCount: d.dates.length + ' dates',
+      leadCount: 'Day ' + leadKeys[0] + '–' + leadKeys[leadKeys.length - 1],
+      featureCount: String(m.features.length),
+      dateRows, leadRows, bands, triage, tip, skill, dateRule,
+      leadStatement: m.placeholder
+        ? 'Stand-in field: lead-day values here are derived from one measured date, so treat the day-to-day change as illustrative until the pipeline file lands.'
+        : 'Every lead day is a separately measured prediction — not one day rescaled.',
+      flaggedCount: nf(counts[2]),
+      headStamp: dt.label + ' + Day ' + this.state.lead + (dt.season ? ' · ' + dt.season : ''),
+      triageStamp: 'Day ' + this.state.lead + ' · ≥1.5° apart',
+      gridSpan: m.grid.nx + '×' + m.grid.ny + ' · ' + m.grid.lon0.toFixed(1) + '–' + (m.grid.lon0 + (m.grid.nx - 1) * m.grid.step).toFixed(1) + 'E',
+      cursorReadout: cur ? this.coordText(cur.ix, cur.iy) : '—',
+      hasSel: !!selVals, noSel: !selVals, sel: selVals || {},
+      opText,
+      precisionNote: 'Each verdict is decided upstream at full precision; p is shown rounded. Two gridpoints can print the same value and still sit on opposite sides of the line, so the console never re-derives the call from p.',
+      mixCaption: 'high risk + uncertain, by lead day · click to jump',
+      budgetCount: nf(counts[2]),
+      budgetPct: (counts[2] / cells.length * 100).toFixed(1) + '%',
+      budgetFg: '#ff8a32',
+      playLabel: this.state.playing ? 'Pause sweep' : 'Sweep Day 1 → ' + leadKeys[leadKeys.length - 1],
+      playBd: this.state.playing ? 'rgba(255,138,50,0.5)' : 'rgba(255,255,255,0.1)',
+      playBg: this.state.playing ? 'rgba(255,90,23,0.12)' : 'rgba(255,255,255,0.03)',
+      playFg: this.state.playing ? '#ff8a32' : 'rgba(242,240,238,0.6)',
+      playIcon: this.state.playing ? '0 3px 0 3px' : '4px 0 4px 6px',
+      togglePlay: () => this.togglePlay(),
+      zoomIn: () => this.zoomIn(), zoomOut: () => this.zoomOut(), zoomReset: () => this.zoomReset(),
+      zoomLabel: '×' + this.state.zoom.toFixed(1),
+      zoomFg: zoomed ? '#cde2fb' : 'rgba(242,240,238,0.36)',
+      fitBd: zoomed ? 'rgba(140,196,251,0.45)' : 'rgba(255,255,255,0.14)',
+      fitFg: zoomed ? '#cde2fb' : 'rgba(242,240,238,0.5)'
+    };
+  }
+}
+</script>
+</body>
+</html>

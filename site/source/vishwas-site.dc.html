@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="assets/aug5.json" data-resource-id="aug5" />
+<meta name="ext-resource-dependency" content="assets/spread.json" data-resource-id="spread" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>VISHWAS · Hellfire Labs</title>
+<link rel="icon" href="assets/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #050506; color: #f2f0ee; font-family: "IBM Plex Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #8cc4fb; text-decoration: none; }
+  a:hover { color: #cde2fb; }
+  * { box-sizing: border-box; }
+  ::selection { background: #ff5a17; color: #0b0709; }
+  @keyframes cue { 0%,100% { transform: translateX(0); opacity: .35 } 50% { transform: translateX(7px); opacity: 1 } }
+  @keyframes navShimmer { 0% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
+  @keyframes navRise { from { opacity: 0; transform: translateY(8px) } }
+</style>
+</helmet>
+
+<div style="width:100%; background:#050506; overflow-x:clip">
+
+  <header data-chrome="" style="position:sticky; top:0; z-index:60; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px clamp(13px,4vw,56px); background:rgba(6,6,8,0.76); backdrop-filter:blur(20px) saturate(130%); border-bottom:1px solid rgba(255,255,255,0.09)">
+    <a href="#top" style="display:flex; align-items:center; gap:11px; color:inherit">
+      <img src="assets/flame-mark.svg" alt="" style="height:25px; width:auto; display:block; filter:drop-shadow(0 0 12px rgba(255,90,23,0.45))" />
+      <span style="display:flex; flex-direction:column; gap:2px">
+        <span style="font-weight:600; font-size:10.5px; letter-spacing:0.3em; color:#f7f5f3">HELLFIRE<span style="background:linear-gradient(180deg,#ff9d1c,#e00f18); -webkit-background-clip:text; background-clip:text; color:transparent"> LABS</span></span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.15em; color:rgba(242,240,238,0.4)">SIH 2026 · SMART AUTOMATION</span>
+      </span>
+    </a>
+    <div style="display:flex; align-items:center; gap:clamp(9px,2vw,22px)">
+      <nav data-desknav="" style="display:none; gap:clamp(10px,1.8vw,22px); font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase">
+        <a href="#evidence" style="color:rgba(242,240,238,0.6)">Evidence</a>
+        <a href="#date" style="color:rgba(242,240,238,0.6)">One date</a>
+        <a href="#map" style="color:rgba(242,240,238,0.6)">Map</a>
+        <a href="#build" style="color:rgba(242,240,238,0.6)">Build</a>
+        <a href="#dashboard" style="color:rgba(242,240,238,0.6)">Console</a>
+        <a href="#team" style="color:rgba(242,240,238,0.6)">Team</a>
+        <a href="dashboard/index.html" style="display:flex; align-items:center; gap:6px; color:#cde2fb"><span style="width:5px; height:5px; background:#8cc4fb"></span>Open ↗</a>
+      </nav>
+      <button type="button" data-present-toggle="" style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(247,245,243,0.92); padding:7px 11px; border:1px solid rgba(255,90,23,0.45); background:rgba(255,90,23,0.10); border-radius:2px" style-hover="background:rgba(255,90,23,0.24); border-color:rgba(255,90,23,0.85)">Present</button>
+    </div>
+  </header>
+
+  <section data-screen-label="Hero proof" data-present-section="" data-present-name="Open" id="top" style="position:relative; height:340vh; background:radial-gradient(120% 55% at 14% 0%, #17100c 0%, #0a0709 40%, #050506 100%)">
+    <div style="position:sticky; top:0; height:100vh; overflow:hidden">
+      <canvas data-cloud="" style="position:absolute; inset:0; width:100%; height:100%; display:block"></canvas>
+
+      <div data-stage="intro" style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(14px,2vh,22px); padding:clamp(18px,5vw,72px); pointer-events:none">
+        <div style="display:flex; align-items:center; gap:13px">
+          <img src="assets/hellfire-logo.png" alt="Hellfire Labs" style="width:clamp(56px,7vw,96px); height:auto; display:block" />
+          <span style="width:1px; height:42px; background:linear-gradient(180deg,rgba(255,157,28,0.85),rgba(224,15,24,0.15))"></span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(242,240,238,0.55); line-height:1.65">Six students<br />one measurement</span>
+        </div>
+        <h1 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(54px,13.5vw,176px); line-height:0.82; letter-spacing:-0.035em; color:#eef5ff; text-shadow:0 0 70px rgba(42,120,214,0.4)">VISHWAS</h1>
+        <p style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:500; font-size:clamp(18px,2.6vw,33px); line-height:1.2; letter-spacing:-0.01em; color:#cde2fb; max-width:660px; text-wrap:pretty">Forecast confidence intelligence — knowing when not to trust the forecast.</p>
+        <p style="margin:0; font-size:clamp(13.5px,1.3vw,16px); line-height:1.6; color:rgba(242,240,238,0.6); max-width:540px; text-wrap:pretty">An AI layer that scores every rainfall forecast from Day 1 to Day 10 as reliable, uncertain or high-risk. It flags failures; it does not adjust the forecast.</p>
+        <div style="display:flex; align-items:center; gap:11px; margin-top:4px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,138,50,0.9)">Scroll — the argument runs below</span>
+          <span style="display:block; width:20px; height:1px; background:linear-gradient(90deg,#ff9d1c,rgba(224,15,24,0)); animation:cue 2.2s ease-in-out infinite"></span>
+        </div>
+      </div>
+
+      <div data-stage="a" style="position:absolute; left:0; right:0; bottom:0; display:flex; padding:clamp(14px,3vw,44px); opacity:0; pointer-events:none">
+        <div style="max-width:450px; padding:clamp(16px,2.2vw,25px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.78), rgba(6,18,38,0.58)); backdrop-filter:blur(13px) saturate(125%); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.34); box-shadow:0 30px 56px -24px rgba(0,0,0,0.9)">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,138,50,0.92); margin-bottom:9px">The signal forecasters already use</div>
+          <p style="margin:0 0 10px; font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:clamp(19px,2.2vw,26px); line-height:1.15; letter-spacing:-0.02em; color:#ffffff; text-wrap:pretty">Ensemble spread looks like it explains forecast error.</p>
+          <p style="margin:0; font-size:13.5px; line-height:1.6; color:rgba(238,245,255,0.68); text-wrap:pretty">77,425 samples — 12 reforecasts, four seasons, three years. Pool them all together and the fit looks convincing. Plotted here: a <span data-plotted-count="">20,000</span>-point sample; the percentages are computed on all <span data-total-count="">77,425</span>.</p>
+        </div>
+      </div>
+
+      <div data-stage="b" style="position:absolute; left:0; right:0; bottom:0; display:flex; padding:clamp(14px,3vw,44px); opacity:0; pointer-events:none">
+        <div style="max-width:470px; padding:clamp(16px,2.2vw,25px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.78), rgba(6,18,38,0.58)); backdrop-filter:blur(13px) saturate(125%); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.34); box-shadow:0 30px 56px -24px rgba(0,0,0,0.9)">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.85); margin-bottom:9px">Same points, split by rainfall regime</div>
+          <p style="margin:0 0 10px; font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:clamp(19px,2.2vw,26px); line-height:1.15; letter-spacing:-0.02em; color:#ffffff; text-wrap:pretty">Every slope inside a regime is flat.</p>
+          <p style="margin:0; font-size:13.5px; line-height:1.6; color:rgba(238,245,255,0.68); text-wrap:pretty">The rise was the staircase between regimes, never the slope within one. Spread was reading how much it rains — not how uncertain the forecast is.</p>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:flex-end; padding:clamp(66px,9vh,104px) clamp(14px,3vw,44px) 0; pointer-events:none">
+        <div data-readout="" style="opacity:0; text-align:right; padding:13px 17px; border-radius:3px; background:rgba(6,18,38,0.6); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.3)">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(205,226,251,0.65)">Variance in error explained</div>
+          <div data-readout-value="" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(32px,5vw,58px); line-height:1.06; letter-spacing:-0.03em; color:#ffffff">43.9%</div>
+          <div data-readout-note="" style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:rgba(238,245,255,0.5)">pooled across all regimes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="position:relative; background:#061428">
+    <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none">
+      <div data-field="" style="position:absolute; top:-14%; left:-16%; width:146%; height:126%; background-image:url('assets/confidence-field-sm.jpg'); background-size:cover; background-position:38% 30%; filter:saturate(0.5) contrast(1.05); opacity:var(--field-op, 0.8); will-change:transform"></div>
+      <div style="position:absolute; inset:0; background:linear-gradient(180deg, #050506 0%, rgba(6,20,40,0.44) 9%, rgba(6,20,40,0.3) 88%, #050506 100%)"></div>
+    </div>
+
+    <section data-screen-label="Evidence" data-present-section="" data-present-name="What moved" id="evidence" style="position:relative; padding:clamp(52px,8vw,112px) clamp(14px,4vw,56px) clamp(28px,4vw,50px)">
+      <div style="max-width:1240px; margin:0 auto">
+        <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(22px,3.5vw,42px)">
+          <img src="assets/flame-mark.svg" alt="" style="height:21px; width:auto; display:block" />
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(238,245,255,0.72)">What moved</span>
+          <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.55), rgba(255,255,255,0.06))"></span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(266px,1fr)); gap:clamp(13px,1.8vw,22px)">
+          <div style="padding:clamp(19px,2.4vw,29px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.60), rgba(6,18,38,0.40)); backdrop-filter:blur(calc(9px * var(--gb,1))) saturate(125%); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.34); box-shadow:0 34px 60px -26px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.10)">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.7); margin-bottom:15px">Variance explained<br />by ensemble spread</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(52px,7.2vw,100px); line-height:0.86; letter-spacing:-0.035em; color:#ffffff; text-shadow:0 0 50px rgba(42,120,214,0.4)">&lt;1%</div>
+            <div style="margin-top:19px; position:relative; height:12px; border-radius:999px; background:rgba(255,255,255,0.09)">
+              <div style="position:absolute; left:0; top:0; height:100%; width:87.8%; border-radius:999px; background:rgba(255,255,255,0.20)"></div>
+              <div data-bar="" data-bar-w="2" style="position:absolute; left:0; top:0; height:100%; width:2%; border-radius:999px; background:linear-gradient(90deg,#0d366b,#2a78d6 55%,#cde2fb); box-shadow:0 0 20px rgba(42,120,214,0.75)"></div>
+              <div style="position:absolute; left:87.8%; top:-6px; width:2px; height:24px; background:rgba(255,255,255,0.6)"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px">
+              <span style="color:rgba(238,245,255,0.55)">pooled 43.9%</span>
+              <span style="color:#cde2fb">same regime &lt;1%</span>
+            </div>
+            <p style="margin:15px 0 0; font-size:13px; line-height:1.6; color:rgba(238,245,255,0.6); text-wrap:pretty">Measured against India's own gauge observations. Median regime decile: 0.9% — the most generous of five wet-point definitions; the range is 0.17–0.90%.</p>
+          </div>
+
+          <div style="padding:clamp(19px,2.4vw,29px); border-radius:3px; background:linear-gradient(158deg, rgba(10,28,54,0.52), rgba(6,18,38,0.34)); backdrop-filter:blur(calc(16px * var(--gb,1))) saturate(120%); border:1px solid rgba(255,255,255,0.09); border-top:1px solid rgba(255,255,255,0.30); box-shadow:0 30px 54px -24px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.09)">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.7); margin-bottom:15px">Skill at ranking error<br />stratified ROC-AUC</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(52px,7.2vw,100px); line-height:0.86; letter-spacing:-0.035em; color:#ffffff; text-shadow:0 0 50px rgba(42,120,214,0.4)"><span data-count-from="0.565" data-count-to="0.728" data-count-dec="3">0.728</span></div>
+            <div style="margin-top:19px; position:relative; height:12px; border-radius:999px; background:rgba(255,255,255,0.09)">
+              <div style="position:absolute; left:0; top:0; height:100%; width:21.7%; border-radius:999px; background:rgba(255,255,255,0.20)"></div>
+              <div data-bar="" data-bar-w="76" style="position:absolute; left:0; top:0; height:100%; width:76%; border-radius:999px; background:linear-gradient(90deg,#0d366b,#2a78d6 55%,#cde2fb); box-shadow:0 0 20px rgba(42,120,214,0.75)"></div>
+              <div style="position:absolute; left:21.7%; top:-6px; width:2px; height:24px; background:rgba(255,255,255,0.6)"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px">
+              <span style="color:rgba(238,245,255,0.55)">spread 0.565</span>
+              <span style="color:#cde2fb">VISHWAS 0.728</span>
+            </div>
+            <p style="margin:15px 0 0; font-size:13px; line-height:1.6; color:rgba(238,245,255,0.6); text-wrap:pretty">Ahead in all eight rainfall bins, across all 52 Wednesdays of a year the model never saw.</p>
+          </div>
+
+          <div style="padding:clamp(19px,2.4vw,29px); border-radius:3px; background:linear-gradient(158deg, rgba(12,32,60,0.44), rgba(6,18,38,0.30)); backdrop-filter:blur(calc(26px * var(--gb,1))) saturate(115%); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.26); box-shadow:0 24px 46px -22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07)">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.7); margin-bottom:15px">Forecast busts caught<br />at an equal alert budget</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(52px,7.2vw,100px); line-height:0.86; letter-spacing:-0.035em; color:#ffffff; text-shadow:0 0 50px rgba(42,120,214,0.4)"><span data-count-from="55" data-count-to="64" data-count-dec="0" data-count-suffix="%">64%</span></div>
+            <div style="margin-top:19px; position:relative; height:12px; border-radius:999px; background:rgba(255,255,255,0.09)">
+              <div style="position:absolute; left:0; top:0; height:100%; width:55%; border-radius:999px; background:rgba(255,255,255,0.20)"></div>
+              <div data-bar="" data-bar-w="64" style="position:absolute; left:0; top:0; height:100%; width:64%; border-radius:999px; background:linear-gradient(90deg,#0d366b,#2a78d6 55%,#cde2fb); box-shadow:0 0 20px rgba(42,120,214,0.75)"></div>
+              <div style="position:absolute; left:55%; top:-6px; width:2px; height:24px; background:rgba(255,255,255,0.6)"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px">
+              <span style="color:rgba(238,245,255,0.55)">current method 55%</span>
+              <span style="color:#cde2fb">VISHWAS 64%</span>
+            </div>
+            <p style="margin:15px 0 0; font-size:13px; line-height:1.6; color:rgba(238,245,255,0.6); text-wrap:pretty">Same tolerance for false alarms a forecaster already accepts — nine more busts in every hundred.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:clamp(18px,2.4vw,30px); padding:clamp(19px,2.6vw,32px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.55), rgba(6,18,38,0.34)); backdrop-filter:blur(calc(14px * var(--gb,1))) saturate(120%); border:1px solid rgba(255,255,255,0.09); border-top:1px solid rgba(255,255,255,0.28); box-shadow:0 30px 56px -26px rgba(0,0,0,0.78)">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.7); margin-bottom:17px">Busts caught out of every 100 — at the same number of alerts</div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:13px">
+              <span style="flex:0 0 126px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:rgba(238,245,255,0.55)">ENSEMBLE SPREAD</span>
+              <div data-dots="55" data-dots-color="rgba(255,255,255,0.30)" style="flex:1 1 230px; display:grid; grid-template-columns:repeat(25, 1fr); gap:3px; min-width:210px"></div>
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:21px; color:rgba(238,245,255,0.7)">55</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:13px">
+              <span style="flex:0 0 126px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#cde2fb">VISHWAS</span>
+              <div data-dots="64" data-dots-color="#2a78d6" style="flex:1 1 230px; display:grid; grid-template-columns:repeat(25, 1fr); gap:3px; min-width:210px"></div>
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:21px; color:#ffffff">64</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="One date" data-present-section="" data-present-name="One date" id="date" style="position:relative; padding:clamp(36px,5vw,66px) clamp(14px,4vw,56px) clamp(46px,6vw,84px)">
+      <div style="max-width:1240px; margin:0 auto">
+        <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(18px,3vw,32px)">
+          <img src="assets/flame-mark.svg" alt="" style="height:21px; width:auto; display:block" />
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(238,245,255,0.72)">One date, in full</span>
+          <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.55), rgba(255,255,255,0.06))"></span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(298px,1fr)); gap:clamp(15px,2.4vw,32px); align-items:start">
+          <div style="display:flex; flex-direction:column; gap:15px">
+            <h2 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(28px,4.2vw,52px); line-height:1.02; letter-spacing:-0.03em; color:#ffffff; text-wrap:pretty">The worst forecast day of the test year, called five days out.</h2>
+            <p style="margin:0; font-size:15px; line-height:1.62; color:rgba(238,245,255,0.72); text-wrap:pretty">Issued 31 July 2019, valid 5 August. 454 of 1,252 gauge-observed land gridpoints busted — the highest bust rate of the 52 test dates. The alert threshold, p ≥ 0.153, was fixed once across the whole test set and applied here unchanged.</p>
+            <div style="display:flex; flex-wrap:wrap; gap:20px; padding-top:2px">
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:32px; line-height:1; color:#cde2fb">0.72</span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(205,226,251,0.6)">precision</span></div>
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:32px; line-height:1; color:#cde2fb">0.87</span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(205,226,251,0.6)">recall</span></div>
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:32px; line-height:1; color:#cde2fb">1,252</span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(205,226,251,0.6)">gridpoints</span></div>
+            </div>
+            <p style="margin:4px 0 0; font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1.75; color:rgba(238,245,255,0.42); text-wrap:pretty">One date, shown as an illustration of the product's form — not evidence of general performance. The general result is the stratified ROC-AUC above.</p>
+          </div>
+
+          <div style="padding:clamp(15px,2vw,23px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.62), rgba(6,18,38,0.42)); backdrop-filter:blur(calc(12px * var(--gb,1))) saturate(120%); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.32); box-shadow:0 34px 60px -26px rgba(0,0,0,0.82); display:flex; flex-direction:column; gap:11px">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(205,226,251,0.7)">The three acts</span>
+              <button type="button" data-trip-play="" style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.95); padding:6px 10px; border:1px solid rgba(255,90,23,0.4); background:rgba(255,90,23,0.10); border-radius:2px; transition:background .2s ease, border-color .2s ease" style-hover="background:rgba(255,90,23,0.22); border-color:rgba(255,90,23,0.75)">Replay</button>
+            </div>
+
+            <button type="button" data-act="0" style="cursor:pointer; text-align:left; display:flex; flex-direction:column; gap:8px; padding:12px 13px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.035); border-radius:2px; transition:background .25s ease, border-color .25s ease" style-hover="background:rgba(255,255,255,0.08)">
+              <span style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:14px; color:#ff8a32">A</span><span style="font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13.5px; color:#f2f7ff">What VISHWAS said, five days out</span></span>
+              <span style="height:7px; border-radius:999px; background:linear-gradient(90deg, rgba(10,34,66,0.9), #2a78d6 62%, #cde2fb)"></span>
+              <span style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:rgba(205,226,251,0.55)"><span>p 0.00</span><span>predicted bust probability</span><span>0.85</span></span>
+            </button>
+
+            <button type="button" data-act="1" style="cursor:pointer; text-align:left; display:flex; flex-direction:column; gap:8px; padding:12px 13px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.035); border-radius:2px; transition:background .25s ease, border-color .25s ease" style-hover="background:rgba(255,255,255,0.08)">
+              <span style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:14px; color:#ff8a32">B</span><span style="font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13.5px; color:#f2f7ff">What actually happened</span></span>
+              <span style="display:flex; gap:3px; height:7px">
+                <span style="flex:1; border-radius:999px 0 0 999px; background:rgba(255,255,255,0.10)"></span>
+                <span style="flex:1; background:#1d4d8f"></span>
+                <span style="flex:1; background:#2a78d6"></span>
+                <span style="flex:1; background:#4f96e2"></span>
+                <span style="flex:1; background:#7db3ec"></span>
+                <span style="flex:1; background:#a8cdf4"></span>
+                <span style="flex:1; border-radius:0 999px 999px 0; background:#d8e9fc"></span>
+              </span>
+              <span style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:rgba(205,226,251,0.55)"><span>no rain</span><span>IMD gauge rainfall, 5 Aug</span><span>204mm+</span></span>
+            </button>
+
+            <button type="button" data-act="2" style="cursor:pointer; text-align:left; display:flex; flex-direction:column; gap:9px; padding:12px 13px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.035); border-radius:2px; transition:background .25s ease, border-color .25s ease" style-hover="background:rgba(255,255,255,0.08)">
+              <span style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:14px; color:#ff8a32">C</span><span style="font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13.5px; color:#f2f7ff">Where the alert was right</span></span>
+              <span style="display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:5px">
+                <span data-outcome-key="hit" style="display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:2px; background:rgba(255,255,255,0.04); transition:background .2s ease"><span style="width:10px; height:10px; flex:none; background:#2a78d6; box-shadow:0 0 8px rgba(42,120,214,0.8)"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:rgba(238,245,255,0.8)">flagged, busted · 395</span></span>
+                <span data-outcome-key="fa" style="display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:2px; background:rgba(255,255,255,0.04); transition:background .2s ease"><span style="width:10px; height:10px; flex:none; background:#ff8a32"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:rgba(238,245,255,0.8)">flagged, no bust · 152</span></span>
+                <span data-outcome-key="miss" style="display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:2px; background:rgba(255,255,255,0.04); transition:background .2s ease"><span style="width:10px; height:10px; flex:none; background:#e00f18; box-shadow:0 0 8px rgba(224,15,24,0.7)"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:rgba(238,245,255,0.8)">busted, not flagged · 59</span></span>
+                <span data-outcome-key="quiet" style="display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:2px; background:rgba(255,255,255,0.04); transition:background .2s ease"><span style="width:10px; height:10px; flex:none; background:rgba(255,255,255,0.2)"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:rgba(238,245,255,0.8)">quiet, held · 646</span></span>
+              </span>
+            </button>
+            <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:9.5px; line-height:1.7; color:rgba(238,245,255,0.42)">Tap an act to hold it. In act C, tap a class to isolate it — blue is the model right, fire is the model wrong.</p>
+          </div>
+        </div>
+
+        <div style="margin:clamp(20px,3vw,34px) 0 0; padding:clamp(14px,2vw,26px); border-radius:3px; background:linear-gradient(168deg, rgba(6,20,42,0.66), rgba(4,12,26,0.5)); backdrop-filter:blur(calc(14px * var(--gb,1))) saturate(120%); border:1px solid rgba(255,255,255,0.09); border-top:1px solid rgba(255,255,255,0.26); box-shadow:0 44px 84px -34px rgba(0,0,0,0.9)">
+          <canvas data-trip="" style="width:100%; display:block"></canvas>
+        </div>
+        <p style="margin:9px 0 0; font-family:'IBM Plex Mono',monospace; font-size:10px; line-height:1.75; color:rgba(238,245,255,0.45); max-width:900px">All 1,252 gridpoints, drawn from the model's own output. Truth: IMD 0.25° gauge-gridded daily rainfall, colocated onto the 0.5° GEFS grid. Bust = |ensemble mean − observed| above the 95th percentile for that region and lead time, fitted on 2018 training data only.</p>
+      </div>
+    </section>
+
+    <section data-screen-label="Map" data-present-section="" data-present-name="Lead-day map" id="map" style="position:relative; padding:clamp(36px,5vw,66px) clamp(14px,4vw,56px) clamp(56px,8vw,110px)">
+      <div style="max-width:1240px; margin:0 auto">
+        <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(18px,3vw,32px)">
+          <img src="assets/flame-mark.svg" alt="" style="height:21px; width:auto; display:block" />
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(238,245,255,0.72)">The product, Day 1 to Day 10</span>
+          <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.55), rgba(255,255,255,0.06))"></span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:clamp(15px,2.4vw,32px); align-items:start">
+          <div style="display:flex; flex-direction:column; gap:15px">
+            <h2 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(26px,3.6vw,44px); line-height:1.04; letter-spacing:-0.03em; color:#ffffff; text-wrap:pretty">Confidence is scored per gridpoint, per lead day.</h2>
+            <p style="margin:0; font-size:15px; line-height:1.62; color:rgba(238,245,255,0.72); text-wrap:pretty">Not one number for a region — 1,252 separate verdicts, re-scored for every lead day. Day 5 is the model's own output for 5 August 2019, and so is every other day on the bar. Step out through the horizon and watch confidence drain: the wet regimes go first, and by Day 10 central India and the Northeast are where a forecaster should stop trusting the number.</p>
+            <div style="display:flex; flex-direction:column; gap:9px; padding-top:2px">
+              <div style="display:flex; align-items:center; gap:10px"><span style="width:13px; height:13px; flex:none; background:#0d366b; border:1px solid rgba(205,226,251,0.35)"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:rgba(238,245,255,0.7)">RELIABLE · p &lt; 0.08</span></div>
+              <div style="display:flex; align-items:center; gap:10px"><span style="width:13px; height:13px; flex:none; background:#2a78d6"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:rgba(238,245,255,0.7)">UNCERTAIN · 0.08 – 0.153</span></div>
+              <div style="display:flex; align-items:center; gap:10px"><span style="width:13px; height:13px; flex:none; background:#ff5a17"></span><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:rgba(238,245,255,0.7)">HIGH RISK · p ≥ 0.153 — alert</span></div>
+            </div>
+            <p style="margin:4px 0 0; font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1.75; color:rgba(238,245,255,0.42); text-wrap:pretty">All ten lead days are separately measured output for this run — 12,520 verdicts, not one field rescaled. The band a gridpoint sits in is decided upstream at full precision; the probability beside it is shown rounded, so two cells can print the same number and still fall on opposite sides of the line.</p>
+          </div>
+
+          <div style="padding:clamp(15px,2vw,23px); border-radius:3px; background:linear-gradient(158deg, rgba(8,24,48,0.62), rgba(6,18,38,0.42)); backdrop-filter:blur(calc(12px * var(--gb,1))) saturate(120%); border:1px solid rgba(255,255,255,0.10); border-top:1px solid rgba(255,255,255,0.32); box-shadow:0 34px 60px -26px rgba(0,0,0,0.82)">
+            <div style="display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:13px">
+              <span data-day-label="" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:26px; letter-spacing:-0.02em; color:#ffffff">Day 5</span>
+              <span data-alert-label="" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,138,50,0.9)">547 of 1,252 flagged</span>
+            </div>
+            <canvas data-map="" style="width:100%; display:block; border-radius:2px; background:rgba(3,10,22,0.5)"></canvas>
+            <div data-daybar="" style="display:grid; grid-template-columns:repeat(10, 1fr); gap:4px; margin-top:13px"></div>
+            <button type="button" data-play="" style="cursor:pointer; margin-top:10px; width:100%; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(247,245,243,0.9); padding:9px 12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05); border-radius:2px" style-hover="background:rgba(255,255,255,0.11)">Play Day 1 → 10</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section data-screen-label="Build" data-present-section="" data-present-name="How it was built" id="build" style="position:relative; padding:clamp(52px,8vw,110px) clamp(14px,4vw,56px); background:radial-gradient(100% 60% at 90% 0%, #140e0a 0%, #09070a 46%, #050506 100%)">
+    <div style="max-width:1240px; margin:0 auto">
+      <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(22px,3vw,40px)">
+        <img src="assets/flame-mark.svg" alt="" style="height:21px; width:auto; display:block" />
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(247,245,243,0.72)">How it was built</span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.6), rgba(255,255,255,0.05))"></span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(186px,1fr)); gap:clamp(9px,1.2vw,14px); margin-bottom:clamp(22px,3vw,38px)">
+        <div style="padding:20px 18px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,157,28,0.5); display:flex; flex-direction:column; gap:7px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">01 · FETCH</span>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:30px; line-height:1; letter-spacing:-0.025em; color:#f7f5f3">50.3 GB</span>
+          <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.55)">GEFS reforecast + IMD gauge grids, public archives only</span>
+        </div>
+        <div style="padding:20px 18px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,120,25,0.5); display:flex; flex-direction:column; gap:7px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">02 · COLOCATE</span>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:30px; line-height:1; letter-spacing:-0.025em; color:#f7f5f3">104</span>
+          <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.55)">forecast dates, 0.25° truth onto the 0.5° model grid</span>
+        </div>
+        <div style="padding:20px 18px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(240,70,22,0.5); display:flex; flex-direction:column; gap:7px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">03 · LABEL</span>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:30px; line-height:1; letter-spacing:-0.025em; color:#f7f5f3">1,302,080</span>
+          <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.55)">gridpoint-days, bust threshold fit on training data only</span>
+        </div>
+        <div style="padding:20px 18px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(224,15,24,0.5); display:flex; flex-direction:column; gap:7px">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">04 · TEST</span>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:30px; line-height:1; letter-spacing:-0.025em; color:#f7f5f3">52</span>
+          <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.55)">Wednesdays of 2019 — a year the model never saw. No GPU</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:clamp(13px,1.8vw,20px)">
+        <article style="padding:clamp(20px,2.6vw,34px); border-radius:3px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-top:1px solid rgba(255,255,255,0.24); display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(16px,3vw,40px)">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; align-items:baseline; gap:13px">
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:38px; line-height:1; letter-spacing:-0.03em; background:linear-gradient(180deg,#ff9d1c,#e00f18); -webkit-background-clip:text; background-clip:text; color:transparent">01</span>
+              <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:clamp(20px,2.2vw,28px); line-height:1.1; letter-spacing:-0.02em; color:#ffffff">The measurement</h3>
+            </div>
+            <p style="margin:0; font-size:15px; line-height:1.65; color:rgba(242,240,238,0.7); text-wrap:pretty">Forecasters judge confidence by eyeballing ensemble spread. We measured that method — and found the signal barely survives a fair test.</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Reforecasts</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">12</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Seasons · years</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">4 · 3</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Samples</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">77,425</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Explained variance</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">43.9% → &lt;1%</span></div>
+          </div>
+        </article>
+
+        <article style="padding:clamp(20px,2.6vw,34px); border-radius:3px; background:rgba(255,255,255,0.032); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.2); display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(16px,3vw,40px)">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; align-items:baseline; gap:13px">
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:38px; line-height:1; letter-spacing:-0.03em; background:linear-gradient(180deg,#ff9d1c,#e00f18); -webkit-background-clip:text; background-clip:text; color:transparent">02</span>
+              <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:clamp(20px,2.2vw,28px); line-height:1.1; letter-spacing:-0.02em; color:#ffffff">The replacement</h3>
+            </div>
+            <p style="margin:0; font-size:15px; line-height:1.65; color:rgba(242,240,238,0.7); text-wrap:pretty">Trained on 2018, tested on 2019. On the fair comparison it beats ensemble spread in all eight rainfall bins — and it runs on a laptop.</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Stratified ROC-AUC</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">0.728 vs 0.565</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Rainfall bins won</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">8 of 8</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Busts caught at equal alerts</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">55% → 64%</span></div>
+          </div>
+        </article>
+
+        <article style="padding:clamp(20px,2.6vw,34px); border-radius:3px; background:rgba(255,255,255,0.026); border:1px solid rgba(255,255,255,0.07); border-top:1px solid rgba(255,255,255,0.16); display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(16px,3vw,40px)">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; align-items:baseline; gap:13px">
+              <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:38px; line-height:1; letter-spacing:-0.03em; background:linear-gradient(180deg,#ff9d1c,#e00f18); -webkit-background-clip:text; background-clip:text; color:transparent">03</span>
+              <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:clamp(20px,2.2vw,28px); line-height:1.1; letter-spacing:-0.02em; color:#ffffff">Made demonstrable</h3>
+            </div>
+            <p style="margin:0; font-size:15px; line-height:1.65; color:rgba(242,240,238,0.7); text-wrap:pretty">Calibrated probabilities, SHAP explanations, and a confidence map per lead day — so a forecaster sees not just the score but the reason for it.</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Lead days scored</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">Day 1 → 10</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.09)"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Verdicts</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">Reliable · uncertain · high-risk</span></div>
+            <div style="display:flex; justify-content:space-between; gap:14px"><span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.5)">Meteorological metrics</span><span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:18px; color:#f7f5f3">POD · FAR · CSI · ETS · FSS</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Dashboard" data-present-section="" data-present-name="The console" id="dashboard" style="position:relative; padding:clamp(52px,8vw,110px) clamp(14px,4vw,56px); background:radial-gradient(120% 60% at 78% 0%, #0b1526 0%, #070a12 45%, #050506 100%); border-top:1px solid rgba(255,255,255,0.06)">
+    <div style="max-width:1240px; margin:0 auto">
+      <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(22px,3vw,40px)">
+        <img src="assets/flame-mark.svg" alt="" style="height:21px; width:auto; display:block" />
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(247,245,243,0.72)">The console</span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(140,196,251,0.6), rgba(255,255,255,0.05))"></span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:clamp(18px,3vw,48px); align-items:start; margin-bottom:clamp(26px,3.5vw,44px)">
+        <div style="display:flex; flex-direction:column; gap:16px">
+          <h2 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(28px,4.2vw,52px); line-height:1.02; letter-spacing:-0.03em; color:#ffffff; text-wrap:pretty">The part a forecaster<br />actually opens.</h2>
+          <p style="margin:0; font-size:15px; line-height:1.62; color:rgba(238,245,255,0.72); text-wrap:pretty">Everything above argues the case. This is the instrument: a duty forecaster picks a date and a lead day, reads which gridpoints not to trust, and gets the reason in words. Dense, quiet, one screen, no scrolling.</p>
+          <a href="dashboard/index.html" style="align-self:flex-start; display:flex; align-items:center; gap:11px; margin-top:4px; padding:13px 20px; border-radius:2px; border:1px solid rgba(140,196,251,0.5); background:rgba(140,196,251,0.12); color:#eaf3ff; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; transition:background .2s ease, border-color .2s ease" style-hover="background:rgba(140,196,251,0.24); border-color:rgba(140,196,251,0.9)">Open the console<span style="font-size:14px">→</span></a>
+          <p style="margin:2px 0 0; font-family:'IBM Plex Mono',monospace; font-size:10px; line-height:1.75; color:rgba(238,245,255,0.42); text-wrap:pretty">Prototype on archived 2019 reforecast dates, not a live feed. It flags forecasts likely to fail — it never corrects a forecast, and it shows no observed rainfall.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:clamp(9px,1.2vw,13px)">
+          <div style="padding:18px 16px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(140,196,251,0.45); display:flex; flex-direction:column; gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(140,196,251,0.9)">01 · SELECT</span>
+            <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.62)">Six reforecast dates, ten lead days, one click each. Every lead day independently measured.</span>
+          </div>
+          <div style="padding:18px 16px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(140,196,251,0.45); display:flex; flex-direction:column; gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(140,196,251,0.9)">02 · SEE</span>
+            <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.62)">India on the half-degree grid in three named states. Zoom and pan to a district.</span>
+          </div>
+          <div style="padding:18px 16px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,157,28,0.5); display:flex; flex-direction:column; gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">03 · EXPLAIN</span>
+            <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.62)">Click a flagged gridpoint and its top drivers read out in plain English, with percentiles.</span>
+          </div>
+          <div style="padding:18px 16px; border-radius:3px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-top:1px solid rgba(255,157,28,0.5); display:flex; flex-direction:column; gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(255,138,50,0.85)">04 · TRIAGE</span>
+            <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.62)">The ten worst areas, ranked and clickable, plus an alert budget that answers "how many alerts is that?"</span>
+          </div>
+          <div style="grid-column:1/-1; padding:18px 16px; border-radius:3px; background:rgba(140,196,251,0.06); border:1px solid rgba(140,196,251,0.2); display:flex; flex-direction:column; gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:rgba(205,226,251,0.9)">05 · REPORTS ITS OWN SKILL</span>
+            <span style="font-size:12.5px; line-height:1.55; color:rgba(242,240,238,0.62)">Move the lead-day control and the measured skill at that horizon moves with it. A confidence system that states its confidence at the horizon you are looking at, rather than asking to be trusted uniformly.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Team" data-present-section="" data-present-name="The six" id="team" data-roster="" style="position:relative; background:#050506; border-top:1px solid rgba(255,255,255,0.06)">
+    <div data-roster-track="" style="position:relative; height:552vh">
+      <div style="position:sticky; top:0; height:100vh; overflow:hidden; display:flex; flex-direction:column">
+        <div style="flex:none; max-width:1240px; width:100%; margin:0 auto; padding:clamp(58px,9vh,92px) clamp(14px,4vw,56px) 0; display:flex; align-items:center; gap:clamp(10px,1.6vw,18px)">
+          <img src="assets/flame-mark.svg" alt="" style="height:19px; width:auto; display:block" />
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(247,245,243,0.72); white-space:nowrap">Six people · one system</span>
+          <span style="flex:1; display:flex; gap:5px; min-width:60px">
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          <span data-roster-seg style="flex:1; height:2px; background:rgba(255,255,255,0.10); overflow:hidden"><span style="display:block; height:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,#ff9d1c,#e00f18)"></span></span>
+          </span>
+          <span data-roster-count="" style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.18em; color:rgba(242,240,238,0.5); white-space:nowrap">01 / 06</span>
+        </div>
+
+      <div data-roster-stage="" style="flex:1; min-height:0; max-width:1240px; width:100%; margin:0 auto; padding:clamp(18px,3vh,34px) clamp(14px,4vw,56px) clamp(28px,6vh,54px); display:grid; grid-template-columns:minmax(0,0.76fr) minmax(0,1fr); gap:clamp(20px,3.4vw,52px); align-items:stretch">
+        <div style="position:relative; min-height:0">
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/devansh-hq.jpg" alt="Devansh" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 18%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-01 · pipeline, model &amp; evaluation</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">B.Tech</span>
+          </figcaption>
+        </figure>
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/ankit-hq.jpg" alt="Ankit" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 17%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-02 · scope &amp; problem tracking</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">B.Tech</span>
+          </figcaption>
+        </figure>
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/paras-hq.jpg" alt="Paras" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-03 · metrics integrity</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">BCA</span>
+          </figcaption>
+        </figure>
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/arnav-hq.jpg" alt="Arnav" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-04 · failure case studies</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">BCA</span>
+          </figcaption>
+        </figure>
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/mahika-hq.jpg" alt="Mahika" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 14%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-05 · interviews &amp; pitch</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">BBA/BA</span>
+          </figcaption>
+        </figure>
+
+        <figure data-roster-photo style="position:absolute; inset:0; margin:0; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.10); box-shadow:0 44px 96px -46px rgba(0,0,0,0.95); clip-path:polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%); opacity:0; will-change:opacity, transform">
+          <img loading="lazy" decoding="async" src="assets/team/dhruv-hq.jpg" alt="Dhruv" style="position:absolute; inset:0; width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" />
+          <span data-roster-duo style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.62), rgba(224,15,24,0.5) 58%, rgba(18,10,26,0.55)); mix-blend-mode:color; opacity:0.9"></span>
+          <span style="position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:0.55; pointer-events:none"></span>
+          <span style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,6,0) 38%, rgba(5,5,6,0.86) 100%); pointer-events:none"></span>
+          <span data-roster-scan style="position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg, rgba(255,157,28,0), #ff9d1c 45%, rgba(224,15,24,0.9) 70%, rgba(224,15,24,0)); box-shadow:0 0 16px rgba(255,90,23,0.75); opacity:0; pointer-events:none"></span>
+          <figcaption style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; padding:15px 17px 17px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(247,245,243,0.74); flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">HL-06 · users, impact, sourcing</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,138,50,0.88); flex:0 0 auto; white-space:nowrap; text-align:right">BBA/BA</span>
+          </figcaption>
+        </figure>
+
+        </div>
+
+        <div style="position:relative; min-height:0">
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">01</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">01 — pipeline, model &amp; evaluation</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Devansh</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">Built the fetch and feature pipeline, then the model on top of it — the training pipeline, the stratified comparison against ensemble spread, and the ablations that proved it is not just predicting where it rains.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Data pipeline</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Training pipeline</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Ablations</span>
+          </div>
+        </div>
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">02</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">02 — scope &amp; problem tracking</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Ankit</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">Caught that SIH had re-listed the problem from Disaster Management to Smart Automation — the save that stopped a deck built on flood framing from going out. It changed the primary user, the framing and how the model is tuned. Also ran the comparison against the secondary problem statement, which is how the team knew what it was choosing against when it committed to this one.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Re-listing catch</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Secondary-idea analysis</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Primary-user reframe</span>
+          </div>
+        </div>
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">03</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">03 — metrics integrity</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Paras</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">POD, FAR, CSI, ETS and FSS are in the evaluation because of his guide. They are what make it read as meteorology rather than generic machine learning. His judge Q&amp;A is what the team drills from.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">POD / FAR / CSI</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">ETS · FSS</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Judge Q&amp;A drill</span>
+          </div>
+        </div>
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">04</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">04 — failure case studies</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Arnav</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">Found the case that justifies the design: on 26 July 2005 Santacruz recorded 944 mm in 24 hours while Colaba, 27 km away, recorded 73 mm. That is why confidence is scored per gridpoint, not per region.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">26 Jul 2005</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">944 mm vs 73 mm</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Per-gridpoint scoring</span>
+          </div>
+        </div>
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">05</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">05 — interviews &amp; pitch</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Mahika</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">Built the first deck; its structure, framing and tagline survived into the final one. Ran three field interviews — a farmer in Assam, a Krishi Vibhag officer in Unnao, an NDRF constable in Guwahati. Almost no team talks to one user; she talked to three.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">First deck</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Three field interviews</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Tagline</span>
+          </div>
+        </div>
+
+        <div data-roster-text style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:clamp(10px,1.4vw,16px); opacity:0; will-change:opacity, transform">
+          <span style="position:absolute; right:0; top:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(96px,14vw,208px); line-height:0.78; letter-spacing:-0.055em; color:rgba(255,255,255,0.042); pointer-events:none">06</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,138,50,0.9)">06 — users, impact, sourcing</span>
+          <h3 style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(38px,6.4vw,82px); line-height:0.95; letter-spacing:-0.035em; color:#f7f5f3">Dhruv</h3>
+          <p style="margin:0; max-width:46ch; font-size:clamp(14px,1.15vw,17px); line-height:1.62; color:rgba(242,240,238,0.72); text-wrap:pretty">Wrote the team’s "claims we cannot make" list. It is why nothing on the deck can be taken apart by a judge — including one of his own figures, which was cut for failing his standard.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:4px">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Claims we cannot make</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:rgba(242,240,238,0.72); padding:6px 11px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05)">Cut his own figure</span>
+          </div>
+        </div>
+
+        </div>
+
+        <div data-roster-rail="" style="display:none; flex-direction:column; justify-content:center; gap:14px">
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/devansh-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 18%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Devansh</span>
+          </button>
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/ankit-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 17%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Ankit</span>
+          </button>
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/paras-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Paras</span>
+          </button>
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/arnav-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Arnav</span>
+          </button>
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/mahika-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 14%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Mahika</span>
+          </button>
+          <button type="button" data-roster-rail-item style="display:flex; align-items:center; gap:9px; padding:0; border:0; background:none; text-align:left; opacity:0.55; color:rgba(242,240,238,0.32)">
+            <span data-rail-bar style="flex:none; width:10px; height:1px; background:rgba(255,255,255,0.18); transition:width .32s ease, background .32s ease"></span>
+            <span style="flex:none; width:34px; height:40px; overflow:hidden; border:1px solid rgba(255,255,255,0.12); background:#0b0709"><img loading="lazy" decoding="async" src="assets/team/dhruv-hq.jpg" alt="" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%)" /></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:inherit">Dhruv</span>
+          </button>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div style="position:relative; max-width:1240px; margin:0 auto; padding:0 clamp(14px,4vw,56px) clamp(52px,8vw,104px)">
+      <div style="display:flex; align-items:center; gap:13px; margin-bottom:clamp(18px,2.6vw,30px)">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(247,245,243,0.6); white-space:nowrap">The full roster</span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, rgba(255,90,23,0.55), rgba(255,255,255,0.05))"></span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(118px,1fr)); gap:clamp(10px,1.5vw,18px)">
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/devansh-hq.jpg" alt="Devansh" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 18%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Devansh</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-01</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/ankit-hq.jpg" alt="Ankit" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 17%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Ankit</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-02</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/paras-hq.jpg" alt="Paras" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Paras</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-03</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/arnav-hq.jpg" alt="Arnav" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Arnav</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-04</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/mahika-hq.jpg" alt="Mahika" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 14%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Mahika</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-05</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="position:relative; aspect-ratio:4/5; overflow:hidden; background:#0b0709; border:1px solid rgba(255,255,255,0.09); clip-path:polygon(0 0, 100% 0, 100% 86%, 86% 100%, 0 100%)">
+            <img loading="lazy" decoding="async" src="assets/team/dhruv-hq.jpg" alt="Dhruv" style="width:100%; height:100%; image-rendering:auto; object-fit:cover; object-position:50% 16%; filter:grayscale(100%) contrast(1.05)" />
+            <span style="position:absolute; inset:0; background:linear-gradient(158deg, rgba(255,157,28,0.5), rgba(224,15,24,0.42)); mix-blend-mode:color"></span>
+          </div>
+          <span style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:-0.01em; color:rgba(247,245,243,0.9)">Dhruv</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(242,240,238,0.4)">HL-06</span>
+        </div>
+      </div>
+      <p style="margin:clamp(20px,3vw,32px) 0 0; max-width:640px; font-size:15px; line-height:1.62; color:rgba(242,240,238,0.5); text-wrap:pretty">Each line above is a thing that exists because of the person next to it.</p>
+    </div>
+  </section>
+
+  <section data-screen-label="Close" data-present-section="" data-present-name="Close" style="position:relative; padding:clamp(64px,11vw,140px) clamp(14px,4vw,56px); background:radial-gradient(100% 70% at 50% 100%, #17100c 0%, #0a0709 50%, #050506 100%); border-top:1px solid rgba(255,255,255,0.06); text-align:center">
+    <div style="max-width:1000px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:24px">
+      <img src="assets/flame-mark.svg" alt="" style="height:42px; width:auto; display:block; filter:drop-shadow(0 0 26px rgba(255,90,23,0.42))" />
+      <p style="margin:0; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(28px,5.4vw,66px); line-height:1.06; letter-spacing:-0.03em; color:#f7f5f3; text-wrap:balance">Don't just know the forecast.<br /><span style="background:linear-gradient(180deg,#ff9d1c,#e00f18); -webkit-background-clip:text; background-clip:text; color:transparent">Know whether to trust it.</span></p>
+      <a href="dashboard/index.html" style="display:flex; align-items:center; gap:11px; padding:13px 22px; border-radius:2px; border:1px solid rgba(140,196,251,0.5); background:rgba(140,196,251,0.12); color:#eaf3ff; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; transition:background .2s ease, border-color .2s ease" style-hover="background:rgba(140,196,251,0.24); border-color:rgba(140,196,251,0.9)">Open the console<span style="font-size:14px">→</span></a>
+      <span style="font-weight:600; font-size:10.5px; letter-spacing:0.32em; color:rgba(242,240,238,0.42)">HELLFIRE LABS · VISHWAS · SIH 2026</span>
+    </div>
+  </section>
+
+  <div data-present-hud="" style="display:none; position:fixed; z-index:70; left:0; right:0; bottom:0; align-items:center; justify-content:space-between; gap:12px; padding:11px clamp(13px,4vw,40px); background:rgba(6,6,8,0.86); backdrop-filter:blur(18px); border-top:1px solid rgba(255,90,23,0.35)">
+    <span data-hud-name="" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(247,245,243,0.85)">Open</span>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span data-hud-count="" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.14em; color:rgba(242,240,238,0.45)">1 / 7</span>
+      <button type="button" data-hud-prev="" style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px; color:rgba(247,245,243,0.9); padding:6px 13px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.05); border-radius:2px" style-hover="background:rgba(255,255,255,0.12)">←</button>
+      <button type="button" data-hud-next="" style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px; color:rgba(247,245,243,0.9); padding:6px 13px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.05); border-radius:2px" style-hover="background:rgba(255,255,255,0.12)">→</button>
+      <button type="button" data-hud-exit="" style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,138,50,0.95); padding:6px 11px; border:1px solid rgba(255,90,23,0.45); background:rgba(255,90,23,0.12); border-radius:2px" style-hover="background:rgba(255,90,23,0.24)">Exit</button>
+    </div>
+  </div>
+
+</div>
+
+
+  <template id="__bundler_thumbnail" data-bg-color="#050506">
+    <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="300" fill="#050506"></rect>
+      <g transform="translate(200 150)">
+        <path d="M0 -62 C 26 -34, 44 -18, 44 6 C 44 32, 24 50, 0 50 C -24 50, -44 32, -44 6 C -44 -18, -26 -34, 0 -62 Z" fill="url(#g)"></path>
+        <path d="M0 -22 C 12 -8, 20 0, 20 12 C 20 25, 11 33, 0 33 C -11 33, -20 25, -20 12 C -20 0, -12 -8, 0 -22 Z" fill="#050506" opacity="0.55"></path>
+      </g>
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ff9d1c"></stop>
+          <stop offset="1" stop-color="#e00f18"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+  </template>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;animateNumbers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;glassStrength&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.4,&quot;max&quot;:1.8,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Glass&quot;},&quot;fieldOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.8,&quot;min&quot;:0.3,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Glass&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyTweaks();
+    this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.smooth = 0; this.prog = 0;
+    this.trip = { t: 0, playing: false, act: 0, rev: 1, mix: [1, 0.3, 0.3], iso: null, inView: false, dirty: true };
+    this.dayF = 1; this.dayTarget = 1; this._playing = false;
+    this._augP = fetch(this.assetUrl('aug5', 'assets/aug5.json')).then(r => r.json()).catch(() => null);
+    this.buildDots();
+    this.armCounters();
+    this.armReveals();
+    this.initCloud();
+    this.initTrip();
+    this.initMap();
+    this.initPresent();
+    this.initRoster();
+    this.syncNav();
+    this.initNavFx();
+    this._rz = () => { this.sizeCloud(); this.sizeTrip(); this.sizeMap(); this.syncNav(); this.sizeRoster(); this.paintRoster(); this.drawCloud(); this.drawTrip(); this.drawMap(); };
+    window.addEventListener('resize', this._rz);
+    this._last = performance.now();
+    this._raf = requestAnimationFrame(this.tick = this.tick.bind(this));
+  }
+  componentDidUpdate() { this.applyTweaks(); }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._rz);
+    if (this._onScroll) window.removeEventListener('scroll', this._onScroll);
+    if (this._onKey) window.removeEventListener('keydown', this._onKey);
+    if (this._playTimer) clearInterval(this._playTimer);
+    if (this._raf) cancelAnimationFrame(this._raf);
+  }
+
+  tick(now) {
+    this._raf = requestAnimationFrame(this.tick);
+    const t = now || performance.now();
+    const dt = Math.min(60, t - (this._last || t));
+    this._last = t;
+
+    if (this.section) {
+      const top = this.section.getBoundingClientRect().top;
+      const h = this.cv ? this.cv.clientHeight : 0;
+      if (h !== this._lastH) { this._lastH = h; this.sizeCloud(); }
+      if (top !== this._lastTop) { this._lastTop = top; this.readScroll(); }
+      const k = this.reduced ? 1 : 1 - Math.pow(0.0022, dt / 1000);
+      const d = this.prog - this.smooth;
+      if (Math.abs(d) > 0.0002) { this.smooth += d * k; this.paintStages(); this.drawCloud(); }
+      else if (this._cloudDirty) { this.smooth = this.prog; this.drawCloud(); this._cloudDirty = false; }
+    }
+
+    if (this._revealCatchUp) {
+      const sy = window.scrollY || document.documentElement.scrollTop || 0;
+      if (sy !== this._lastSy) { this._lastSy = sy; this._revealCatchUp(); }
+    }
+    if (this.rTrack) {
+      const rt = this.rTrack.getBoundingClientRect().top;
+      if (rt !== this._rTop) { this._rTop = rt; this.paintRoster(); }
+    }
+
+    if (this._field === undefined) this._field = document.querySelector('[data-field]');
+    if (this._field && !this.reduced) {
+      const r = this._field.parentElement.getBoundingClientRect();
+      if (r.bottom > -200 && r.top < window.innerHeight + 200) {
+        const y = Math.max(-1, Math.min(1, -r.top / Math.max(1, r.height))) * 90;
+        this._field.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
+      }
+    }
+
+    const tp = this.trip;
+    if (tp && this.tv) {
+      if (tp.playing && tp.inView) {
+        tp.t += dt;
+        const DUR = 2900, REV = 1250;
+        const act = Math.min(2, Math.floor(tp.t / DUR));
+        if (act !== tp.act) { tp.act = act; this.paintActs(); }
+        tp.rev = Math.min(1, (tp.t - act * DUR) / REV);
+        if (tp.t > 2 * DUR + REV + 600) { tp.playing = false; this.paintActs(); }
+        tp.dirty = true;
+      }
+      let moving = false;
+      for (let i = 0; i < 3; i++) {
+        const target = i === tp.act ? 1 : 0.3;
+        const d2 = target - tp.mix[i];
+        if (Math.abs(d2) > 0.002) { tp.mix[i] += d2 * (this.reduced ? 1 : 1 - Math.pow(0.004, dt / 1000)); moving = true; }
+        else tp.mix[i] = target;
+      }
+      if ((tp.dirty || moving) && tp.inView) { this.drawTrip(); tp.dirty = false; }
+    }
+
+    if (this.mv && this.aug) {
+      if (this._playing) {
+        this.dayF = Math.min(10, this.dayF + dt / 620);
+        this.dayTarget = Math.round(this.dayF);
+        this.paintDayBar();
+        if (this.dayF >= 10) this.stopPlay();
+        this.drawMap();
+      } else {
+        const d3 = this.dayTarget - this.dayF;
+        if (Math.abs(d3) > 0.004) { this.dayF += d3 * (this.reduced ? 1 : 1 - Math.pow(0.002, dt / 1000)); this.drawMap(); }
+        else if (this.dayF !== this.dayTarget || this._mapDirty) { this._mapDirty = false; this.dayF = this.dayTarget; this.drawMap(); }
+      }
+    }
+  }
+
+  initRoster() {
+    this.rSec = document.querySelector('[data-roster]');
+    if (!this.rSec) return;
+    this.rTrack = this.rSec.querySelector('[data-roster-track]');
+    this.rPhotos = Array.from(this.rSec.querySelectorAll('[data-roster-photo]'));
+    this.rTexts = Array.from(this.rSec.querySelectorAll('[data-roster-text]'));
+    this.rSegs = Array.from(this.rSec.querySelectorAll('[data-roster-seg]'));
+    this.rRail = Array.from(this.rSec.querySelectorAll('[data-roster-rail-item]'));
+    this.rN = this.rPhotos.length;
+    this.rRail.forEach((el, i) => { el.style.cursor = 'pointer'; el.addEventListener('click', () => this.jumpRoster(i)); });
+    this.sizeRoster();
+    this.paintRoster();
+  }
+
+  sizeRoster() {
+    if (!this.rSec) return;
+    const w = window.innerWidth;
+    const narrow = w < 900;
+    const stage = this.rSec.querySelector('[data-roster-stage]');
+    const rail = this.rSec.querySelector('[data-roster-rail]');
+    const wide = w > 1180;
+    if (stage) {
+      stage.style.gridTemplateColumns = narrow ? 'minmax(0,1fr)' : (wide ? 'minmax(0,0.72fr) minmax(0,1fr) 128px' : 'minmax(0,0.76fr) minmax(0,1fr)');
+      stage.style.gridTemplateRows = narrow ? 'minmax(0,0.8fr) minmax(0,1.2fr)' : 'minmax(0,1fr)';
+    }
+    // The longest body runs ~380 chars; on a short phone the stage would clip it,
+    // so tighten the copy block rather than let a card lose its last sentence.
+    this.rSec.querySelectorAll('[data-roster-text] p').forEach(p => {
+      p.style.fontSize = narrow ? '13px' : '';
+      p.style.lineHeight = narrow ? '1.5' : '';
+    });
+    this.rSec.querySelectorAll('[data-roster-text] h3').forEach(h => {
+      h.style.fontSize = narrow ? 'clamp(30px,8vw,44px)' : '';
+    });
+    if (rail) rail.style.display = wide ? 'flex' : 'none';
+    if (this.rTrack) this.rTrack.style.height = (this.rN * (narrow ? 76 : 92)) + 'vh';
+  }
+
+  paintRoster() {
+    if (!this.rSec || !this.rTrack) return;
+    const travel = Math.max(1, this.rTrack.offsetHeight - window.innerHeight);
+    const raw = -this.rTrack.getBoundingClientRect().top / travel;
+    const p = Math.max(0, Math.min(1, raw)) * this.rN;
+    const cur = Math.max(0, Math.min(this.rN - 1, Math.floor(p)));
+    const f = Math.max(0, Math.min(1, p - cur));
+    for (let i = 0; i < this.rN; i++) {
+      const local = p - i;
+      const e = Math.max(0, Math.min(1, (local + 0.3) / 0.3));
+      const x = Math.max(0, Math.min(1, (local - 0.84) / 0.16));
+      const a = e * (1 - x);
+      const ph = this.rPhotos[i], tx = this.rTexts[i];
+      if (ph) {
+        ph.style.opacity = a.toFixed(3);
+        ph.style.transform = 'translate3d(0,' + ((1 - e) * 7 - x * 6).toFixed(2) + '%,0) scale(' + (0.93 + 0.07 * e + 0.05 * x).toFixed(3) + ')';
+        ph.style.pointerEvents = a > 0.5 ? 'auto' : 'none';
+        const img = ph.querySelector('img');
+        if (img) img.style.filter = 'grayscale(' + Math.round(100 - 100 * Math.min(1, e * 1.15)) + '%) contrast(' + (1 + 0.06 * e).toFixed(2) + ')';
+        const duo = ph.querySelector('[data-roster-duo]');
+        if (duo) duo.style.opacity = Math.max(0, 0.92 - 0.72 * e + 0.55 * x).toFixed(3);
+        const scan = ph.querySelector('[data-roster-scan]');
+        if (scan) {
+          scan.style.top = (Math.max(0, Math.min(1, local)) * 100).toFixed(2) + '%';
+          scan.style.opacity = (a * Math.min(1, 3 * Math.min(local, 1 - Math.min(local, 1)) + 0.25)).toFixed(3);
+        }
+      }
+      if (tx) {
+        tx.style.opacity = a.toFixed(3);
+        tx.style.transform = 'translate3d(' + ((1 - e) * 26 - x * 18).toFixed(1) + 'px,0,0)';
+        tx.style.pointerEvents = a > 0.5 ? 'auto' : 'none';
+      }
+      const seg = this.rSegs[i];
+      if (seg && seg.firstElementChild) seg.firstElementChild.style.transform = 'scaleX(' + (i < cur ? 1 : i > cur ? 0 : f).toFixed(3) + ')';
+      const ri = this.rRail[i];
+      if (ri) {
+        const on = i === cur;
+        ri.style.color = on ? '#f7f5f3' : 'rgba(242,240,238,0.32)';
+        ri.style.opacity = on ? '1' : '0.5';
+        const bar = ri.querySelector('[data-rail-bar]');
+        if (bar) { bar.style.width = on ? '26px' : '10px'; bar.style.background = on ? 'linear-gradient(90deg,#ff9d1c,#e00f18)' : 'rgba(255,255,255,0.18)'; }
+        const th = ri.querySelector('img');
+        if (th) th.style.filter = on ? 'grayscale(0%)' : 'grayscale(100%)';
+      }
+    }
+    const cnt = this.rSec.querySelector('[data-roster-count]');
+    if (cnt) {
+      const t = String(cur + 1).padStart(2, '0') + ' / ' + String(this.rN).padStart(2, '0');
+      if (cnt.textContent !== t) cnt.textContent = t;
+    }
+  }
+
+  jumpRoster(i) {
+    if (!this.rTrack) return;
+    let sc = this.rSec.parentElement;
+    while (sc && sc !== document.documentElement) {
+      const st = getComputedStyle(sc);
+      if (sc.scrollHeight > sc.clientHeight + 60 && /(auto|scroll|overlay)/.test(st.overflowY)) break;
+      sc = sc.parentElement;
+    }
+    if (!sc || sc === document.documentElement) sc = document.scrollingElement || document.documentElement;
+    const base = (sc === document.scrollingElement || sc === document.documentElement) ? 0 : sc.getBoundingClientRect().top;
+    const travel = Math.max(1, this.rTrack.offsetHeight - window.innerHeight);
+    const target = sc.scrollTop + (this.rTrack.getBoundingClientRect().top - base) + ((i + 0.4) / this.rN) * travel;
+    try { sc.scrollTo({ top: target, behavior: 'smooth' }); } catch (err) { sc.scrollTop = target; }
+  }
+
+  applyTweaks() {
+    const r = document.documentElement;
+    r.style.setProperty('--gb', String(this.props.glassStrength ?? 1));
+    r.style.setProperty('--field-op', String(this.props.fieldOpacity ?? 0.8));
+  }
+
+  // Leaving for the console is a hard navigation into a heavy page, so the site
+  // fades to a dark handoff card first; the console fades in from the same colour
+  // and its own loading overlay picks up from there.
+  initNavFx() {
+    this._navFx = e => {
+      const a = e.target && e.target.closest && e.target.closest('a[href$="dashboard/index.html"]');
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const href = a.getAttribute('href');
+      if (this.reduced || document.querySelector('[data-navfx]')) { window.location.href = href; return; }
+      const ov = document.createElement('div');
+      ov.setAttribute('data-navfx', '');
+      ov.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#050506;opacity:0;transition:opacity .24s ease';
+      // The header mark is already inlined by the bundler; reuse its resolved src
+      // so the overlay works offline instead of refetching a path that is gone.
+      const src = (document.querySelector('header img') || {}).src || '';
+      const mark = document.createElement('img');
+      if (src) mark.src = src;
+      mark.alt = '';
+      mark.style.cssText = 'height:34px;width:auto;display:block;filter:drop-shadow(0 0 22px rgba(255,90,23,0.45));animation:navRise .3s ease both';
+      const label = document.createElement('span');
+      label.textContent = 'OPENING THE CONSOLE';
+      label.style.cssText = "font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.24em;color:rgba(242,240,238,0.55);animation:navRise .3s ease .05s both";
+      const track = document.createElement('span');
+      track.style.cssText = 'position:relative;width:128px;height:2px;overflow:hidden;background:rgba(255,255,255,0.09)';
+      const bar = document.createElement('span');
+      bar.style.cssText = 'position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,90,23,0),#ff5a17,rgba(140,196,251,0.9),rgba(255,90,23,0));animation:navShimmer 1s linear infinite';
+      track.appendChild(bar);
+      if (src) ov.appendChild(mark);
+      ov.appendChild(label); ov.appendChild(track);
+      document.body.appendChild(ov);
+      requestAnimationFrame(() => { ov.style.opacity = '1'; });
+      setTimeout(() => { window.location.href = href; }, 290);
+    };
+    document.addEventListener('click', this._navFx);
+  }
+
+  syncNav() {
+    const n = document.querySelector('[data-desknav]');
+    if (n) n.style.display = window.innerWidth > 900 ? 'flex' : 'none';
+  }
+
+  buildDots() {
+    document.querySelectorAll('[data-dots]').forEach(host => {
+      if (host.childElementCount) return;
+      const on = parseInt(host.getAttribute('data-dots'), 10);
+      const col = host.getAttribute('data-dots-color');
+      for (let i = 0; i < 100; i++) {
+        const d = document.createElement('span');
+        d.style.cssText = 'display:block; aspect-ratio:1; border-radius:1px; background:' + (i < on ? col : 'rgba(255,255,255,0.07)');
+        if (i < on && col !== 'rgba(255,255,255,0.30)') d.style.boxShadow = '0 0 7px rgba(42,120,214,0.55)';
+        host.appendChild(d);
+      }
+    });
+  }
+
+  async initTrip() {
+    this.tv = document.querySelector('[data-trip]');
+    if (!this.tv) return;
+    this.tx = this.tv.getContext('2d');
+    this.aug = await this._augP;
+    if (!this.aug) return;
+    this.sizeTrip();
+
+    document.querySelectorAll('[data-act]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const k = +btn.getAttribute('data-act');
+        this.trip.playing = false; this.trip.act = k; this.trip.rev = 1; this.trip.t = k * 2900 + 1250;
+        this.trip.dirty = true; this.paintActs();
+      });
+    });
+    document.querySelectorAll('[data-outcome-key]').forEach(el => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const k = el.getAttribute('data-outcome-key');
+        this.trip.iso = this.trip.iso === k ? null : k;
+        this.trip.playing = false; this.trip.act = 2; this.trip.rev = 1; this.trip.t = 2 * 2900 + 1250;
+        this.trip.dirty = true; this.paintActs();
+      });
+    });
+    const rp = document.querySelector('[data-trip-play]');
+    if (rp) rp.addEventListener('click', () => {
+      this.trip.t = 0; this.trip.act = 0; this.trip.rev = 0; this.trip.iso = null;
+      this.trip.playing = !this.reduced; this.trip.dirty = true; this.paintActs();
+    });
+
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      this.trip.inView = e.isIntersecting;
+      if (e.isIntersecting) {
+        this.trip.dirty = true;
+        if (!this._tripSeen) {
+          this._tripSeen = true;
+          if (this.reduced) { this.trip.act = 2; this.trip.rev = 1; }
+          else { this.trip.t = 0; this.trip.act = 0; this.trip.rev = 0; this.trip.playing = true; }
+          this.paintActs();
+        }
+      }
+    }), { threshold: 0.25 });
+    io.observe(this.tv);
+    setTimeout(() => {
+      if (this._tripSeen) return;
+      const r = this.tv.getBoundingClientRect();
+      if (r.top < window.innerHeight * 1.6) {
+        this._tripSeen = true; this.trip.inView = true;
+        if (this.reduced) { this.trip.act = 2; this.trip.rev = 1; }
+        else { this.trip.t = 0; this.trip.act = 0; this.trip.rev = 0; this.trip.playing = true; }
+        this.paintActs();
+      }
+    }, 1600);
+    this.paintActs();
+    this.drawTrip();
+  }
+
+  sizeTrip() {
+    if (!this.tv || !this.aug) return;
+    const w = this.tv.clientWidth || 600;
+    this.tcols = w >= 800 ? 3 : 1;
+    const gap = this.tcols === 3 ? Math.max(14, w * 0.022) : 0;
+    const pw = (w - gap * (this.tcols - 1)) / this.tcols;
+    const ph = pw * (this.aug.ny / this.aug.nx);
+    const head = 40;
+    const h = Math.round(ph + head + 16);
+    this.tv.style.height = h + 'px';
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.tv.width = Math.round(w * dpr); this.tv.height = Math.round(h * dpr);
+    this.tx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.tw = w; this.th = h; this.tpw = pw; this.tph = ph; this.tgap = gap; this.thead = head;
+    this.tmask = this.buildMask(pw, ph, this.aug, dpr, 0.085);
+  }
+
+  buildMask(pw, ph, d, dpr, alpha) {
+    const mc = document.createElement('canvas');
+    mc.width = Math.max(1, Math.round(pw * dpr)); mc.height = Math.max(1, Math.round(ph * dpr));
+    const g = mc.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cw = pw / d.nx, ch = ph / d.ny, sz = 0.66;
+    g.fillStyle = 'rgba(152,200,252,' + alpha + ')';
+    for (let i = 0; i < d.cells.length; i++) {
+      const c = d.cells[i];
+      g.fillRect(c[0] * cw + cw * (1 - sz) / 2, (d.ny - 1 - c[1]) * ch + ch * (1 - sz) / 2, Math.max(1, cw * sz), Math.max(1, ch * sz));
+    }
+    return mc;
+  }
+
+  paintActs() {
+    document.querySelectorAll('[data-act]').forEach(btn => {
+      const on = +btn.getAttribute('data-act') === this.trip.act;
+      btn.style.background = on ? 'rgba(42,120,214,0.16)' : 'rgba(255,255,255,0.035)';
+      btn.style.borderColor = on ? 'rgba(140,196,251,0.5)' : 'rgba(255,255,255,0.10)';
+    });
+    document.querySelectorAll('[data-outcome-key]').forEach(el => {
+      const sel = this.trip.iso === el.getAttribute('data-outcome-key');
+      el.style.background = sel ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.04)';
+    });
+    const rp = document.querySelector('[data-trip-play]');
+    if (rp) rp.textContent = this.trip.playing ? 'Playing' : 'Replay';
+  }
+
+  tripColor(cell, act) {
+    const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+    const ramp = (stops, t) => {
+      const s = Math.max(0, Math.min(0.9999, t)) * (stops.length - 1);
+      const i = Math.floor(s);
+      return lerp(stops[i], stops[i + 1], s - i);
+    };
+    if (act === 0) {
+      const t = Math.min(1, cell[2] / 0.85);
+      return { c: ramp([[12,38,74],[26,86,166],[42,120,214],[150,197,250],[226,240,255]], t), a: 0.4 + 0.6 * t, s: 0.78 + 0.22 * t, g: Math.max(0, t - 0.5) * 2 };
+    }
+    if (act === 1) {
+      const r = cell[3];
+      if (r === 0) return { c: [140,190,250], a: 0.06, s: 0.5, g: 0 };
+      const t = (r - 1) / 5;
+      return { c: ramp([[36,92,168],[52,134,224],[124,180,238],[196,222,250],[236,245,255]], t), a: 0.66 + 0.34 * t, s: 0.56 + 0.44 * t, g: Math.max(0, t - 0.35) * 1.9 };
+    }
+    const o = cell[4];
+    if (o === 1) return { c: [42,120,214], a: 0.95, s: 0.94, g: 0.55, k: 'hit' };
+    if (o === 2) return { c: [255,138,50], a: 0.95, s: 0.9, g: 0.4, k: 'fa' };
+    if (o === 3) return { c: [235,42,48], a: 1, s: 1, g: 1, k: 'miss' };
+    return { c: [255,255,255], a: 0.085, s: 0.62, g: 0, k: 'quiet' };
+  }
+
+  drawTrip() {
+    if (!this.tx || !this.aug) return;
+    const cx = this.tx, w = this.tw, h = this.th, d = this.aug;
+    cx.clearRect(0, 0, w, h);
+    const smoothstep = t => t * t * (3 - 2 * t);
+    const cw = this.tpw / d.nx, ch = this.tph / d.ny;
+    // Colour comes from the verdict column, never from a threshold comparison:
+    // probabilities are stored rounded, so cells that print identically can fall on
+    // opposite sides of the decision line. Harmless
+    // while nothing exposes a per-cell probability; if a hover/tap readout is ever
+    // added, regenerate aug5.json at four decimals rather than shifting this caption.
+    const titles = [['A', 'PREDICTED', 'issued 31 July · Day 5'], ['B', 'OBSERVED', 'IMD gauge rainfall, 5 Aug'], ['C', 'OUTCOME', 'alert threshold p ≥ 0.153']];
+    const panels = this.tcols === 3 ? [0, 1, 2] : [this.trip.act];
+
+    panels.forEach((act, slot) => {
+      const px0 = slot * (this.tpw + this.tgap);
+      const py0 = this.thead;
+      const mix = this.tcols === 3 ? this.trip.mix[act] : 1;
+      const rev = act < this.trip.act ? 1 : (act === this.trip.act ? this.trip.rev : 0);
+
+      cx.font = '800 12px "Bricolage Grotesque", sans-serif';
+      cx.textAlign = 'left';
+      cx.fillStyle = 'rgba(255,138,50,' + (0.35 + 0.65 * mix).toFixed(3) + ')';
+      cx.fillText(titles[act][0], px0, py0 - 20);
+      cx.font = '500 10px "IBM Plex Mono", monospace';
+      try { cx.letterSpacing = '0.18em'; } catch (e) {}
+      cx.fillStyle = 'rgba(238,245,255,' + (0.3 + 0.6 * mix).toFixed(3) + ')';
+      cx.fillText(titles[act][1], px0 + 14, py0 - 20);
+      cx.fillStyle = 'rgba(205,226,251,' + (0.18 + 0.34 * mix).toFixed(3) + ')';
+      cx.font = '400 9.5px "IBM Plex Mono", monospace';
+      try { cx.letterSpacing = '0.08em'; } catch (e) {}
+      cx.fillText(titles[act][2], px0, py0 - 6);
+      try { cx.letterSpacing = '0px'; } catch (e) {}
+
+      if (this.tmask) {
+        cx.globalAlpha = 0.35 + 0.65 * mix;
+        cx.drawImage(this.tmask, px0, py0, this.tpw, this.tph);
+        cx.globalAlpha = 1;
+      }
+      if (rev <= 0.001) return;
+      const cells = d.cells;
+      for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        const ix = cell[0], iy = cell[1];
+        const delay = (ix / d.nx) * 0.5;
+        const pr = smoothstep(Math.max(0, Math.min(1, (rev - delay) / 0.5)));
+        if (pr <= 0.01) continue;
+        const st = this.tripColor(cell, act);
+        let alpha = st.a * pr * mix;
+        if (act === 2 && this.trip.iso && st.k !== this.trip.iso) alpha *= 0.07;
+        const sz = st.s * (0.55 + 0.45 * pr);
+        const x = px0 + ix * cw + cw * (1 - sz) / 2;
+        const y = py0 + (d.ny - 1 - iy) * ch + ch * (1 - sz) / 2;
+        const rgb = st.c[0].toFixed(0) + ',' + st.c[1].toFixed(0) + ',' + st.c[2].toFixed(0);
+        if (st.g > 0.02) {
+          cx.fillStyle = 'rgba(' + rgb + ',' + (alpha * 0.16 * st.g).toFixed(3) + ')';
+          cx.fillRect(x - cw * 0.7, y - ch * 0.7, cw * sz + cw * 1.4, ch * sz + ch * 1.4);
+        }
+        cx.fillStyle = 'rgba(' + rgb + ',' + alpha.toFixed(3) + ')';
+        cx.fillRect(x, y, Math.max(1.2, cw * sz), Math.max(1.2, ch * sz));
+      }
+
+      if (rev > 0.01 && rev < 1) {
+        const sx = px0 + Math.min(1, rev / 0.5) * this.tpw;
+        const g = cx.createLinearGradient(sx - 26, 0, sx + 4, 0);
+        g.addColorStop(0, 'rgba(255,157,28,0)');
+        g.addColorStop(1, 'rgba(255,157,28,' + (0.5 * (1 - rev)).toFixed(3) + ')');
+        cx.fillStyle = g;
+        cx.fillRect(sx - 26, py0, 28, this.tph);
+      }
+    });
+  }
+
+  armCounters() {
+    const counts = Array.from(document.querySelectorAll('[data-count-to]'));
+    const bars = Array.from(document.querySelectorAll('[data-bar]'));
+    if (this.reduced || (this.props.animateNumbers ?? true) === false) return;
+    bars.forEach(b => { b.style.transition = 'width 1.15s cubic-bezier(.22,.9,.2,1)'; b.style.width = '0%'; });
+    counts.forEach(el => { el.dataset.final = el.textContent; });
+    const run = (el) => {
+      if (el.dataset.done) return; el.dataset.done = '1';
+      if (el.hasAttribute('data-bar')) { requestAnimationFrame(() => { el.style.width = el.dataset.barW + '%'; }); return; }
+      el.textContent = el.dataset.final;
+      el.style.display = 'inline-block';
+      el.style.filter = 'blur(14px)';
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(9px) scale(0.965)';
+      requestAnimationFrame(() => {
+        el.style.transition = 'filter .82s cubic-bezier(.16,.9,.24,1), opacity .62s ease, transform .82s cubic-bezier(.16,.9,.24,1)';
+        el.style.filter = 'blur(0px)';
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    };
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } }), { threshold: 0.4 });
+    counts.concat(bars).forEach(el => io.observe(el));
+  }
+
+  armReveals() {
+    if (this.reduced) return;
+    const top = document.getElementById('top');
+    const cards = Array.from(document.querySelectorAll('div, article')).filter(el => {
+      if (top && top.contains(el)) return false;
+      if (el.hasAttribute('data-field') || el.closest('[data-present-hud]') || el.closest('[data-roster]')) return false;
+      const s = getComputedStyle(el);
+      return s.borderTopLeftRadius === '3px' && s.borderTopWidth === '1px' && el.offsetHeight > 70;
+    });
+    const groups = new Map();
+    cards.forEach(el => {
+      const key = el.parentElement;
+      const arr = groups.get(key) || [];
+      arr.push(el); groups.set(key, arr);
+    });
+    cards.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .78s cubic-bezier(.22,.9,.2,1), transform .78s cubic-bezier(.22,.9,.2,1)';
+      el.style.willChange = 'opacity, transform';
+    });
+    const pending = new Set(cards);
+    const show = (el, delay) => {
+      if (!pending.has(el)) return;
+      pending.delete(el);
+      io.unobserve(el);
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        setTimeout(() => { el.style.willChange = 'auto'; }, 900);
+      }, delay);
+    };
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const sibs = groups.get(el.parentElement) || [el];
+      show(el, Math.min(320, Math.max(0, sibs.indexOf(el)) * 85));
+    }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    cards.forEach(el => io.observe(el));
+    // catch-up: anything scrolled past (anchor jump, fast flick) reveals immediately
+    this._revealPending = pending;
+    this._revealCatchUp = () => {
+      if (!pending.size) return;
+      Array.from(pending).forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.94) show(el, 0);
+      });
+    };
+    setTimeout(() => { Array.from(pending).forEach(el => show(el, 0)); }, 4200);
+  }
+
+  async initCloud() {
+    this.cv = document.querySelector('[data-cloud]');
+    if (!this.cv) return;
+    this.cx = this.cv.getContext('2d');
+    this.sizeCloud();
+    try {
+      const r = await fetch(this.assetUrl('spread', 'assets/spread.json'));
+      const d = await r.json();
+      this.pts = d.pts;
+      // Caption reads the plotted count off the array itself, never a metadata
+      // field — a stale `n` is how the caption drifted from the plot before.
+      const pc = document.querySelector('[data-plotted-count]');
+      if (pc) pc.textContent = this.pts.length.toLocaleString('en-US');
+      const tc = document.querySelector('[data-total-count]');
+      if (tc && d.n_total) tc.textContent = d.n_total.toLocaleString('en-US');
+    } catch (e) { this.pts = []; }
+    this.binStats = {};
+    for (let b = 0; b < 10; b++) {
+      const a = this.pts.filter(p => p[2] === b);
+      if (!a.length) continue;
+      const mx = a.reduce((s, p) => s + p[0], 0) / a.length;
+      const my = a.reduce((s, p) => s + p[1], 0) / a.length;
+      let sxy = 0, sxx = 0;
+      a.forEach(p => { sxy += (p[0] - mx) * (p[1] - my); sxx += (p[0] - mx) * (p[0] - mx); });
+      this.binStats[b] = { mx, my, slope: sxy / sxx };
+    }
+    const all = this.pts;
+    const MX = all.reduce((s, p) => s + p[0], 0) / all.length;
+    const MY = all.reduce((s, p) => s + p[1], 0) / all.length;
+    let SXY = 0, SXX = 0;
+    all.forEach(p => { SXY += (p[0] - MX) * (p[1] - MY); SXX += (p[0] - MX) * (p[0] - MX); });
+    this.pooled = { mx: MX, my: MY, slope: SXY / SXX };
+    this.section = this.cv.closest('section');
+    this._onScroll = () => this.readScroll();
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this.readScroll();
+    this.smooth = this.prog;
+    this._cloudDirty = true;
+    this.paintStages();
+  }
+
+  sizeCloud() {
+    if (!this.cv) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = this.cv.clientWidth, h = this.cv.clientHeight;
+    this.cv.width = Math.round(w * dpr); this.cv.height = Math.round(h * dpr);
+    this.cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.cw = w; this.ch = h;
+  }
+
+  readScroll() {
+    if (!this.section) return;
+    const r = this.section.getBoundingClientRect();
+    const total = Math.max(1, r.height - window.innerHeight);
+    this.prog = Math.max(0, Math.min(1, -r.top / total));
+  }
+
+  onScroll() { this.readScroll(); }
+
+  paintStages() {
+    const p = this.smooth;
+    const intro = this._elIntro || (this._elIntro = document.querySelector('[data-stage="intro"]'));
+    const sa = this._elA || (this._elA = document.querySelector('[data-stage="a"]'));
+    const sb = this._elB || (this._elB = document.querySelector('[data-stage="b"]'));
+    const ro = this._elRo || (this._elRo = document.querySelector('[data-readout]'));
+    const rv = this._elRv || (this._elRv = document.querySelector('[data-readout-value]'));
+    const rn = this._elRn || (this._elRn = document.querySelector('[data-readout-note]'));
+    const ramp = (v, a, b) => Math.max(0, Math.min(1, (v - a) / (b - a)));
+    const ease = t => t * t * (3 - 2 * t);
+    if (intro) {
+      const o = 1 - ease(ramp(p, 0.05, 0.19));
+      intro.style.opacity = o.toFixed(3);
+      intro.style.transform = 'translateY(' + (-30 * (1 - o)).toFixed(2) + 'px) scale(' + (0.985 + 0.015 * o).toFixed(4) + ')';
+    }
+    const aOn = ease(ramp(p, 0.17, 0.29)) * (1 - ease(ramp(p, 0.43, 0.55)));
+    const bOn = ease(ramp(p, 0.57, 0.69));
+    if (sa) { sa.style.opacity = aOn.toFixed(3); sa.style.transform = 'translateY(' + (22 * (1 - aOn)).toFixed(2) + 'px)'; }
+    if (sb) { sb.style.opacity = bOn.toFixed(3); sb.style.transform = 'translateY(' + (22 * (1 - bOn)).toFixed(2) + 'px)'; }
+    if (ro) {
+      const o = Math.max(aOn, bOn);
+      ro.style.opacity = o.toFixed(3);
+      ro.style.transform = 'translateY(' + (-14 * (1 - o)).toFixed(2) + 'px)';
+    }
+    const split = ease(ramp(p, 0.45, 0.73));
+    if (rv && rn) {
+      const on = split >= 0.5;
+      const val = on ? '0.9%' : '43.9%';
+      const note = on ? 'within a single rainfall regime' : 'pooled across all regimes';
+      if (rv.textContent !== val) {
+        rv.textContent = val; rn.textContent = note;
+        rv.style.color = on ? '#cde2fb' : '#ffffff';
+        // Pulse on the flip only — never on scroll position, so every resting
+        // position renders the figure sharp and fully opaque.
+        if (!this.reduced) {
+          rv.style.transition = 'none'; rn.style.transition = 'none';
+          rv.style.filter = 'blur(9px)'; rv.style.opacity = '0.25';
+          rn.style.opacity = '0.15';
+          cancelAnimationFrame(this._roPulse);
+          this._roPulse = requestAnimationFrame(() => {
+            rv.style.transition = 'filter .34s ease, opacity .34s ease';
+            rn.style.transition = 'opacity .34s ease';
+            rv.style.filter = 'none'; rv.style.opacity = '1'; rn.style.opacity = '1';
+          });
+        }
+      }
+    }
+  }
+
+  drawCloud() {
+    if (!this.cx || !this.pts || !this.pts.length) return;
+    const w = this.cw, h = this.ch, cx = this.cx;
+    cx.clearRect(0, 0, w, h);
+    const p = this.smooth;
+    const ramp = (v, a, b) => Math.max(0, Math.min(1, (v - a) / (b - a)));
+    const smoothstep = t => t * t * (3 - 2 * t);
+    const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const appear = smoothstep(ramp(p, 0.09, 0.27));
+    const split = ease(ramp(p, 0.45, 0.73));
+    if (appear <= 0.002) return;
+
+    const narrow = w < 680;
+    const padX = Math.max(38, w * 0.065), padTop = Math.max(96, h * 0.17), padBot = Math.max(200, h * 0.31);
+    const X0 = -2.4, X1 = 4.8, Y0 = -2.5, Y1 = 5.6;
+    const px = v => padX + (v - X0) / (X1 - X0) * (w - padX * 2);
+    const py = v => (h - padBot) - (v - Y0) / (Y1 - Y0) * (h - padTop - padBot);
+    const colW = (w - padX * 2) / 10;
+    const bx = (v, b) => padX + colW * (b + 0.5) + (v - this.binStats[b].mx) * (colW / (X1 - X0)) * 8.8;
+
+    // regime columns emerge as the split resolves
+    if (split > 0.01) {
+      for (let b = 0; b < 10; b++) {
+        const x0 = padX + colW * b;
+        cx.fillStyle = 'rgba(140,196,251,' + (0.022 * split * (b % 2 ? 1 : 0.45)).toFixed(4) + ')';
+        cx.fillRect(x0 + 1, padTop * 0.72, colW - 2, (h - padBot) - padTop * 0.72);
+      }
+    }
+
+    cx.globalCompositeOperation = 'lighter';
+    const dotR = narrow ? 1.1 : 1.45;
+    const dotD = dotR * 2;
+    const n = this.pts.length;
+    // 20k points a frame: squares instead of arcs, and a pre-built alpha ramp so the
+    // hot loop never allocates an rgba string. Visually identical at this dot size.
+    const aMax = 0.055 + 0.115 * appear;
+    const rgb = split > 0.55 ? '158,201,252' : '56,131,219';
+    const STEPS = 20;
+    const pal = new Array(STEPS);
+    for (let s = 0; s < STEPS; s++) pal[s] = 'rgba(' + rgb + ',' + (aMax * (s + 1) / STEPS).toFixed(3) + ')';
+    let cur = -1;
+    for (let i = 0; i < n; i++) {
+      const q = this.pts[i], b = q[2];
+      if (!this.binStats[b]) continue;
+      // stagger the arrival left-to-right so the cloud fills like a wave
+      const wave = smoothstep(Math.max(0, Math.min(1, (appear - (q[0] - X0) / (X1 - X0) * 0.42) / 0.58)));
+      if (wave <= 0.01) continue;
+      const xa = px(q[0]);
+      const x = xa + (bx(q[0], b) - xa) * split;
+      const y = py(q[1]);
+      let si = (wave * STEPS) | 0; if (si >= STEPS) si = STEPS - 1;
+      if (si !== cur) { cur = si; cx.fillStyle = pal[si]; }
+      cx.fillRect(x - dotR, y - dotR, dotD, dotD);
+    }
+    cx.globalCompositeOperation = 'source-over';
+
+    if (split < 0.99) {
+      const s = this.pooled, fade = (1 - split) * appear;
+      const xa = px(X0 + 0.25), xb = px(X1 - 0.25);
+      const ya = py(s.my + s.slope * (X0 + 0.25 - s.mx)), yb = py(s.my + s.slope * (X1 - 0.25 - s.mx));
+      cx.lineCap = 'round';
+      cx.strokeStyle = 'rgba(255,138,50,' + (0.14 * fade).toFixed(3) + ')';
+      cx.lineWidth = 12; cx.beginPath(); cx.moveTo(xa, ya); cx.lineTo(xb, yb); cx.stroke();
+      cx.strokeStyle = 'rgba(255,157,28,' + (0.95 * fade).toFixed(3) + ')';
+      cx.lineWidth = 2.4; cx.beginPath(); cx.moveTo(xa, ya); cx.lineTo(xb, yb); cx.stroke();
+    }
+    if (split > 0.04) {
+      for (let b = 0; b < 10; b++) {
+        const st = this.binStats[b]; if (!st) continue;
+        const half = colW * 0.34 * (0.5 + 0.5 * split);
+        const cxp = padX + colW * (b + 0.5), y = py(st.my);
+        cx.lineCap = 'round';
+        cx.strokeStyle = 'rgba(140,196,251,' + (0.12 * split).toFixed(3) + ')';
+        cx.lineWidth = 10; cx.beginPath(); cx.moveTo(cxp - half, y); cx.lineTo(cxp + half, y); cx.stroke();
+        cx.strokeStyle = 'rgba(214,232,253,' + (0.9 * split).toFixed(3) + ')';
+        cx.lineWidth = 2.2; cx.beginPath(); cx.moveTo(cxp - half, y); cx.lineTo(cxp + half, y); cx.stroke();
+      }
+    }
+
+    cx.font = '500 ' + (narrow ? 9 : 10) + 'px "IBM Plex Mono", monospace';
+    try { cx.letterSpacing = '0.16em'; } catch (e) {}
+    cx.fillStyle = 'rgba(238,245,255,' + (0.42 * appear).toFixed(3) + ')';
+    cx.save(); cx.translate(padX - 15, (padTop + (h - padBot)) / 2); cx.rotate(-Math.PI / 2);
+    cx.textAlign = 'center'; cx.fillText('FORECAST ERROR', 0, 0); cx.restore();
+    cx.textAlign = 'center';
+    const lab = split > 0.5 ? 'RAINFALL REGIME · DRY → WET' : 'ENSEMBLE SPREAD →';
+    cx.globalAlpha = split > 0.5 ? Math.min(1, (split - 0.5) * 4) : Math.min(1, (0.5 - split) * 4);
+    cx.fillText(lab, w / 2, h - padBot + 28);
+    cx.globalAlpha = 1;
+    try { cx.letterSpacing = '0px'; } catch (e) {}
+  }
+
+  async initMap() {
+    this.mv = document.querySelector('[data-map]');
+    if (!this.mv) return;
+    this.mx = this.mv.getContext('2d');
+    this.aug = this.aug || await this._augP;
+    if (!this.aug) return;
+    const bar = document.querySelector('[data-daybar]');
+    if (bar && !bar.childElementCount) {
+      for (let d = 1; d <= 10; d++) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = d;
+        b.style.cssText = 'cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:11px; padding:8px 0; border-radius:2px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:rgba(238,245,255,0.75); transition:background .22s ease, color .22s ease, border-color .22s ease';
+        b.addEventListener('click', () => { this.stopPlay(); this.setDay(d); });
+        bar.appendChild(b);
+      }
+    }
+    const play = document.querySelector('[data-play]');
+    if (play) play.addEventListener('click', () => this.togglePlay());
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting && this._mapT0 == null) { this._mapT0 = performance.now(); this._mapDirty = true; }
+    }), { threshold: 0.3 });
+    io.observe(this.mv);
+    setTimeout(() => { if (this._mapT0 == null) { this._mapT0 = performance.now(); this._mapDirty = true; } }, 1800);
+    this.sizeMap(); this.setDay(5);
+  }
+
+  sizeMap() {
+    if (!this.mv || !this.aug) return;
+    const pad = 10;
+    const w = this.mv.clientWidth || 460;
+    const cell = (w - pad * 2) / this.aug.nx;
+    const h = Math.round(cell * this.aug.ny + pad * 2);
+    this.mv.style.height = h + 'px';
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.mv.width = Math.round(w * dpr); this.mv.height = Math.round(h * dpr);
+    this.mx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.mw = w; this.mh = h; this.mcell = cell; this.mpad = pad;
+    this.mmask = this.buildMask(cell * this.aug.nx, cell * this.aug.ny, this.aug, dpr, 0.07);
+  }
+
+  setDay(d) {
+    this.dayTarget = d;
+    this._mapDirty = true;
+    this.paintDayBar();
+  }
+
+  paintDayBar() {
+    const d = Math.round(this._playing ? this.dayF : this.dayTarget);
+    const lab = document.querySelector('[data-day-label]');
+    if (lab && lab.textContent !== 'Day ' + d) lab.textContent = 'Day ' + d;
+    const bar = document.querySelector('[data-daybar]');
+    if (bar) Array.from(bar.children).forEach((b, i) => {
+      const on = i + 1 === d;
+      if (b._on === on) return;
+      b._on = on;
+      b.style.background = on ? 'linear-gradient(158deg,#ff9d1c,#e00f18)' : 'rgba(255,255,255,0.04)';
+      b.style.color = on ? '#0b0709' : 'rgba(238,245,255,0.75)';
+      b.style.borderColor = on ? 'rgba(255,157,28,0.7)' : 'rgba(255,255,255,0.12)';
+      b.style.fontWeight = on ? '600' : '400';
+    });
+  }
+
+  // Resolves to an inlined blob URL in the standalone build, the plain path otherwise.
+  assetUrl(id, fallback) {
+    const r = typeof window !== 'undefined' && window.__resources;
+    return (r && r[id]) || fallback;
+  }
+
+  // Every lead day is read from the export: cell[5] is the ten measured
+  // probabilities, cell[6] the ten verdicts decided upstream. Nothing here
+  // re-derives a call from p, and no cutoff value is written down anywhere.
+  pAt(cell, dayF) {
+    const ps = cell[5];
+    if (!ps || ps.length < 2) return cell[2];
+    const x = Math.max(1, Math.min(ps.length, dayF)) - 1;
+    const i = Math.min(ps.length - 2, Math.floor(x));
+    return ps[i] + (ps[i + 1] - ps[i]) * (x - i);
+  }
+  vAt(cell, day) {
+    const vs = cell[6];
+    if (!vs) return 0;
+    return vs[Math.max(0, Math.min(vs.length - 1, Math.round(day) - 1))] | 0;
+  }
+  dayBand(day) {
+    const key = Math.max(1, Math.min(10, Math.round(day)));
+    if (this._brDay === key) return this._br;
+    const lo = [1, 1, 1], hi = [0, 0, 0];
+    for (const c of this.aug.cells) {
+      const v = this.vAt(c, key), p = (c[5] || [])[key - 1];
+      if (p == null) continue;
+      if (p < lo[v]) lo[v] = p;
+      if (p > hi[v]) hi[v] = p;
+    }
+    this._brDay = key; this._br = { lo, hi };
+    return this._br;
+  }
+  bandDepth(p, v, bs) { const s = bs.hi[v] - bs.lo[v]; return s < 1e-9 ? 0.5 : Math.max(0, Math.min(1, (p - bs.lo[v]) / s)); }
+
+  drawMap() {
+    if (!this.mx || !this.aug) return;
+    const d = this.aug, w = this.mw, h = this.mh, cx = this.mx, cell = this.mcell, pad = this.mpad;
+    cx.clearRect(0, 0, w, h);
+    const smoothstep = t => t * t * (3 - 2 * t);
+    let rev = 1;
+    if (this._mapT0 == null) rev = 0;
+    else if (!this.reduced) {
+      rev = Math.min(1, (performance.now() - this._mapT0) / 950);
+      if (rev < 1) this._mapDirty = true;
+    }
+    if (this.mmask) cx.drawImage(this.mmask, pad, pad, cell * d.nx, cell * d.ny);
+    let alerts = 0;
+    // Count at the settled day, never an in-flight frame, so a dropped settle
+    // can't leave an off-by-N figure published in the header.
+    const dayC = this._playing ? Math.round(this.dayF) : this.dayTarget;
+    const bs = this.dayBand(dayC);
+    for (let i = 0; i < d.cells.length; i++) {
+      const c = d.cells[i], ix = c[0], iy = c[1];
+      const p = this.pAt(c, this.dayF);
+      const v = this.vAt(c, dayC);
+      if (v === 2) alerts++;
+      const pr = rev >= 1 ? 1 : smoothstep(Math.max(0, Math.min(1, (rev - (1 - iy / d.ny) * 0.45) / 0.55)));
+      if (pr <= 0.01) continue;
+      let r, g, b, a, glow = 0;
+      const t = this.bandDepth(p, v, bs);
+      if (v === 2) { r = 255; g = 90 + 40 * t; b = 23 + 22 * t; a = 0.92; glow = 0.35 + 0.6 * t; }
+      else if (v === 1) { r = 34 + 8 * t; g = 104 + 16 * t; b = 190 + 24 * t; a = 0.72 + 0.2 * t; }
+      else { r = 13 + 12 * t; g = 44 + 20 * t; b = 96 + 34 * t; a = 0.42 + 0.34 * t; }
+      const sz = cell * (0.62 + 0.2 * pr);
+      const x = pad + ix * cell + (cell - sz) / 2;
+      const y = pad + (d.ny - 1 - iy) * cell + (cell - sz) / 2;
+      if (glow > 0.02) {
+        cx.fillStyle = 'rgba(255,90,23,' + (0.15 * glow * pr).toFixed(3) + ')';
+        cx.fillRect(x - cell * 0.75, y - cell * 0.75, sz + cell * 1.5, sz + cell * 1.5);
+      }
+      cx.fillStyle = 'rgba(' + r.toFixed(0) + ',' + g.toFixed(0) + ',' + b.toFixed(0) + ',' + (a * pr).toFixed(3) + ')';
+      cx.fillRect(x, y, Math.max(1.4, sz), Math.max(1.4, sz));
+    }
+    const al = document.querySelector('[data-alert-label]');
+    if (al) {
+      const txt = alerts.toLocaleString() + ' of ' + d.cells.length.toLocaleString() + ' flagged';
+      if (al.textContent !== txt) al.textContent = txt;
+    }
+  }
+
+  togglePlay() {
+    if (this._playing) { this.stopPlay(); return; }
+    const btn = document.querySelector('[data-play]');
+    if (btn) btn.textContent = 'Pause';
+    this._playing = true;
+    this.dayF = 1; this.dayTarget = 1;
+    this._mapT0 = this._mapT0 || performance.now();
+  }
+  stopPlay() {
+    this._playing = false;
+    this.dayTarget = Math.max(1, Math.min(10, Math.round(this.dayF)));
+    this.dayF = this.dayTarget;
+    this._mapDirty = true;
+    this.paintDayBar();
+    const btn = document.querySelector('[data-play]');
+    if (btn) btn.textContent = 'Play Day 1 → 10';
+  }
+
+  initPresent() {
+    this.sections = Array.from(document.querySelectorAll('[data-present-section]'));
+    this.pi = 0; this.presenting = false;
+    const hud = document.querySelector('[data-present-hud]');
+    const toggle = document.querySelector('[data-present-toggle]');
+    const setHud = () => {
+      const s = this.sections[this.pi];
+      const nm = document.querySelector('[data-hud-name]');
+      const ct = document.querySelector('[data-hud-count]');
+      if (nm && s) nm.textContent = s.getAttribute('data-present-name') || '';
+      if (ct) ct.textContent = (this.pi + 1) + ' / ' + this.sections.length;
+    };
+    const scroller = () => {
+      let el = this.sections[0] && this.sections[0].parentElement;
+      while (el && el !== document.documentElement) {
+        const st = getComputedStyle(el);
+        if (el.scrollHeight > el.clientHeight + 60 && /(auto|scroll|overlay)/.test(st.overflowY)) return el;
+        el = el.parentElement;
+      }
+      return document.scrollingElement || document.documentElement;
+    };
+    const go = (i) => {
+      this.pi = Math.max(0, Math.min(this.sections.length - 1, i));
+      const s = this.sections[this.pi];
+      const sc = scroller();
+      const target = (sc === document.scrollingElement || sc === document.documentElement)
+        ? s.offsetTop - 52
+        : s.offsetTop - sc.offsetTop - 52;
+      try { sc.scrollTo({ top: target, behavior: 'smooth' }); } catch (e) { sc.scrollTop = target; }
+      setHud();
+    };
+    const enter = () => {
+      this.presenting = true;
+      if (hud) hud.style.display = 'flex';
+      if (toggle) { toggle.textContent = 'Presenting'; toggle.style.background = 'rgba(255,90,23,0.28)'; }
+      let best = 0, bd = Infinity;
+      this.sections.forEach((s, i) => { const d = Math.abs(s.getBoundingClientRect().top); if (d < bd) { bd = d; best = i; } });
+      go(best);
+    };
+    const exit = () => {
+      this.presenting = false;
+      if (hud) hud.style.display = 'none';
+      if (toggle) { toggle.textContent = 'Present'; toggle.style.background = 'rgba(255,90,23,0.10)'; }
+    };
+    if (toggle) toggle.addEventListener('click', () => this.presenting ? exit() : enter());
+    const pv = document.querySelector('[data-hud-prev]'), nx = document.querySelector('[data-hud-next]'), ex = document.querySelector('[data-hud-exit]');
+    if (pv) pv.addEventListener('click', () => go(this.pi - 1));
+    if (nx) nx.addEventListener('click', () => go(this.pi + 1));
+    if (ex) ex.addEventListener('click', exit);
+    this._onKey = (e) => {
+      if (e.key === 'Escape') { exit(); return; }
+      if (!this.presenting) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(this.pi + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(this.pi - 1); }
+    };
+    window.addEventListener('keydown', this._onKey);
+    setHud();
+  }
+
+  renderVals() { return {}; }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+{
+  "metric": "stratified ROC-AUC",
+  "model_label": "VISHWAS",
+  "baseline_label": "ensemble spread",
+  "chance": 0.5,
+  "holds": "positive at every lead, interval entirely above zero at every lead",
+  "not_comparable_with": "the pooled all-leads figure reported on the project site",
+  "leads": {
+    "1": {
+      "model": 0.783,
+      "baseline": 0.617,
+      "margin": 0.167,
+      "margin_lo": 0.116,
+      "margin_hi": 0.256,
+      "n": 65104
+    },
+    "2": {
+      "model": 0.732,
+      "baseline": 0.585,
+      "margin": 0.147,
+      "margin_lo": 0.075,
+      "margin_hi": 0.217,
+      "n": 65104
+    },
+    "3": {
+      "model": 0.745,
+      "baseline": 0.618,
+      "margin": 0.126,
+      "margin_lo": 0.086,
+      "margin_hi": 0.205,
+      "n": 65104
+    },
+    "4": {
+      "model": 0.789,
+      "baseline": 0.594,
+      "margin": 0.195,
+      "margin_lo": 0.116,
+      "margin_hi": 0.255,
+      "n": 65104
+    },
+    "5": {
+      "model": 0.793,
+      "baseline": 0.611,
+      "margin": 0.182,
+      "margin_lo": 0.109,
+      "margin_hi": 0.287,
+      "n": 65104
+    },
+    "6": {
+      "model": 0.752,
+      "baseline": 0.62,
+      "margin": 0.132,
+      "margin_lo": 0.071,
+      "margin_hi": 0.235,
+      "n": 65104
+    },
+    "7": {
+      "model": 0.758,
+      "baseline": 0.585,
+      "margin": 0.173,
+      "margin_lo": 0.099,
+      "margin_hi": 0.239,
+      "n": 65104
+    },
+    "8": {
+      "model": 0.727,
+      "baseline": 0.575,
+      "margin": 0.152,
+      "margin_lo": 0.07,
+      "margin_hi": 0.217,
+      "n": 65104
+    },
+    "9": {
+      "model": 0.663,
+      "baseline": 0.562,
+      "margin": 0.101,
+      "margin_lo": 0.06,
+      "margin_hi": 0.177,
+      "n": 65104
+    },
+    "10": {
+      "model": 0.694,
+      "baseline": 0.515,
+      "margin": 0.179,
+      "margin_lo": 0.109,
+      "margin_hi": 0.214,
+      "n": 65104
+    }
+  },
+  "interval": "95% bootstrap interval on the margin"
+}
