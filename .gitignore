@@ -16,6 +16,22 @@ __pycache__/
 tmp/
 temp/
 
+# ...but ablations/ and logs/ hold RESULTS, not build noise. ablations/*.log is
+# the printed output of each ablation variant and is cited as a source in
+# CLAUDE.md, docs/DECK-VERIFICATION.md and docs/CONSISTENCY-AUDIT.md;
+# logs/*.log is the only record of how the five-year numbers were produced.
+# Blanket *.log had been excluding all of them silently.
+# These negations work only because neither parent directory is itself
+# excluded -- `git check-ignore -v logs ablations` exits 1. Do NOT copy this
+# pattern under models/, which IS excluded as a directory, so a negation there
+# would never be reached.
+!ablations/*.log
+!logs/*.log
+
+# Bundles are a COPY of the history, never part of it. Kept ignored so one can
+# sit in the repo folder for transfer without ever being committed.
+*.bundle
+
 # Generated weather data and model artifacts
 data/*.parquet
 data/features_parts/
