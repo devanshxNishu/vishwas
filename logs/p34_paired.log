@@ -1,0 +1,24 @@
+paired on 651,040 rows over 52 forecast dates
+bust labels changed by the retrain: 4,576 rows (0.70%)
+
+                                     (a)       (b)     change
+  model AUC                       0.7281    0.7030    -0.0251
+  baseline AUC                    0.5647    0.5611    -0.0036
+  margin                          0.1634    0.1418    -0.0215
+
+  THE BASELINE ROW IS THE RELABELLING CONTROL. Ensemble spread's
+  scores are bit-identical across the two runs, so its -0.0036 is
+  caused by the changed labels alone. That is the scale of the
+  relabelling effect on a FIXED ranker.
+
+PAIRED BOOTSTRAP, 2000 replicates over the same 52 dates
+  (b) - (a) model AUC          -0.0147   95% CI -0.0539 to +0.0069   includes zero
+  (b) - (a) baseline AUC       -0.0031   95% CI -0.0066 to -0.0001   excludes zero
+  (b) - (a) margin             -0.0118   95% CI -0.0509 to +0.0111   includes zero
+
+  VERDICT
+  -> The change in margin is NOT separable from zero on these 52
+     dates. More training data did not measurably change the
+     result on the question (a) asked. Report it as unchanged,
+     not as a decline.
+  -> The change in model AUC alone is also inside the noise.

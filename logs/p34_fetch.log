@@ -1,0 +1,329 @@
+Wednesday sampling: 260 dates in range, 108 already done, 156 to go.
+Wednesday sampling: 260 dates in range, 108 already done, 156 to go.
+      -> 50410 rows -> 20150107.parquet
+  [1/156] 20150107  1210 msgs  467.5 MB  478.3 s
+      -> 50410 rows -> 20150114.parquet
+  [2/156] 20150114  1210 msgs  456.2 MB  525.9 s
+Wednesday sampling: 260 dates in range, 110 already done, 154 to go.
+      -> 50410 rows -> 20150121.parquet
+  [1/154] 20150121  1210 msgs  478.6 MB  73.8 s
+      -> 50410 rows -> 20150128.parquet
+  [2/154] 20150128  1210 msgs  470.4 MB  73.3 s
+      -> 50410 rows -> 20150204.parquet
+  [3/154] 20150204  1210 msgs  475.3 MB  76.0 s
+      -> 50410 rows -> 20150211.parquet
+  [4/154] 20150211  1210 msgs  486.4 MB  78.2 s
+      -> 50410 rows -> 20150218.parquet
+  [5/154] 20150218  1210 msgs  480.5 MB  76.9 s
+      -> 50410 rows -> 20150225.parquet
+  [6/154] 20150225  1210 msgs  488.7 MB  74.0 s
+      -> 50410 rows -> 20150304.parquet
+  [7/154] 20150304  1210 msgs  445.7 MB  74.7 s
+      -> 50410 rows -> 20150311.parquet
+  [8/154] 20150311  1210 msgs  449.7 MB  76.2 s
+      -> 50410 rows -> 20150318.parquet
+  [9/154] 20150318  1210 msgs  482.6 MB  71.9 s
+      -> 50410 rows -> 20150325.parquet
+  [10/154] 20150325  1210 msgs  491.7 MB  75.1 s
+      -> 50410 rows -> 20150401.parquet
+  [11/154] 20150401  1210 msgs  493.2 MB  74.5 s
+      -> 50410 rows -> 20150408.parquet
+  [12/154] 20150408  1210 msgs  472.1 MB  72.9 s
+      -> 50410 rows -> 20150415.parquet
+  [13/154] 20150415  1210 msgs  492.4 MB  73.3 s
+      -> 50410 rows -> 20150422.parquet
+  [14/154] 20150422  1210 msgs  496.0 MB  74.9 s
+      -> 50410 rows -> 20150429.parquet
+  [15/154] 20150429  1210 msgs  495.3 MB  77.8 s
+      -> 50410 rows -> 20150506.parquet
+  [16/154] 20150506  1210 msgs  490.1 MB  83.6 s
+      -> 50410 rows -> 20150513.parquet
+  [17/154] 20150513  1210 msgs  463.2 MB  75.7 s
+      -> 50410 rows -> 20150520.parquet
+  [18/154] 20150520  1210 msgs  506.6 MB  79.7 s
+      -> 50410 rows -> 20150527.parquet
+  [19/154] 20150527  1210 msgs  502.1 MB  80.6 s
+      -> 50410 rows -> 20150603.parquet
+  [20/154] 20150603  1210 msgs  493.5 MB  79.4 s
+      -> 50410 rows -> 20150610.parquet
+  [21/154] 20150610  1210 msgs  509.9 MB  84.3 s
+      -> 50410 rows -> 20150617.parquet
+  [22/154] 20150617  1210 msgs  501.0 MB  94.4 s
+      -> 50410 rows -> 20150624.parquet
+  [23/154] 20150624  1210 msgs  503.2 MB  81.0 s
+      -> 50410 rows -> 20150701.parquet
+  [24/154] 20150701  1210 msgs  483.7 MB  79.9 s
+      -> 50410 rows -> 20150708.parquet
+  [25/154] 20150708  1210 msgs  476.3 MB  82.0 s
+      -> 50410 rows -> 20150715.parquet
+  [26/154] 20150715  1210 msgs  497.0 MB  92.8 s
+      -> 50410 rows -> 20150722.parquet
+  [27/154] 20150722  1210 msgs  510.2 MB  84.3 s
+      -> 50410 rows -> 20150729.parquet
+  [28/154] 20150729  1210 msgs  473.5 MB  83.0 s
+      -> 50410 rows -> 20150805.parquet
+  [29/154] 20150805  1210 msgs  489.4 MB  89.3 s
+      -> 50410 rows -> 20150812.parquet
+  [30/154] 20150812  1210 msgs  474.6 MB  81.7 s
+      -> 50410 rows -> 20150819.parquet
+  [31/154] 20150819  1210 msgs  448.2 MB  81.0 s
+      -> 50410 rows -> 20150826.parquet
+  [32/154] 20150826  1210 msgs  486.4 MB  87.1 s
+      -> 50410 rows -> 20150902.parquet
+  [33/154] 20150902  1210 msgs  458.7 MB  83.9 s
+      -> 50410 rows -> 20150909.parquet
+  [34/154] 20150909  1210 msgs  497.4 MB  78.8 s
+      -> 50410 rows -> 20150916.parquet
+  [35/154] 20150916  1210 msgs  494.8 MB  83.0 s
+      -> 50410 rows -> 20150923.parquet
+  [36/154] 20150923  1210 msgs  474.3 MB  80.0 s
+      -> 50410 rows -> 20150930.parquet
+  [37/154] 20150930  1210 msgs  476.3 MB  81.4 s
+      -> 50410 rows -> 20151007.parquet
+  [38/154] 20151007  1210 msgs  492.6 MB  81.8 s
+      -> 50410 rows -> 20151014.parquet
+  [39/154] 20151014  1210 msgs  471.2 MB  78.6 s
+      -> 50410 rows -> 20151021.parquet
+  [40/154] 20151021  1210 msgs  484.6 MB  79.9 s
+      -> 50410 rows -> 20151028.parquet
+  [41/154] 20151028  1210 msgs  496.0 MB  87.3 s
+      -> 50410 rows -> 20151104.parquet
+  [42/154] 20151104  1210 msgs  496.2 MB  76.4 s
+      -> 50410 rows -> 20151111.parquet
+  [43/154] 20151111  1210 msgs  492.0 MB  75.7 s
+      -> 50410 rows -> 20151118.parquet
+  [44/154] 20151118  1210 msgs  474.2 MB  75.9 s
+      -> 50410 rows -> 20151125.parquet
+  [45/154] 20151125  1210 msgs  485.8 MB  80.8 s
+      -> 50410 rows -> 20151202.parquet
+  [46/154] 20151202  1210 msgs  490.3 MB  78.2 s
+      -> 50410 rows -> 20151209.parquet
+  [47/154] 20151209  1210 msgs  489.4 MB  76.7 s
+      -> 50410 rows -> 20151216.parquet
+  [48/154] 20151216  1210 msgs  480.5 MB  73.7 s
+      -> 50410 rows -> 20151223.parquet
+  [49/154] 20151223  1210 msgs  477.5 MB  72.9 s
+      -> 50410 rows -> 20151230.parquet
+  [50/154] 20151230  1210 msgs  485.2 MB  79.0 s
+      -> 50410 rows -> 20160106.parquet
+  [51/154] 20160106  1210 msgs  475.6 MB  75.2 s
+      -> 50410 rows -> 20160113.parquet
+  [52/154] 20160113  1210 msgs  483.1 MB  79.8 s
+      -> 50410 rows -> 20160120.parquet
+  [53/154] 20160120  1210 msgs  477.3 MB  75.0 s
+      -> 50410 rows -> 20160127.parquet
+  [54/154] 20160127  1210 msgs  487.8 MB  80.3 s
+      -> 50410 rows -> 20160203.parquet
+  [55/154] 20160203  1210 msgs  475.7 MB  76.7 s
+      -> 50410 rows -> 20160210.parquet
+  [56/154] 20160210  1210 msgs  475.8 MB  73.8 s
+      -> 50410 rows -> 20160217.parquet
+  [57/154] 20160217  1210 msgs  476.3 MB  74.0 s
+Traceback (most recent call last):
+  File "/Users/devansh/vishwas/src/02_features.py", line 455, in <module>
+    main()
+  File "/Users/devansh/vishwas/src/02_features.py", line 451, in main
+    fetch_module.fetch(filesystem, args.years, args.limit, False, on_date)
+  File "/Users/devansh/vishwas/src/01_fetch.py", line 309, in fetch
+    on_date(init, blobs, paths)
+  File "/Users/devansh/vishwas/src/02_features.py", line 446, in on_date
+    rows = build_rows(fields, init)
+  File "/Users/devansh/vishwas/src/02_features.py", line 251, in build_rows
+    gh = stack_members(fields["hgt_pres_abv700mb"], exact)
+  File "/Users/devansh/vishwas/src/02_features.py", line 191, in stack_members
+    raise ValueError("expected 1 step, got {}".format(len(matches)))
+ValueError: expected 1 step, got 0
+Wednesday sampling: 260 dates in range, 167 already done, 97 to go.
+  [1/97] 20160224  SKIPPED — archive incomplete: hgt_pres_abv700mb {'p08': 4}; ugrd_pres_abv700mb {'p08': 4}; vgrd_pres_abv700mb {'p08': 4}
+      -> 50410 rows -> 20160302.parquet
+  [2/97] 20160302  1210 msgs  490.1 MB  72.7 s
+  [3/97] 20160309  SKIPPED — archive incomplete: hgt_pres_abv700mb {'p09': 8}; ugrd_pres_abv700mb {'p09': 8}; vgrd_pres_abv700mb {'p09': 8}
+      -> 50410 rows -> 20160316.parquet
+  [4/97] 20160316  1210 msgs  485.7 MB  73.4 s
+      -> 50410 rows -> 20160323.parquet
+  [5/97] 20160323  1210 msgs  489.9 MB  78.5 s
+      -> 50410 rows -> 20160330.parquet
+  [6/97] 20160330  1210 msgs  485.0 MB  77.3 s
+      -> 50410 rows -> 20160406.parquet
+  [7/97] 20160406  1210 msgs  484.9 MB  73.8 s
+      -> 50410 rows -> 20160413.parquet
+  [8/97] 20160413  1210 msgs  465.8 MB  70.1 s
+      -> 50410 rows -> 20160420.parquet
+  [9/97] 20160420  1210 msgs  493.5 MB  71.8 s
+      -> 50410 rows -> 20160427.parquet
+  [10/97] 20160427  1210 msgs  496.3 MB  72.4 s
+      -> 50410 rows -> 20160504.parquet
+  [11/97] 20160504  1210 msgs  505.3 MB  78.4 s
+      -> 50410 rows -> 20160511.parquet
+  [12/97] 20160511  1210 msgs  501.0 MB  74.6 s
+      -> 50410 rows -> 20160518.parquet
+  [13/97] 20160518  1210 msgs  499.7 MB  76.2 s
+      -> 50410 rows -> 20160525.parquet
+  [14/97] 20160525  1210 msgs  507.4 MB  75.6 s
+      -> 50410 rows -> 20160601.parquet
+  [15/97] 20160601  1210 msgs  500.8 MB  75.1 s
+      -> 50410 rows -> 20160608.parquet
+  [16/97] 20160608  1210 msgs  506.8 MB  75.0 s
+  [17/97] 20160615  SKIPPED — archive incomplete: hgt_pres_abv700mb {'p06': 8}; ugrd_pres_abv700mb {'p06': 8}; vgrd_pres_abv700mb {'p06': 8}
+  [18/97] 20160622  SKIPPED — archive incomplete: hgt_pres_abv700mb {'p01': 9}; ugrd_pres_abv700mb {'p01': 9}; vgrd_pres_abv700mb {'p01': 9}
+      -> 50410 rows -> 20160629.parquet
+  [19/97] 20160629  1210 msgs  508.5 MB  72.5 s
+      -> 50410 rows -> 20160706.parquet
+  [20/97] 20160706  1210 msgs  497.0 MB  78.4 s
+      -> 50410 rows -> 20160713.parquet
+  [21/97] 20160713  1210 msgs  507.3 MB  76.2 s
+      -> 50410 rows -> 20160720.parquet
+  [22/97] 20160720  1210 msgs  512.7 MB  76.8 s
+      -> 50410 rows -> 20160727.parquet
+  [23/97] 20160727  1210 msgs  508.6 MB  77.2 s
+      -> 50410 rows -> 20160803.parquet
+  [24/97] 20160803  1210 msgs  515.3 MB  76.1 s
+      -> 50410 rows -> 20160810.parquet
+  [25/97] 20160810  1210 msgs  506.9 MB  77.4 s
+      -> 50410 rows -> 20160817.parquet
+  [26/97] 20160817  1210 msgs  502.7 MB  76.7 s
+      -> 50410 rows -> 20160824.parquet
+  [27/97] 20160824  1210 msgs  476.7 MB  75.0 s
+      -> 50410 rows -> 20160831.parquet
+  [28/97] 20160831  1210 msgs  492.2 MB  74.9 s
+      -> 50410 rows -> 20160907.parquet
+  [29/97] 20160907  1210 msgs  491.4 MB  79.7 s
+      -> 50410 rows -> 20160914.parquet
+  [30/97] 20160914  1210 msgs  496.0 MB  85.6 s
+      -> 50410 rows -> 20160921.parquet
+  [31/97] 20160921  1210 msgs  478.5 MB  72.8 s
+      -> 50410 rows -> 20160928.parquet
+  [32/97] 20160928  1210 msgs  489.2 MB  75.0 s
+      -> 50410 rows -> 20161005.parquet
+  [33/97] 20161005  1210 msgs  484.6 MB  75.7 s
+      -> 50410 rows -> 20161012.parquet
+  [34/97] 20161012  1210 msgs  471.2 MB  75.4 s
+      -> 50410 rows -> 20161019.parquet
+  [35/97] 20161019  1210 msgs  494.3 MB  77.1 s
+      -> 50410 rows -> 20161026.parquet
+  [36/97] 20161026  1210 msgs  484.8 MB  74.9 s
+      -> 50410 rows -> 20161102.parquet
+  [37/97] 20161102  1210 msgs  485.0 MB  77.3 s
+      -> 50410 rows -> 20161109.parquet
+  [38/97] 20161109  1210 msgs  483.1 MB  77.9 s
+      -> 50410 rows -> 20161116.parquet
+  [39/97] 20161116  1210 msgs  479.6 MB  78.4 s
+      -> 50410 rows -> 20161123.parquet
+  [40/97] 20161123  1210 msgs  488.7 MB  76.1 s
+      -> 50410 rows -> 20161130.parquet
+  [41/97] 20161130  1210 msgs  489.0 MB  75.5 s
+      -> 50410 rows -> 20161207.parquet
+  [42/97] 20161207  1210 msgs  482.8 MB  74.7 s
+      -> 50410 rows -> 20161214.parquet
+  [43/97] 20161214  1210 msgs  480.1 MB  76.6 s
+      -> 50410 rows -> 20161221.parquet
+  [44/97] 20161221  1210 msgs  476.3 MB  74.6 s
+      -> 50410 rows -> 20161228.parquet
+  [45/97] 20161228  1210 msgs  476.6 MB  74.7 s
+      -> 50410 rows -> 20170104.parquet
+  [46/97] 20170104  1210 msgs  478.4 MB  77.6 s
+      -> 50410 rows -> 20170111.parquet
+  [47/97] 20170111  1210 msgs  491.5 MB  77.6 s
+      -> 50410 rows -> 20170118.parquet
+  [48/97] 20170118  1210 msgs  489.4 MB  77.4 s
+      -> 50410 rows -> 20170125.parquet
+  [49/97] 20170125  1210 msgs  488.7 MB  77.3 s
+      -> 50410 rows -> 20170201.parquet
+  [50/97] 20170201  1210 msgs  478.1 MB  78.5 s
+      -> 50410 rows -> 20170208.parquet
+  [51/97] 20170208  1210 msgs  480.9 MB  77.5 s
+      -> 50410 rows -> 20170215.parquet
+  [52/97] 20170215  1210 msgs  484.4 MB  75.7 s
+      -> 50410 rows -> 20170222.parquet
+  [53/97] 20170222  1210 msgs  492.3 MB  77.1 s
+      -> 50410 rows -> 20170301.parquet
+  [54/97] 20170301  1210 msgs  482.4 MB  77.5 s
+      -> 50410 rows -> 20170308.parquet
+  [55/97] 20170308  1210 msgs  485.8 MB  79.4 s
+      -> 50410 rows -> 20170315.parquet
+  [56/97] 20170315  1210 msgs  498.0 MB  81.0 s
+      -> 50410 rows -> 20170322.parquet
+  [57/97] 20170322  1210 msgs  490.3 MB  77.0 s
+      -> 50410 rows -> 20170329.parquet
+  [58/97] 20170329  1210 msgs  494.7 MB  76.3 s
+      -> 50410 rows -> 20170405.parquet
+  [59/97] 20170405  1210 msgs  491.3 MB  81.2 s
+      -> 50410 rows -> 20170412.parquet
+  [60/97] 20170412  1210 msgs  492.9 MB  77.5 s
+      -> 50410 rows -> 20170419.parquet
+  [61/97] 20170419  1210 msgs  503.4 MB  83.4 s
+      -> 50410 rows -> 20170426.parquet
+  [62/97] 20170426  1210 msgs  496.7 MB  76.7 s
+      -> 50410 rows -> 20170503.parquet
+  [63/97] 20170503  1210 msgs  496.4 MB  80.9 s
+      -> 50410 rows -> 20170510.parquet
+  [64/97] 20170510  1210 msgs  504.8 MB  81.6 s
+      -> 50410 rows -> 20170517.parquet
+  [65/97] 20170517  1210 msgs  507.6 MB  78.4 s
+      -> 50410 rows -> 20170524.parquet
+  [66/97] 20170524  1210 msgs  509.7 MB  78.9 s
+      -> 50410 rows -> 20170531.parquet
+  [67/97] 20170531  1210 msgs  503.7 MB  77.3 s
+      -> 50410 rows -> 20170607.parquet
+  [68/97] 20170607  1210 msgs  500.3 MB  82.4 s
+      -> 50410 rows -> 20170614.parquet
+  [69/97] 20170614  1210 msgs  501.5 MB  79.7 s
+      -> 50410 rows -> 20170621.parquet
+  [70/97] 20170621  1210 msgs  512.3 MB  82.0 s
+      -> 50410 rows -> 20170628.parquet
+  [71/97] 20170628  1210 msgs  505.3 MB  80.5 s
+      -> 50410 rows -> 20170705.parquet
+  [72/97] 20170705  1210 msgs  507.7 MB  82.6 s
+      -> 50410 rows -> 20170712.parquet
+  [73/97] 20170712  1210 msgs  507.6 MB  83.1 s
+      -> 50410 rows -> 20170719.parquet
+  [74/97] 20170719  1210 msgs  505.8 MB  84.0 s
+      -> 50410 rows -> 20170726.parquet
+  [75/97] 20170726  1210 msgs  504.9 MB  60.6 s
+      -> 50410 rows -> 20170802.parquet
+  [76/97] 20170802  1210 msgs  496.8 MB  58.8 s
+      -> 50410 rows -> 20170809.parquet
+  [77/97] 20170809  1210 msgs  508.1 MB  77.2 s
+      -> 50410 rows -> 20170816.parquet
+  [78/97] 20170816  1210 msgs  499.2 MB  65.2 s
+      -> 50410 rows -> 20170823.parquet
+  [79/97] 20170823  1210 msgs  488.2 MB  69.2 s
+      -> 50410 rows -> 20170830.parquet
+  [80/97] 20170830  1210 msgs  485.7 MB  57.4 s
+      -> 50410 rows -> 20170906.parquet
+  [81/97] 20170906  1210 msgs  452.8 MB  81.6 s
+      -> 50410 rows -> 20170913.parquet
+  [82/97] 20170913  1210 msgs  479.1 MB  55.4 s
+      -> 50410 rows -> 20170920.parquet
+  [83/97] 20170920  1210 msgs  482.3 MB  59.3 s
+      -> 50410 rows -> 20170927.parquet
+  [84/97] 20170927  1210 msgs  492.8 MB  57.2 s
+      -> 50410 rows -> 20171004.parquet
+  [85/97] 20171004  1210 msgs  492.5 MB  54.3 s
+      -> 50410 rows -> 20171011.parquet
+  [86/97] 20171011  1210 msgs  479.8 MB  60.0 s
+      -> 50410 rows -> 20171018.parquet
+  [87/97] 20171018  1210 msgs  443.1 MB  65.9 s
+      -> 50410 rows -> 20171025.parquet
+  [88/97] 20171025  1210 msgs  479.4 MB  65.9 s
+      -> 50410 rows -> 20171101.parquet
+  [89/97] 20171101  1210 msgs  493.9 MB  61.9 s
+      -> 50410 rows -> 20171108.parquet
+  [90/97] 20171108  1210 msgs  491.3 MB  69.0 s
+      -> 50410 rows -> 20171115.parquet
+  [91/97] 20171115  1210 msgs  486.2 MB  71.7 s
+      -> 50410 rows -> 20171122.parquet
+  [92/97] 20171122  1210 msgs  484.8 MB  68.1 s
+      -> 50410 rows -> 20171129.parquet
+  [93/97] 20171129  1210 msgs  484.0 MB  65.6 s
+      -> 50410 rows -> 20171206.parquet
+  [94/97] 20171206  1210 msgs  472.7 MB  63.2 s
+      -> 50410 rows -> 20171213.parquet
+  [95/97] 20171213  1210 msgs  470.0 MB  57.3 s
+      -> 50410 rows -> 20171220.parquet
+  [96/97] 20171220  1210 msgs  473.9 MB  66.5 s
+      -> 50410 rows -> 20171227.parquet
+  [97/97] 20171227  1210 msgs  486.3 MB  63.2 s
+
+SKIPPED 4 date(s) the archive could not serve in full: 20160224, 20160309, 20160615, 20160622
+Recorded in /Users/devansh/vishwas/data/raw/incomplete.jsonl. They are NOT in the feature table.

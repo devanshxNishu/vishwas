@@ -1,0 +1,61 @@
+VISHWAS — skill by lead day (P26)
+==============================================================================
+1,302,080 test rows, 104 forecast dates, Day 1-10
+stratified AUC, 10 rainfall bins, refitted within each lead day
+cluster bootstrap on the margin: 1000 replicates, resampling the 52 forecast dates
+  Day  1  model 0.792  spread 0.621  margin +0.171  [+0.108, +0.237]
+  Day  2  model 0.754  spread 0.589  margin +0.164  [+0.084, +0.212]
+  Day  3  model 0.803  spread 0.600  margin +0.204  [+0.129, +0.247]
+  Day  4  model 0.818  spread 0.593  margin +0.225  [+0.138, +0.280]
+  Day  5  model 0.788  spread 0.590  margin +0.197  [+0.126, +0.264]
+  Day  6  model 0.767  spread 0.611  margin +0.156  [+0.110, +0.217]
+  Day  7  model 0.760  spread 0.544  margin +0.217  [+0.108, +0.240]
+  Day  8  model 0.747  spread 0.550  margin +0.197  [+0.126, +0.247]
+  Day  9  model 0.665  spread 0.560  margin +0.105  [+0.029, +0.189]
+  Day 10  model 0.703  spread 0.555  margin +0.149  [+0.094, +0.225]
+
+PER-LEAD-DAY TABLE
+  day        n  bust rate     model    spread    margin     95% CI on margin
+    1  130,208     5.92%     0.792     0.621    +0.171      0.108 to +0.237
+    2  130,208     6.12%     0.754     0.589    +0.164      0.084 to +0.212
+    3  130,208     5.57%     0.803     0.600    +0.204      0.129 to +0.247
+    4  130,208     4.97%     0.818     0.593    +0.225      0.138 to +0.280
+    5  130,208     4.54%     0.788     0.590    +0.197      0.126 to +0.264
+    6  130,208     4.69%     0.767     0.611    +0.156      0.110 to +0.217
+    7  130,208     5.15%     0.760     0.544    +0.217      0.108 to +0.240
+    8  130,208     5.46%     0.747     0.550    +0.197      0.126 to +0.247
+    9  130,208     5.48%     0.665     0.560    +0.105      0.029 to +0.189
+   10  130,208     5.44%     0.703     0.555    +0.149      0.094 to +0.225
+
+CROSS-CHECK — bin edges fitted on the pooled test set instead of
+within each lead day. If the two agree, the binning choice is inert.
+  day     model    global    spread    global  d margin
+    1     0.792     0.802     0.621     0.663    -0.032
+    2     0.754     0.768     0.589     0.626    -0.022
+    3     0.803     0.794     0.600     0.622    -0.031
+    4     0.818     0.815     0.593     0.634    -0.044
+    5     0.788     0.783     0.590     0.597    -0.012
+    6     0.767     0.766     0.611     0.612    -0.002
+    7     0.760     0.780     0.544     0.631    -0.067
+    8     0.747     0.751     0.550     0.579    -0.025
+    9     0.665     0.673     0.560     0.568    -0.001
+   10     0.703     0.702     0.555     0.553    +0.001
+
+SHAPE OF THE CURVE
+  model    Day 1 0.792 -> Day 10 0.703   (-0.089)
+  spread   Day 1 0.621 -> Day 10 0.555   (-0.066)
+  margin   Day 1 +0.171 -> Day 10 +0.149  (-0.022)
+  margin positive on 10 of 10 lead days; whole 95% CI above zero on 10
+  neither curve is monotone — Day 4 is the model's best lead and Day 9 its worst.
+
+RECONCILIATION WITH THE PUBLISHED HEADLINE
+  all ten leads pooled and binned together (the headline):
+    model 0.755   spread 0.606   margin +0.149
+  mean of the ten per-lead values (this table):
+    model 0.760   spread 0.581   margin +0.179
+  The per-lead values are HIGHER because splitting by lead removes
+  the cross-lead ranking the pooled number still has to do. Do not
+  quote a per-lead number as an improvement on 0.728.
+
+wrote data/lead_day_auc_5yr.csv
+wrote figures/fig10_lead_curve_5yr.png

@@ -1,0 +1,53 @@
+features    : 12904960 rows, 27 columns
+colocation  : exact, 65 lats and 68 lons inside the IMD domain
+truth join  : 1804 distinct valid dates
+              100/1804 dates
+              200/1804 dates
+              300/1804 dates
+              400/1804 dates
+              500/1804 dates
+              600/1804 dates
+              700/1804 dates
+              800/1804 dates
+              900/1804 dates
+              1000/1804 dates
+              1100/1804 dates
+              1200/1804 dates
+              1300/1804 dates
+              1400/1804 dates
+              1500/1804 dates
+              1600/1804 dates
+              1700/1804 dates
+              1800/1804 dates
+threshold gate: need >= 160 train samples per group (8.0 exceedances at the 95.0th pct); 0 of 12520 groups qualify
+
+====================================================================
+VISHWAS — bust labels  (reference population: per gridpoint)
+====================================================================
+train window: init <= 2017-12-31
+threshold   : 95.0th percentile of |ensemble mean - IMD|, TRAIN ONLY
+
+rows in                 :  12904960
+dropped, no IMD truth   :   9699840  (75.2%)
+rows out                :   3205120
+gridpoints surviving    :      1252  of 5041 (24.8%)
+   P1 expects ~1252: 621 points fall outside the IMD domain and the
+   rest are ocean or no-gauge, stored as -999 and dropped as NaN.
+
+threshold provenance:
+   region         3205120 rows  (100.0%)
+
+BASE RATES — THIS IS THE HONESTY CHECK
+   train    1903040 rows   bust rate 5.001%
+   test     1302080 rows   bust rate 5.335%
+
+   Train sits at ~5.0% by construction. Test is 5.335%, a
+   gap of 0.334 points. THAT GAP IS THE PROOF THE SPLIT IS
+   HONEST: the test window never touched its own threshold.
+
+no test row contributed to any threshold: enforced in build_labels(),
+which fits every threshold table on split == 'train' only.
+
+wrote data/labelled_5yr.parquet
+wrote data/bust_thresholds_5yr.parquet   <- auditable, reusable, and the record of what the
+      label meant. Keep it with any result you report.

@@ -1,0 +1,67 @@
+
+SPLITS — seasonal composition is printed so an unbalanced test set
+cannot slip through unnoticed (a test block missing a season would
+invalidate any four-season claim).
+  role          dates      rows    bust%   seasons
+  train            39    488280    4.86%   DJF=9 MAM=10 JJAS=13 ON=7
+  validation       13    162760    5.43%   DJF=4 MAM=3 JJAS=4 ON=2
+  test             52    651040    6.47%   DJF=13 MAM=13 JJAS=17 ON=9
+
+features (23): lead_day, gh500_mean, gh500_spread, u500_mean, u500_spread, v500_mean, v500_spread, pwat_mean, pwat_spread, cape_mean, cape_spread, precip_mean, precip_spread, gh500_gradient, wind500_speed, u850_mean, v850_mean, shear_500_850, flow500_deformation, month, pwat_anomaly, cape_anomaly, precip_anomaly
+  lat/lon/region excluded — see the FEATURES note in the docstring.
+
+======================================================================
+RESULTS — test period, 651040 rows, bust base rate 6.47%
+======================================================================
+
+                                       baseline      model
+                                       (spread)  (VISHWAS)
+  --------------------------------------------------------
+  ROC-AUC, pooled                         0.885      0.909   <- DO NOT QUOTE
+  ROC-AUC, stratified                     0.565      0.728   <- THE HEADLINE
+  PR-AUC, pooled                          0.407      0.491
+  PR-AUC lift over base rate               6.29x      7.60x
+
+  PR-AUC's no-skill floor IS the base rate (0.065), so the lift is
+  the comparable figure. Never compare bare PR-AUC across seasons or
+  regions whose base rates differ.
+
+  STRATIFIED MARGIN (model - baseline): +0.1634
+  95% CI, cluster bootstrap over 52 forecast dates: +0.1026 to +0.1910
+
+  VERDICT
+  -> The model beats ensemble spread on the honest metric, and the
+     whole confidence interval is above zero.
+
+  NOTE: accuracy is deliberately not reported anywhere. At a ~5% base
+  rate, predicting 'never a bust' scores 95% and is useless.
+
+ROBUSTNESS TO THE WET-POINT DEFINITION
+  The baseline is reported this way (04_conditional.py), so the model
+  is too. If the verdict flips between rows, quote the range.
+
+  variant                             baseline     model    margin   bins
+  all bins (headline)                    0.565     0.728   +0.1634      8
+  drop the driest bin                    0.539     0.671   +0.1322      7
+  [truth-filtered] both > 0.5 mm         0.557     0.607   +0.0503     10
+  [truth-filtered] both > 1.0 mm         0.556     0.600   +0.0440     10
+  [truth-filtered] both > 2.0 mm         0.555     0.590   +0.0348     10
+
+  margin ranges +0.1322 to +0.1634 across these definitions.
+  The model is ahead under EVERY definition — that is the
+  robust form of the claim, and the one to quote.
+
+PER RAINFALL BIN (stratified detail)
+   bin   median mm         n    bust%   baseline      model
+     0        0.00    208065    0.15%      0.583      0.835
+     1        0.05     53386    0.78%      0.578      0.723
+     2        0.24     64381    1.22%      0.536      0.675
+     3        0.83     64795    2.14%      0.542      0.700
+     4        2.24     65184    3.88%      0.524      0.658
+     5        4.91     65028    6.02%      0.523      0.628
+     6        9.31     65097    9.40%      0.539      0.618
+     7       18.19     65104   40.92%      0.656      0.753
+
+wrote data/pred_a_full.parquet
+  validation dates held out and untouched: 13 — reserved for
+  calibration (P12) and the operating point (P14).

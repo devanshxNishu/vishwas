@@ -1,0 +1,102 @@
+
+==============================================================================
+THE COMPARISON
+==============================================================================
+
+                                         baseline    model    margin
+  ------------------------------------------------------------------
+  (a) published   train 2018,   test 2019    0.565    0.728   +0.1634
+  (b) new model   train 15-17,  test 2019    0.561    0.703   +0.1418
+  (c) new model   train 15-17,  test 18+19    0.606    0.755   +0.1491
+
+  Stratified ROC-AUC. The pooled pair is computed but NOT printed as
+  a measure of performance — CLAUDE.md bars it from every figure,
+  slide, table and spoken line. It is written to the machine-readable
+  CSV only, as the thing being ruled against.
+
+  95% CI on the margin, cluster bootstrap over forecast dates:
+    (a) published   train 2018,   test 2019 +0.1080 to +0.1926   (52 dates)
+    (b) new model   train 15-17,  test 2019 +0.0813 to +0.1907   (52 dates)
+    (c) new model   train 15-17,  test 18+19 +0.1164 to +0.2029   (104 dates)
+
+  Supporting detail:
+                                              rows    dates     bust%      bins
+  (a) published   train 2018,   test 2019   651,040       52     6.47%         8
+  (b) new model   train 15-17,  test 2019   651,040       52     6.04%         8
+  (c) new model   train 15-17,  test 18+19 1,302,080      104     5.34%         7
+
+  PR-AUC lift over base rate               baseline      model
+  (a) published   train 2018,   test 2019      6.29x      7.60x
+  (b) new model   train 15-17,  test 2019      6.39x      8.11x
+  (c) new model   train 15-17,  test 18+19      6.86x      8.94x
+
+  Drop the driest bin                    baseline    model    margin
+  (a) published   train 2018,   test 2019    0.539    0.671   +0.1322
+  (b) new model   train 15-17,  test 2019    0.534    0.678   +0.1441
+  (c) new model   train 15-17,  test 18+19    0.528    0.695   +0.1670
+
+==============================================================================
+(a) vs (b) — WHAT MORE TRAINING DATA DID
+==============================================================================
+
+  Same test year, same features, same estimator, same seed, same
+  metric. Only the training data differs: 39 fitted dates in one
+  year, against ? fitted dates across three.
+
+  stratified margin  (a) +0.1634   (b) +0.1418   change -0.0215
+  model AUC          (a) 0.7281    (b) 0.7030    change -0.0251
+  baseline AUC       (a) 0.5647    (b) 0.5611    change -0.0036
+
+  The baseline is ensemble spread on identical rows, so it SHOULD be
+  unchanged between (a) and (b) — it does not depend on training
+  data at all. A non-zero change there is a bug, not a finding.
+  -> IT MOVED. Investigate before reading anything else here.
+
+PER RAINFALL BIN — (b) new model, test 2019
+   bin   median mm         n    bust%   baseline      model     margin
+     0        0.00   208,065    0.14%      0.582      0.741    +0.1594
+     1        0.05    53,386    0.72%      0.573      0.698    +0.1248
+     2        0.24    64,381    1.13%      0.531      0.671    +0.1394
+     3        0.83    64,795    2.01%      0.536      0.693    +0.1573
+     4        2.24    65,184    3.68%      0.518      0.677    +0.1587
+     5        4.91    65,028    5.73%      0.523      0.649    +0.1254
+     6        9.31    65,097    8.65%      0.531      0.630    +0.0994
+     7       18.19    65,104   38.13%      0.651      0.779    +0.1289
+
+PER RAINFALL BIN — (c) new model, test 2018+2019
+   bin   median mm         n    bust%   baseline      model     margin
+     0        0.00   522,549    0.16%      0.692      0.830    +0.1380
+     1        0.15   128,711    0.88%      0.528      0.721    +0.1930
+     2        0.62   130,018    1.65%      0.539      0.715    +0.1761
+     3        1.83   130,358    3.13%      0.521      0.698    +0.1773
+     4        4.26   130,031    5.05%      0.517      0.667    +0.1497
+     5        8.52   130,205    7.53%      0.526      0.635    +0.1091
+     6       17.20   130,208   34.50%      0.656      0.791    +0.1350
+
+PER LEAD DAY — (b) new model, test 2019
+   day         n    bust%   baseline      model     margin
+     1    65,104    6.71%      0.607      0.777    +0.1701
+     2    65,104    7.01%      0.589      0.717    +0.1281
+     3    65,104    6.29%      0.615      0.764    +0.1492
+     4    65,104    5.69%      0.595      0.799    +0.2049
+     5    65,104    5.04%      0.600      0.792    +0.1912
+     6    65,104    4.97%      0.617      0.780    +0.1627
+     7    65,104    5.81%      0.590      0.725    +0.1347
+     8    65,104    6.27%      0.574      0.725    +0.1512
+     9    65,104    6.43%      0.564      0.641    +0.0772
+    10    65,104    6.15%      0.516      0.664    +0.1479
+
+PER LEAD DAY — (c) new model, test 2018+2019
+   day         n    bust%   baseline      model     margin
+     1   130,208    5.92%      0.621      0.792    +0.1709
+     2   130,208    6.12%      0.589      0.754    +0.1642
+     3   130,208    5.57%      0.600      0.803    +0.2038
+     4   130,208    4.97%      0.593      0.818    +0.2251
+     5   130,208    4.54%      0.590      0.788    +0.1973
+     6   130,208    4.69%      0.611      0.767    +0.1562
+     7   130,208    5.15%      0.544      0.760    +0.2167
+     8   130,208    5.46%      0.550      0.747    +0.1971
+     9   130,208    5.48%      0.560      0.665    +0.1051
+    10   130,208    5.44%      0.555      0.703    +0.1486
+
+wrote data/comparison_5yr.csv

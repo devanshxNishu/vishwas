@@ -1,0 +1,6 @@
+loaded 12904960 rows from 256 dates
+train window: init <= 2017-12-31  (152 dates, 7662320 rows)
+test  window: init >  2017-12-31  (104 dates, 5242640 rows)
+  every row matched a training climatology group
+wrote data/climatology_5yr.parquet (201640 groups, fitted on init <= 2017-12-31)
+wrote data/features_5yr.parquet (1099.3 MB, 12904960 rows, 27 columns)

@@ -1,0 +1,45 @@
+train 488280 rows | test 651040 rows | 23 features
+baseline stratified AUC (frozen bins): 0.7281
+bins: 8   repeats: 5
+
+  [1/23] lead_day               -0.0014
+  [2/23] gh500_mean             +0.0072
+  [3/23] gh500_spread           +0.0111
+  [4/23] u500_mean              +0.0062
+  [5/23] u500_spread            +0.0016
+  [6/23] v500_mean              +0.0033
+  [7/23] v500_spread            +0.0002
+  [8/23] pwat_mean              +0.0857
+  [9/23] pwat_spread            +0.0047
+  [10/23] cape_mean              +0.0115
+  [11/23] cape_spread            +0.0331
+  [12/23] precip_mean            +0.0614
+  [13/23] precip_spread          +0.0655
+  [14/23] gh500_gradient         +0.0059
+  [15/23] wind500_speed          +0.0023
+  [16/23] u850_mean              +0.0018
+  [17/23] v850_mean              +0.0017
+  [18/23] shear_500_850          +0.0048
+  [19/23] flow500_deformation    +0.0015
+  [20/23] month                  +0.0331
+  [21/23] pwat_anomaly           +0.0176
+  [22/23] cape_anomaly           +0.0015
+  [23/23] precip_anomaly         +0.0175
+
+============================================================
+PERMUTATION IMPORTANCE — test set, stratified AUC, top 10
+============================================================
+  feature                    AUC drop       sd
+  pwat_mean                   +0.0857   0.0033
+  precip_spread               +0.0655   0.0046
+  precip_mean                 +0.0614   0.0021
+  cape_spread                 +0.0331   0.0010
+  month                       +0.0331   0.0007
+  pwat_anomaly                +0.0176   0.0011
+  precip_anomaly              +0.0175   0.0017
+  cape_mean                   +0.0115   0.0012
+  gh500_spread                +0.0111   0.0020
+  gh500_mean                  +0.0072   0.0008
+
+A LARGER DROP MEANS THE MODEL RELIED ON IT MORE.
+Negative means shuffling it HELPED — noise, not signal.
