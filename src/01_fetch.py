@@ -100,6 +100,31 @@ WEDNESDAY = 2                      # datetime.date.weekday() code
 ARCHIVE_START = datetime.date(2000, 1, 1)
 ARCHIVE_END = datetime.date(2019, 12, 31)   # 2020/ holds one misfiled date
 
+# How many daily-step messages each variable must contribute PER MEMBER. apcp
+# is 40 because a daily total is the sum of four 6-hour buckets; everything else
+# is one message per lead day.
+EXPECTED_MESSAGES = {
+    "apcp_sfc": 40, "cape_sfc": 10, "pwat_eatm": 10,
+    "hgt_pres_abv700mb": 10, "ugrd_pres_abv700mb": 10, "vgrd_pres_abv700mb": 10,
+    "ugrd_pres": 10, "vgrd_pres": 10,
+}
+
+# Dates the archive cannot serve completely. Found 2026-09-06 by scanning every
+# 2015-2019 Wednesday's index: four dates carry a member whose *_abv700mb files
+# hold only some of the ten daily steps (e.g. 20160224 p08 has 4 of 10). The
+# 0.25 deg families are complete on all four; only the 0.5 deg ones are short.
+#
+# THESE DATES ARE SKIPPED, NOT PATCHED. The two alternatives are both worse:
+# dropping the short member gives that date a 10-member ensemble, and CLAUDE.md's
+# own 5 -> 11 sensitivity shows ensemble size moves the spread baseline (about
+# +0.015 conditional), so a mixed-size record would put an inhomogeneity inside
+# the incumbent we are measuring against; and taking the member's missing steps
+# as absent would silently shorten the lead-time axis for one date.
+# Skipped dates are recorded in INCOMPLETE, never marked done, and printed in
+# the run summary, so the loss is visible rather than inferred from a row count.
+INCOMPLETE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "data", "raw", "incomplete.jsonl")
+
 # Resume state. The download WILL be interrupted; restarting from zero is a day.
 MANIFEST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "data", "raw", "manifest.jsonl")
@@ -108,9 +133,23 @@ MANIFEST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 SAMPLE = 12
 
 
+# botocore defaults to 10 pooled connections. One init date is ~1,210 byte-range
+# GETs, so the pool — not the link — is what limits the fetch: measured on
+# 2026-09-06, four unfetched dates, 200 messages each, alternating settings so a
+# recovering network could not flatter the later run,
+#     default pool (10)   4.43 MB/s
+#     pool = 128          6.09-6.44 MB/s
+# This is a TRANSPORT setting only. The same byte ranges are requested and the
+# same GRIB messages come back; every blob is still checked for its GRIB/7777
+# envelope in fetch(). Raising it further did not help — batch_size 256 with a
+# 256 pool measured slower than the default batch size at pool 128.
+POOL_CONNECTIONS = 128
+
+
 def connect():
     """Anonymous read-only S3 filesystem."""
-    return s3fs.S3FileSystem(anon=True)
+    return s3fs.S3FileSystem(
+        anon=True, config_kwargs={"max_pool_connections": POOL_CONNECTIONS})
 
 
 def list_path(fs, path):
@@ -256,12 +295,17 @@ def fetch(fs, years, limit=None, dry_run=False, on_date=None):
                  if datetime.datetime.strptime(d, "%Y%m%d").date() >= cutoff]
 
     done = load_manifest()
-    todo = [d for d in dates if d not in done]
+    known_incomplete = load_incomplete()
+    todo = [d for d in dates
+            if d not in done and d not in known_incomplete]
     if limit:
         todo = todo[:limit]
 
     print("Wednesday sampling: {} dates in range, {} already done, {} to go."
           .format(len(dates), len(done), len(todo)))
+    if known_incomplete:
+        print("  {} date(s) skipped as unservable by the archive: {}".format(
+            len(known_incomplete), ", ".join(sorted(known_incomplete))))
     if not todo:
         print("Nothing left to fetch.")
         return
@@ -277,9 +321,23 @@ def fetch(fs, years, limit=None, dry_run=False, on_date=None):
         print("Use 02_features.py, which passes its own on_date.")
         sys.exit(1)
 
+    skipped = []
     for number, init in enumerate(todo, 1):
         clock = datetime.datetime.now()
         paths, starts, ends = plan_init_date(fs, init)
+
+        # Integrity BEFORE transfer. A date the archive cannot serve in full is
+        # skipped and recorded; it must never become a short ensemble, and it
+        # must never crash the run three hours in. See INCOMPLETE above.
+        short = shortfall(init, paths)
+        if short:
+            record_incomplete(init, short)
+            skipped.append(init)
+            print("  [{}/{}] {}  SKIPPED — archive incomplete: {}".format(
+                number, len(todo), init,
+                "; ".join("{} {}".format(v, m) for v, m in sorted(short.items()))))
+            continue
+
         blobs = fs.cat_ranges(paths, starts, ends)
 
         bad = [i for i, b in enumerate(blobs)
@@ -299,6 +357,66 @@ def fetch(fs, years, limit=None, dry_run=False, on_date=None):
         record_done(init, len(paths), n_bytes, seconds)
         print("  [{}/{}] {}  {} msgs  {:.1f} MB  {:.1f} s".format(
             number, len(todo), init, len(paths), n_bytes / 1e6, seconds))
+
+    if skipped:
+        print()
+        print("SKIPPED {} date(s) the archive could not serve in full: {}".format(
+            len(skipped), ", ".join(skipped)))
+        print("Recorded in {}. They are NOT in the feature table.".format(INCOMPLETE))
+
+
+def shortfall(init, paths):
+    """Which (variable, member) pairs the archive cannot serve in full.
+
+    Reads the PLAN, so it costs nothing beyond the index fetch that already
+    happened — the check runs before a single message byte is transferred.
+    """
+    counts = {}
+    for path in paths:
+        name = path.split("/")[-1]
+        member = name.rsplit("_", 1)[1].replace(".grib2", "")
+        variable = name.split("_{}00_".format(init))[0]
+        counts[(variable, member)] = counts.get((variable, member), 0) + 1
+
+    short = {}
+    for variable, expected in EXPECTED_MESSAGES.items():
+        for member in MEMBERS_WEEKLY:
+            got = counts.get((variable, member), 0)
+            if got != expected:
+                short.setdefault(variable, {})[member] = got
+    return short
+
+
+def load_incomplete():
+    """Dates already found unservable. Skipped without re-planning them."""
+    if not os.path.exists(INCOMPLETE):
+        return {}
+    out = {}
+    with open(INCOMPLETE) as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+                out[row["init"]] = row.get("shortfall", {})
+            except (ValueError, KeyError):
+                continue
+    return out
+
+
+def record_incomplete(init, short):
+    """Record one unservable date. Never written to the manifest: `done` means
+    the features exist, and for these dates they deliberately do not."""
+    directory = os.path.dirname(INCOMPLETE)
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
+    with open(INCOMPLETE, "a") as handle:
+        handle.write(json.dumps({
+            "init": init, "shortfall": short,
+            "found": datetime.datetime.now().isoformat(timespec="seconds")}) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
 
 
 def wednesdays(start=ARCHIVE_START, end=ARCHIVE_END):

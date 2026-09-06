@@ -45,6 +45,13 @@ ROOT = os.path.dirname(HERE)
 TABLE = os.path.join(ROOT, "data", "features.parquet")
 CLIMATOLOGY = os.path.join(ROOT, "data", "climatology.parquet")
 
+# The per-date parts directory is FIXED and independent of the finalized table
+# path. Parts are the expensive artefact — one HTTP fetch of the archive each —
+# and a second study window must append to the same pile rather than start a
+# new one. Only the finalized table and its climatology vary per window, which
+# is why finalize() takes them as arguments and append_parquet() does not.
+PARTS = os.path.join(ROOT, "data", "features_parts")
+
 # Anomalies are taken against a climatology that is FITTED ON THE TRAINING
 # WINDOW ONLY. See finalize().
 ANOMALY_COLUMNS = ["pwat_mean", "cape_mean", "precip_mean"]
@@ -306,18 +313,14 @@ def build_rows(fields, init):
 
 def append_parquet(rows):
     """Append one date's rows. Written per date so a kill loses one date."""
-    directory = os.path.dirname(TABLE)
-    if not os.path.isdir(directory):
-        os.makedirs(directory)
-    part = TABLE.replace(".parquet", "") + "_parts"
-    if not os.path.isdir(part):
-        os.makedirs(part)
-    target = os.path.join(part, "{}.parquet".format(rows["init"].iloc[0]))
+    if not os.path.isdir(PARTS):
+        os.makedirs(PARTS)
+    target = os.path.join(PARTS, "{}.parquet".format(rows["init"].iloc[0]))
     rows.to_parquet(target, index=False, compression="zstd")
     return target
 
 
-def finalize(train_end):
+def finalize(train_end, table_path=TABLE, climatology_path=CLIMATOLOGY):
     """
     Add climatology-relative anomalies once every date is in.
 
@@ -337,8 +340,7 @@ def finalize(train_end):
     to its own period's mean, which would reintroduce the leak for precisely
     the groups where it does the most damage.
     """
-    part = TABLE.replace(".parquet", "") + "_parts"
-    files = sorted(os.path.join(part, f) for f in os.listdir(part)
+    files = sorted(os.path.join(PARTS, f) for f in os.listdir(PARTS)
                    if f.endswith(".parquet"))
     if not files:
         print("No parts to finalize.")
@@ -395,14 +397,14 @@ def finalize(train_end):
     else:
         print("  every row matched a training climatology group")
 
-    climatology.to_parquet(CLIMATOLOGY, index=False, compression="zstd")
+    climatology.to_parquet(climatology_path, index=False, compression="zstd")
     print("wrote {} ({} groups, fitted on init <= {})".format(
-        CLIMATOLOGY, len(climatology), cutoff.date()))
+        climatology_path, len(climatology), cutoff.date()))
 
-    table.to_parquet(TABLE, index=False, compression="zstd")
-    size = os.path.getsize(TABLE) / 1e6
+    table.to_parquet(table_path, index=False, compression="zstd")
+    size = os.path.getsize(table_path) / 1e6
     print("wrote {} ({:.1f} MB, {} rows, {} columns)".format(
-        TABLE, size, len(table), len(table.columns)))
+        table_path, size, len(table), len(table.columns)))
 
 
 def main():
@@ -410,6 +412,14 @@ def main():
     parser.add_argument("--years", type=int, default=None)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--finalize", action="store_true")
+    parser.add_argument("--table", default=TABLE,
+                        help="finalized feature table to write. A second study "
+                             "window must NOT overwrite the one behind a "
+                             "published result — give it a new path.")
+    parser.add_argument("--climatology", default=CLIMATOLOGY,
+                        help="where to write the fitted climatology. It is "
+                             "fitted on --train-end, so it belongs to one "
+                             "study window and travels with --table.")
     parser.add_argument("--train-end", default=None,
                         help="last init date IN THE TRAINING WINDOW, "
                              "e.g. 2015-12-31. Required with --finalize: the "
@@ -422,7 +432,7 @@ def main():
                 "--finalize requires --train-end (e.g. --train-end 2015-12-31). "
                 "There is deliberately no default: a climatology fitted over "
                 "the whole record leaks the test period into every anomaly.")
-        finalize(args.train_end)
+        finalize(args.train_end, args.table, args.climatology)
         return
     if args.years is None and args.limit is None:
         parser.print_help()
