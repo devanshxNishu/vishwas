@@ -86,6 +86,34 @@ CANONICAL = [
     ("GEFSv12 dataset paper", "Guan et al. (2022), Mon. Wea. Rev. 150(3), 647-665",
      [], None),
     ("theme", "Smart Automation", [], None),
+
+    # P34, 6 Sep — THE FIVE-YEAR EXTENSION. These sit BESIDE the published
+    # values above, they do not replace them. The published run's scope is
+    # train 2018 / test 2019; (b) and (c) are a different study window and the
+    # two must never be merged into one trend. See the FORBIDDEN entries for
+    # the specific misuse.
+    ("P34 (b) five-year, test 2019",
+     "0.561 baseline / 0.703 model, margin +0.1418", [], None),
+    ("P34 (c) five-year, test 2018+2019",
+     "0.606 baseline / 0.755 model, margin +0.1491, "
+     "CI +0.1164 to +0.2029 over 104 dates", [], None),
+    ("P34 paired (b)-(a)",
+     "margin -0.0118, CI -0.0509 to +0.0111, INCLUDES ZERO -> report as "
+     "UNCHANGED; model -0.0147, CI -0.0539 to +0.0069", [], None),
+    ("P34 relabelling control",
+     "baseline -0.0031, CI -0.0066 to -0.0001; 4,576 of 651,040 rows "
+     "(0.70%) change label, bust rate 6.467% -> 6.035%", [], None),
+    ("P34 dates", "256 usable (2015: 52, 2016: 48, 2017: 52, 2018: 52, "
+                  "2019: 52); 152 newly fetched; 4 skipped as unservable",
+     [], None),
+    ("P34 rows", "12,904,960 feature rows, 3,205,120 labelled rows", [], None),
+    ("P34 data fetched", "124.5 GB in total", [], None),
+    ("P34 bins", "SEVEN bins on the pooled two-year test set, not eight; "
+                 "522,549 of 1,302,080 rows (40%) in the collapsed driest bin",
+     [], None),
+    ("P34 threshold scope", "0 of 12,520 groups qualify; 100% region scope; "
+                            "gate needs 160 train samples, window has 152",
+     [], None),
 ]
 
 # ---------------------------------------------------------------------------
@@ -130,6 +158,33 @@ FORBIDDEN = [
      "Never quote a margin range containing +0.035. It came from a "
      "'forecast AND truth > X mm' filter, which conditions on the OUTCOME and "
      "deletes both classes of extreme bust. The honest range is +0.13 to +0.16.",
+     None),
+
+    # P34, 6 Sep — THE SCOPE CONFLATION. 0.728 (train 2018 / test 2019) and
+    # 0.755 (train 2015-17 / test 2018+19) are different test sets, different
+    # labels, and a different bin partition (7 vs 8). Setting them side by side
+    # manufactures an improvement that the paired test explicitly rules out:
+    # -0.0118, CI -0.0509 to +0.0111, includes zero. These are stale-CLAIM
+    # rules, so ABSOLVING applies and CLAUDE.md's own prohibition of the
+    # phrasing is not itself reported.
+    (r"0\.728\s*(?:to|→|->|vs\.?)\s*0\.755",
+     "0.728 and 0.755 are different studies, not a before and after. Different "
+     "test set, different labels, and SEVEN bins instead of eight. The paired "
+     "test over the shared 52 dates gives -0.0118, CI -0.0509 to +0.0111, "
+     "which INCLUDES ZERO: report P34 as UNCHANGED.",
+     None),
+
+    (r"0\.755\s*(?:to|→|->|vs\.?)\s*0\.728",
+     "Same scope conflation in the other direction. 0.755 is (c), the "
+     "two-test-year five-year run; 0.728 is the published run. Neither is a "
+     "revision of the other.",
+     None),
+
+    (r"improv\w*\s+to\s+0\.755",
+     "0.755 is not an improvement on anything. It is (c): train 2015-17, test "
+     "2018+2019, on a different bin partition. The only new claim it supports "
+     "is +0.149 over 104 forecast dates, and the effect of more training data "
+     "on an unchanged question was measured as UNCHANGED.",
      None),
 
     (r"[Dd]isaster [Mm]anagement",

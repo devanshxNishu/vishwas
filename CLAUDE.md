@@ -178,6 +178,23 @@ VERIFY-IMD — all four passed 2026-08-27:
   PHYSICS CHECK (beyond the four): July 2015 all-India mean 9.18 mm/day vs
   January 0.27 mm/day, a factor of 35. The monsoon is present in the decode.
 
+S3 THROUGHPUT — THE CONNECTION POOL, NOT THE LINK. MEASURED 2026-09-06 (P34).
+One init date is ~1,210 byte-range GETs, and botocore pools only 10 connections
+by default. That pool, not bandwidth, is what limits the fetch. Proof it was
+not the link: with the fetch running alone the whole interface carried
+0.91 MB/s; adding a second downloader took the interface to 2.49 MB/s.
+    default pool (10)          0.9 - 4.4 MB/s     478 s per date
+    max_pool_connections=128   6.1 - 6.4 MB/s      74 s per date
+Benchmarked on four UNFETCHED dates, 200 messages each, alternating settings so
+a recovering network could not flatter the later run. Raising it further did not
+help: batch_size 256 with a 256 pool measured SLOWER than the default batch size
+at pool 128. connect() in 01_fetch.py now sets POOL_CONNECTIONS = 128.
+THIS IS A TRANSPORT SETTING ONLY — the same byte ranges are requested, the same
+GRIB messages come back, and every blob still gets its GRIB/7777 envelope check
+in fetch(). It is a ~6x speedup on every future fetch. DO NOT let it be
+rediscovered, and do not read a slow first date as "the network is bad" without
+checking the pool first.
+
 IMD OPERATIONAL NOTE: imdpune.gov.in is flaky. The first get_data() call of
 a session may die with a TLS connection reset; an immediate retry works.
 The host also resets any client that offers HTTP/2 in ALPN (curl fails,
@@ -362,10 +379,20 @@ only ANOMALY_COLUMNS + CLIMATOLOGY_KEYS, so the 850 columns fall outside it,
 pd.concat silently fills them with NaN for the new dates, and
 HistGradientBoostingClassifier handles NaN natively. Result: a feature that is
 real for 104 dates and NaN for 156, with no error anywhere.
-EITHER keep 850 hPa for every date (recommended — the parts are only 486 MB;
-the 27.4 GB is transfer time, ~1.7 h overnight, and skipping it destroys data
-already fetched) OR strip the three columns from the existing parts first so
-the schema stays uniform. NEVER mix.
+EITHER keep 850 hPa for every date (recommended — the parts are small; the
+cost is transfer time, and skipping it destroys data already fetched) OR strip
+the three columns from the existing parts first so the schema stays uniform.
+NEVER mix.
+  COST CORRECTED 2026-09-06 BY MEASUREMENT (P34). This note used to say the
+  extension costs "~27.4 GB / ~1.7 h". IT IS 488 MB PER DATE, 74.2 GB for the
+  152 new dates, 3.44 h. The 27.4 GB was the 850 hPa PORTION alone and was
+  transcribed as though it were the total. The COST block above was right all
+  along (~122 GB for ~261 dates); this note disagreed with it and this note was
+  the wrong one. The extension ran and the schema held: 256 parts, one schema,
+  850 hPa present throughout, zero nulls in all 27 columns of the finalized
+  table. src/17_schema_guard.py is the check, and it exits non-zero on a
+  mismatch rather than warning — run it before and after any fetch that adds
+  dates.
 
 P11 ABLATIONS — 2026-08-29. All five, same split/labels/seed.
   FULL 0.728 | drop month 0.722 (-0.006) | drop precip 0.731 (+0.003)
@@ -616,6 +643,90 @@ p >= 0.1271. Frozen onto test it fires at 11.62% (2019 is wetter: 6.47% vs
   copying its design, AND imports the original unchanged for the AUC margin.
   ETS IS computable from the four counts: H_rand = (H+FA)(H+M)/N. Paras's guide
   says otherwise and is wrong on that point.
+
+================================================================================
+THE FIVE-YEAR EXTENSION (P34) — COMPLETE 2026-09-06. Study window 2015-2019.
+================================================================================
+
+VERDICT: TRIPLING THE TRAINING DATA DID NOT MEASURABLY CHANGE THE RESULT.
+The two runs score the SAME 52 test dates, so the pairing is used rather than
+wasted on two overlapping intervals: resample the dates once per replicate and
+recompute BOTH models on that same resample (src/19_paired_ab.py).
+    margin (b)-(a)   -0.0118   95% CI -0.0509 to +0.0111   INCLUDES ZERO
+    model  (b)-(a)   -0.0147   95% CI -0.0539 to +0.0069   INCLUDES ZERO
+REPORT THIS AS UNCHANGED. Not as a decline, not as an improvement. The
+published 0.728 / 0.565 / +0.13 to +0.16 stands for its stated scope. One year
+of training was already enough, and that is now an EXPERIMENTAL RESULT rather
+than an assumption — which strengthens the original rather than weakening it.
+
+  (a) published   train 2018      test 2019      0.565 / 0.728   +0.1634
+  (b) five-year   train 2015-17   test 2019      0.561 / 0.703   +0.1418
+  (c) five-year   train 2015-17   test 2018+19   0.606 / 0.755   +0.1491
+                                                 CI +0.1164 to +0.2029
+
+(c) IS THE NEW RESULT AND THE ONLY NEW CLAIM: +0.149 across 104 forecast dates,
+two monsoons, all four seasons in the test block (DJF 26, MAM 26, JJAS 34,
+ON 18), entire interval above zero. This is what retires "one test year is
+thin".
+
+NEVER SET 0.755 BESIDE 0.728. Three INDEPENDENT reasons, each sufficient on its
+own: a different test set, different labels, and qcut yielding SEVEN bins
+instead of eight — pooling two years puts 522,549 of 1,302,080 rows (40%) into
+the collapsed driest bin, so the n-weighted stratified average is averaging
+over a different partition. A "0.728 -> 0.755 improvement" is a scope
+conflation, not a gain, and scripts/check_docs.py now forbids that phrasing.
+
+THE SPLIT HAS A CONFOUND, AND IT IS MEASURED. "Only the training data differs"
+is not quite true: bust thresholds are the 95th percentile OF THE TRAINING
+WINDOW, so retraining relabels the test set — 4,576 of 651,040 rows (0.70%),
+bust rate 6.467% -> 6.035%. Ensemble spread's scores are BIT-IDENTICAL across
+both runs, so it is a fixed ranker and its movement isolates the relabelling
+with the ranker held still:
+    baseline (b)-(a)   -0.0031   95% CI -0.0066 to -0.0001   excludes zero
+That is roughly a fifth of the model's -0.015, so relabelling is real but does
+not account for the move. THE CONFOUND IS INHERENT TO DOING IT HONESTLY: the
+only way to remove it is one threshold fitted across all 260 dates, which is
+precisely the leak 06_label.py exists to prevent.
+
+ROBUSTNESS IMPROVED WHERE IT WAS WEAKEST. Dropping the driest bin NARROWED the
+published margin to +0.132; in both new runs it WIDENS — +0.144 for (b),
++0.167 for (c). The new result does not lean on the bin where spread is
+degenerate. (c) is ahead in all 7 bins (+0.109 to +0.193); (b) in all 8
+(+0.099 to +0.159).
+
+THE LEAD-DAY CLAIM, CORRECTED. DO NOT WRITE "the margin is as wide at Day 10 as
+at Day 1". That rested on the 52-date curve. The 104-date curve shows a gentle
+decline: +0.171 at Day 1 easing to +0.149 at Day 10. THE CLAIM THAT SURVIVES
+BOTH is: positive at every lead day, with the whole confidence interval above
+zero at all ten.
+
+DATA. 256 usable dates (2015: 52, 2016: 48, 2017: 52, 2018: 52, 2019: 52),
+12,904,960 feature rows, 3,205,120 labelled rows, 124.5 GB fetched in total.
+Outputs carry a _5yr suffix so both studies coexist unambiguously:
+data/{features,climatology,labelled,bust_thresholds,model_predictions,
+comparison,lead_day_auc}_5yr.*, models/vishwas_model_5yr.joblib,
+ablations/a_full_5yr.log, figures/fig10_lead_curve_5yr.png. Nothing behind the
+published result was overwritten.
+
+FOUR DATES THE ARCHIVE CANNOT SERVE — 20160224 (p08), 20160309 (p09),
+20160615 (p06), 20160622 (p01). One member truncated in the *_abv700mb family
+only; the 0.25 deg families are complete on all four. SKIPPED, NOT PATCHED:
+dropping the short member gives those dates a 10-member ensemble, and this
+project's own 5 -> 11 sensitivity shows ensemble size moves the spread baseline
+by about +0.015 conditional — that inhomogeneity would sit INSIDE the incumbent
+being measured. Recorded in data/raw/incomplete.jsonl and printed in the run
+summary. DO NOT "fix" this by lowering EXPECTED_MEMBERS. 01_fetch.py now checks
+message counts against EXPECTED_MESSAGES before transferring a byte, so an
+unservable date is a logged skip rather than a crash three hours in.
+
+PER-GRIDPOINT THRESHOLDS REMAIN OUT OF REACH. 0 of 12,520 (lat, lon, lead_day)
+groups qualify; 100% region scope. The gate needs 160 training samples (8
+exceedances at the 95th pct) and the training window has 152 — 156 Wednesdays
+in 2015-2017 minus the 4 skipped. EIGHT SHORT. DO NOT lower --min-exceedances:
+at 152 samples a 95th percentile rests on 7.6 observations, so one unlucky day
+would set a gridpoint's threshold for the whole study. Getting there needs a
+LONGER TRAINING WINDOW, roughly seven years, not a re-cut of these. Note this
+also keeps (a) and (b) comparable, since the published run is region-scoped too.
 
 TEAM ROLES AND CREDIT — CORRECTION PENDING THE 20 SEP REBUILD, P23 2026-08-31.
 
