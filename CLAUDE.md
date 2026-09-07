@@ -231,8 +231,71 @@ stands. Do not let dashboard work block the evaluation.
 Its real layout is NOT gefs.YYYYMMDD/{HH}/pgrb2a/ — probed 2026-08-25: the
 2017-era files sit directly under {HH}/ with pgrb2a in the FILENAME
 (gec00.t00z.pgrb2af000), and the current era uses {HH}/atmos/pgrb2ap5/.
-Coverage starts 2017-01-01 and carries 31 members, so it neither overlaps nor
-is comparable to the 5-member 2000-2019 reforecast.
+
+"NEITHER OVERLAPS NOR IS COMPARABLE" — HALF WRONG, CORRECTED 2026-09-07 (P37).
+Established by LISTING the bucket, not by reasoning about retention:
+  IT DOES OVERLAP IN DATE. noaa-gefs-pds holds an UNBROKEN daily series from
+  gefs.20170101 to the present — 3,537 entries for a 3,537-day span, zero
+  missing. gefs.20190731/00/ still exists, and that is both a published
+  52-date test-set member and the demo date. There is no retention window.
+  IT IS STILL NOT COMPARABLE, but for reasons this file did not name:
+    - RESOLUTION. The 2019 operational families are pgrb2a/pgrb2b at 1.0 deg
+      (181 x 360). The analysis grid is 0.5 deg, so HALF our latitudes and
+      half our longitudes DO NOT EXIST in the 2019 operational files.
+      colocation would become interpolation, which to_india_grid() forbids.
+    - MODEL VERSION. GEFSv12 became operational 2020-09-23, after the
+      reforecast ends. Every overlapping date is GEFS v11 output; the
+      reforecast is GEFSv12. Different model, not just a different sample.
+    - Member count differs too (21 in 2019, 31 now, 11 in training), but it
+      is the least of the three and the only one we can correct for.
+  CONSEQUENCE: a "same date, both archives" controlled comparison is NOT
+  available, and the four confounds — model version, resolution, gradient
+  length scale, member count — would exceed the signal. Do not build one and
+  do not report one.
+  THE LIVE PATH IS A BETTER MATCH THAN THE HISTORICAL OVERLAP, which is
+  counter-intuitive and worth holding onto: today's cycle is GEFSv12 at
+  0.5 deg from pgrb2ap5 — the same model family and the exact grid the model
+  was trained on.
+OPERATIONAL VIABILITY — PROBED 2026-09-07 (P37), PS-fidelity item 4 CLOSED as
+a question, OPEN as an engineering decision. THE PUBLISHED MODEL CAN SCORE A
+LIVE CYCLE. Ran end to end on gefs.20260907/00Z, src/20_oper_probe.py,
+logs/p37_oper.log.
+  FIELD PROVENANCE, from a real .idx and not from documentation:
+    pgrb2ap5   HGT/UGRD/VGRD 500 mb, UGRD/VGRD 850 mb, PWAT, APCP  (7 of 8)
+    pgrb2bp5   CAPE:surface                                        (1 of 8)
+  CAPE IS THE TRAP. pgrb2ap5 carries CAPE:180-0 mb above ground — mixed-layer
+  CAPE, a DIFFERENT QUANTITY from the reforecast's cape_sfc, which its own
+  .idx confirms is CAPE:surface. Matching on "CAPE" would silently feed the
+  model a different variable. Surface CAPE is in the b family.
+  APCP SUMMATION REPRODUCES A DAILY TOTAL. Operational buckets are disjoint
+  and tiling — f102 is 96-102, f108 102-108, f114 108-114, f120 114-120 — so
+  four are SUMMED per day, exactly as daily_precip() already does. Never
+  differenced.
+  MEMBERS SUBSAMPLED 31 -> 11 (gec00 + gep01..gep10) to match training. A
+  31-member spread is SHARPER than anything in training, so using all of them
+  would shift the model's most important feature family. "More is better" is
+  the wrong instinct here; see the 5 -> 11 sensitivity below.
+  THE STORED CLIMATOLOGY APPLIES UNCHANGED. Keyed on season, not date, so
+  every one of 50,410 live rows matched a group in data/climatology.parquet.
+  It is LOADED, never refitted — refitting on operational data is the leak
+  finalize() was rewritten to prevent.
+  USE THE 00Z CYCLE. The reforecast is all 00Z inits, so a 06Z cycle is a
+  quiet mismatch: over India the diurnal cycle makes a 06Z-06Z daily
+  accumulation a different quantity from 00Z-00Z. Measured, not assumed — the
+  same probe on 06Z put 2.63% of gh500_mean outside the training range, and
+  on 00Z that falls to 0.01%.
+  COST FOR ONE CYCLE: 1,210 messages, 207.6 MB, 89.5 s wall clock (plan 14.3,
+  transfer 73.0, features+score 2.2). A daily job is trivially affordable.
+  DISTRIBUTIONS: on 00Z no feature puts more than 1% of live values outside
+  the training range. The model is interpolating, not guessing.
+  DEPLOY THE CALIBRATED SCORE, NOT THE RAW ONE. The live tail reproduces the
+  known saturation: p >= 0.9 on 7 of 50,410 cells (0.014%), against 72 of
+  651,040 (0.011%) on the test set. P12 showed those leaves are overconfident.
+  NO TRUTH, SO NO ACCURACY. IMD gauge rainfall lags far beyond this horizon.
+  A live run yields a confidence FIELD and nothing that can be scored.
+  10.93% of cells crossed the FIXED threshold p >= 0.153 on 7 Sep 2026. The
+  threshold is NOT recomputed per cycle; the crossed fraction is the signal.
+
 ARCHIVE RANGE IS 2000-2019. reforecast/2020/ holds one misfiled 2010
 date. Never write range(2000, 2021).
 

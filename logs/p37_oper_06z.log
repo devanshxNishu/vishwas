@@ -1,0 +1,87 @@
+newest complete cycle: gefs.20260907/06
+
+==============================================================================
+VISHWAS P37 — operational probe, cycle gefs.20260907/06Z
+==============================================================================
+members : 11 of 31 available — gec00 .. gep10
+          SUBSAMPLED to match the 11 the model was trained on. A
+          31-member spread is sharper than anything in training, so
+          using all of them would shift the model's most important
+          feature family. See MEMBER COUNT in the docstring.
+grid    : 0.50 deg (pgrb2ap5/pgrb2bp5) — the analysis grid exactly
+truth   : NONE. No accuracy of any kind is computed below.
+
+planned 1210 messages in 12.6 s
+fetched 209.3 MB in 74.0 s (2.83 MB/s)
+   apcp_sfc               11 members x 40 steps
+   cape_sfc               11 members x 10 steps
+   hgt_pres_abv700mb      11 members x 10 steps
+   pwat_eatm              11 members x 10 steps
+   ugrd_pres              11 members x 10 steps
+   ugrd_pres_abv700mb     11 members x 10 steps
+   vgrd_pres              11 members x 10 steps
+   vgrd_pres_abv700mb     11 members x 10 steps
+
+built 50410 rows x 24 columns via 02_features.build_rows(), unchanged
+  every row matched a stored climatology group (201640 groups, keyed on lat, lon, lead_day, season)
+
+model   : vishwas_model.joblib (23 features, trained ['2018-01-01', '2019-12-31'])
+
+==============================================================================
+CONFIDENCE FIELD — no truth, no accuracy, no score of correctness
+==============================================================================
+operating point: p >= 0.153, the FIXED published threshold, NOT recomputed here
+flagged high risk: 5,861 of 50,410 cells = 11.63%
+  This is NOT 10%, and that is correct. The threshold is a fixed
+  operating point; how much of the grid crosses it on a given day
+  is the signal.
+
+   day     mean p      max p  high risk %  uncertain %
+     1     0.0430     0.6339        5.30%        5.93%
+     2     0.0520     1.0000        7.66%        8.11%
+     3     0.0583     0.9999        9.13%       11.76%
+     4     0.0688     0.9373       11.51%       13.45%
+     5     0.0774     0.8184       12.68%       14.34%
+     6     0.0715     0.9877       11.19%       15.95%
+     7     0.0714     0.8560       13.71%       13.03%
+     8     0.0835     0.8607       14.82%       12.72%
+     9     0.0901     0.9321       17.08%       14.46%
+    10     0.0933     0.9856       13.21%       16.05%
+
+training rows for the comparison: 651,040 (52 dates)
+
+==============================================================================
+FEATURE DISTRIBUTIONS — live cycle vs the model's TRAINING rows
+==============================================================================
+  feature                 train p1 train p99   live p1  live p99 outside
+  lead_day                   1.000    10.000     1.000    10.000   0.00%
+  gh500_mean              5636.200  5878.082  5826.005  5916.222   2.63%  <-- EXTRAPOLATING
+  gh500_spread               2.515    36.698     1.990    30.532   0.00%
+  u500_mean                 -9.510    28.874    -7.848     9.480   0.00%
+  u500_spread                0.395     7.322     0.418     6.066   0.00%
+  v500_mean                -11.581     9.761    -5.979     5.561   0.00%
+  v500_spread                0.490     7.369     0.439     5.063   0.00%
+  pwat_mean                  0.855    68.836     3.573    64.864   0.00%
+  pwat_spread                0.136    10.877     0.379     8.983   0.00%
+  cape_mean                  0.000  1912.965     0.000  2090.959   0.00%
+  cape_spread                0.000   826.147     0.000   775.179   0.00%
+  precip_mean                0.000    30.319     0.000    24.822   0.00%
+  precip_spread              0.000    25.320     0.000    25.339   0.00%
+  gh500_gradient             0.329    22.038     0.213    12.971   0.00%
+  wind500_speed              0.619    29.666     0.415    10.572   0.00%
+  u850_mean                 -8.633    17.765    -5.882    12.281   0.00%
+  v850_mean                 -8.782     7.208    -6.635     5.239   0.00%
+  shear_500_850              0.637    27.704     0.313    13.778   0.00%
+  flow500_deformation        0.199    11.740     0.157     5.778   0.00%
+  month                      1.000    12.000     9.000     9.000   0.00%
+  pwat_anomaly             -20.631    19.692   -13.325     8.226   0.00%
+  cape_anomaly            -679.009   886.891  -776.077  1619.724   0.00%
+  precip_anomaly           -10.392    19.062   -19.791    13.315   0.10%
+
+  1 feature(s) put more than 1% of live values OUTSIDE the training range:
+    gh500_mean             2.63% outside; train [5516.579, 5910.750] live [5795.038, 5930.610]
+
+wrote /Users/devansh/vishwas/data/features_oper.parquet
+wrote /Users/devansh/vishwas/data/predictions_oper.parquet
+
+TIMING for one cycle: plan 12.6 s, transfer 74.0 s, features+score 2.2 s, total 88.8 s; 209.3 MB
