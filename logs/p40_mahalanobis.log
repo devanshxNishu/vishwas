@@ -1,0 +1,56 @@
+labelled table            1,302,080 rows
+  split == train          651,040 rows over 52 dates
+  minus 13 validation     488,280 rows over 39 dates  <- the fitted set
+  bundle n_train_rows     488,280   MATCH
+
+condition number, raw covariance          2.714e+05
+condition number, standardised (used)     7.487e+01
+  below the 1e+10 trigger -> NO regularisation applied
+
+======================================================================================
+SQUARED MAHALANOBIS DISTANCE, 23 features, live cycle 20260908
+reference = the 488,280 fitted training rows; quantiles are EMPIRICAL
+======================================================================================
+  group                                n       p50       p90        p99         max
+  training rows (reference)      488,280     17.76     39.86    100.72      4301.7
+  live, gauged                    12,520     17.00     29.07     74.11       187.8
+  live, ungauged                  37,890     21.85     52.27    120.43       853.9
+  live, ungauged AND flagged       4,986     44.73     93.26    219.03       853.9
+  live, gauged AND flagged           974     21.11     52.52    109.60       187.8
+
+  fraction beyond the TRAINING 99th percentile (D^2 > 100.72):
+    training rows (reference)         1.00%
+    live, gauged                      0.29%
+    live, ungauged                    1.66%
+    live, ungauged AND flagged        8.82%
+    live, gauged AND flagged          1.33%
+  by construction the training row itself sits at 1.00%.
+
+======================================================================================
+WHICH STORY
+======================================================================================
+  ungauged median D^2 is 1.28x the gauged median (21.85 vs 17.00)
+  ungauged beyond training p99: 1.66%   gauged: 0.29%   expected under (a): ~1%
+  ungauged AND FLAGGED beyond training p99: 8.82%
+
+  STORY (a) -- METEOROLOGY. The ungauged cells sit inside the joint
+  training distribution at close to the rate the training rows
+  themselves do, so 13.16% is not the model extrapolating into a
+  void. The P39 decision stands: score all 5,041, mark the 3,789.
+
+  THE FLAGGED UNGAUGED CELLS ARE THE QUALIFICATION, AND THEY ARE PRINTED
+  WHATEVER THE VERDICT SAYS. 8.82% of them sit beyond the training 99th
+  percentile, against 1.33% of the flagged GAUGED cells -- 6.6x -- and their
+  median D^2 of 44.73 is 2.5x the training median of 17.76. So the ALARMS
+  raised outside the gauge grid are drawn disproportionately from the
+  sparse edge of the training distribution, even though the ungauged
+  field AS A WHOLE is not. That is a minority effect -- 91.2% of flagged
+  ungauged cells are still inside the hull -- so it qualifies story (a)
+  rather than replacing it with (b). Report it with the headline.
+
+  IN-RANGE IS STILL NOT VERIFIED. This measures DISTANCE TO THE TRAINING
+  DISTRIBUTION and nothing else. No gauge means no label ever existed
+  there, so nothing at those points has been or can be scored. A cell
+  can sit at the centre of the training cloud and still be wrong.
+
+wrote /Users/devansh/vishwas/data/mahalanobis.csv

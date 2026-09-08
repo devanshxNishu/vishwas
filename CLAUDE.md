@@ -389,6 +389,152 @@ shift 0.0050 against blocks far wider than that.
   rate ever observed in held-out data, so the system does not display a
   confidence it has not earned."
 
+REGION LABELS ON THE DASHBOARD — FIXED AND DEPLOYED 2026-09-09 (P40).
+The "most error-prone areas" panel names places through region(lon, lat), a
+table of approximate lat/lon rectangles. THE BOXES ARE FINE; THE COMPOUND NAMES
+WERE NOT. Every wrong label was a compound asserting a SECOND, NARROWER place
+the rectangle cannot guarantee, and every single-name label was correct:
+    Gujarat–Saurashtra              -> Gujarat        (24.0N 73.0E)
+    Konkan–Goa coast                -> Konkan coast   (20.0N 73.0E; Goa is 15.3N)
+    Central India (MP–Chhattisgarh) -> Central India  (25.0N 76.5E is Baran, RAJASTHAN)
+    West Rajasthan                  -> Rajasthan      (26.0N 74.0E sits ON IMD's
+                                       own West/East Rajasthan subdivision line,
+                                       so an IMD or NCMRWF judge checks it on sight)
+Two off-screen compounds failed the same test and were renamed:
+'Bengal–Odisha coast' is assigned inland to 84E, ~230 km from the sea, so it
+became 'Bengal–Odisha'; 'Kerala–coastal Karnataka' reaches 77.5E at 12.5N,
+interior Karnataka, so it became 'Kerala–Karnataka'. 'Telangana–Vidarbha' WAS
+KEPT DELIBERATELY: it names two PEER regions the box genuinely spans, with no
+narrower assertion, exactly as 'Bihar–Jharkhand' does. A peer compound is not
+the defect; a NARROWING compound is. Do not "finish the job" by reducing it to
+one state — that would label Vidarbha (Maharashtra) as Telangana, a fresh
+state-level error.
+
+THE TIE-BREAK IS THE TRAP, AND IT COST ONE OF THE TWO INSTRUCTED BOX EDITS.
+region() picks, among all boxes CONTAINING the point, the one whose CENTRE is
+nearest. So shrinking a box MOVES ITS CENTRE and can steal or surrender points
+nowhere near the edge that moved. Measured over the 1,252 gauge cells:
+    Bihar–Jharkhand latMin 21.5 -> 22.5   APPLIED. 7 cells fixed, 3 regressed.
+        Fixes 21.5/22.0N x 83.0/83.5E (Raigarh/Jashpur, CHHATTISGARH — 22.0N
+        83.5E was showing as rank 09 on the Day 5 view). Costs 22.5N
+        85.5/86.0E (Singhbhum, JHARKHAND) and 26.5N 83.5E (Gorakhpur, UP).
+    Interior Maharashtra maxLat 21.5 -> 21.2   NOT APPLIED, ON PURPOSE.
+        It fixes 5 Madhya Pradesh cells but breaks 2 more elsewhere: the centre
+        moves 18.75N -> 18.6N and steals 17.0N 78.0E (HYDERABAD, Telangana) and
+        17.0N 76.5E (Kalaburagi, Karnataka) from their correct boxes. Both
+        surface in the top-10 panel. Net 13 fixed / 5 broken, but it puts MORE
+        wrong labels on the visible panel than were there before.
+CONSEQUENCE: 21.5N 75.5E (Khargone/Barwani, MADHYA PRADESH) STILL READS
+"Interior Maharashtra". IT IS A KNOWN SURVIVOR, not an oversight. Fixing it
+needs a tie-break that does not depend on box centres — containment depth was
+tried and is WORSE (168 cells move, and it does not fix Hyderabad either) — so
+it is post-20-Sep work. DO NOT apply the 21.2 narrowing without re-measuring.
+
+TWO FILES CARRY THE TABLE and a rebuild from source silently reverts a
+one-file fix: site/source/vishwas-dashboard.dc.html (design-chat source) and
+site/dashboard/index.html (built page). Both were edited, and the parsed tables
+are asserted identical. Deployed and VERIFIED ON THE SERVED PAGE, not merely
+committed: vishwas-five.vercel.app/dashboard/ returns 'Konkan coast',
+'Rajasthan', 'Gujarat', 'Central India', 'Bengal–Odisha', 'Kerala–Karnataka'
+and zero occurrences of Saurashtra, "Goa coast", Chhattisgarh, "West
+Rajasthan", "coastal Karnataka". A COMMIT IS NOT A DEPLOY AND A DEPLOY IS NOT
+A VERIFICATION. deck/VISHWAS_SIH.{pptx,pdf} was held on exactly this (slide 3
+prints the dashboard URL) and was released unchanged once the page verified.
+
+IS THE UNGAUGED FIELD A PREDICTION OR AN EXTRAPOLATION? — ANSWERED 2026-09-09
+(P40). src/23_mahalanobis.py, logs/p40_mahalanobis.log, data/mahalanobis.csv.
+P39's domain table is 23 SEPARATE ONE-DIMENSIONAL checks, so it cannot tell
+"genuinely stormier terrain" from "joint feature combinations never seen". A
+cell can sit inside every feature's own range and still occupy an empty corner
+of 23-dimensional space. Squared Mahalanobis distance settles it, mean and
+covariance fitted on THE 488,280 ROWS THE ESTIMATOR ACTUALLY SAW — split=="train"
+MINUS the 13 interleaved validation dates, asserted against the bundle's
+n_train_rows — not on the whole labelled table.
+    group                        n        p50    p90     p99      max   >train p99
+    training rows (reference)  488,280  17.76  39.86  100.72   4301.7     1.00%
+    live, gauged                12,520  17.00  29.07   74.11    187.8     0.29%
+    live, ungauged              37,890  21.85  52.27  120.43    853.9     1.66%
+    live, ungauged AND flagged   4,986  44.73  93.26  219.03    853.9     8.82%
+    live, gauged AND flagged       974  21.11  52.52  109.60    187.8     1.33%
+VERDICT: STORY (a), METEOROLOGY. The ungauged field as a whole sits inside the
+joint training distribution at 1.66% beyond the training 99th percentile
+against the training rows' own 1.00%. 13.16% is not the model extrapolating
+into a void, and the P39 decision stands: score all 5,041, mark the 3,789.
+  THE QUALIFICATION IS THE FLAGGED SUBSET AND IT SHIPS WITH THE HEADLINE.
+  8.82% of flagged UNGAUGED cells sit beyond the training p99, against 1.33%
+  of flagged GAUGED cells — 6.6x — and their median D^2 of 44.73 is 2.5x the
+  training median. The ALARMS raised outside the gauge grid are drawn
+  disproportionately from the sparse edge of the training distribution even
+  though the field as a whole is not. 91.2% of them are still inside the hull,
+  so this QUALIFIES (a) rather than replacing it with (b). Never quote the
+  1.66% without the 8.82%.
+  THE REFERENCE IS THE EMPIRICAL TRAINING DISTRIBUTION, NOT A CHI-SQUARED
+  TABLE. D^2 ~ chi2(23) needs multivariate normality and these features are
+  nothing like it — precip_mean is zero-inflated, month is discrete and cyclic.
+  A chi-squared cutoff would be a distributional assumption smuggled in as a
+  threshold. Condition number 74.87 on the standardised (correlation) matrix
+  against 2.714e+05 raw, so NO regularisation was needed or applied; the ridge
+  trigger sits at 1e10 and is reported either way.
+  IN-RANGE IS STILL NOT VERIFIED. This measures distance to the training
+  distribution and nothing else. No gauge means no label ever existed, so a
+  cell can sit at the centre of the training cloud and still be wrong.
+
+SHAP IN THE OPERATIONAL EXPORT — ADDED 2026-09-09 (P40), an omission in P39.
+Operational cells were [ix, iy, p_display, verdict, domain] with no SHAP, while
+the archive carries the top three drivers — and that "WHY THIS GRIDPOINT" panel
+is THE IMAGE ON SLIDE 3. As built, the live product could not answer the
+question the deck shows it answering, and "Explainable output" is PS Expected
+Outcome 4, named explicitly. src/20_operational.py now calls explain(), which
+REUSES 15_dashboard_export.py's shap_for() and percentile_lookup() rather than
+running a parallel implementation.
+  THE SELECTION RULE IS COPIED, NOT INVENTED: every cell whose STORED VERDICT
+  is not "reliable" gets drivers, which is the archive's rule exactly. On
+  20260908 that is 8,044 of 34,220 display-grid cells (23.5%).
+  THE ADDITIVITY ASSERTION CARRIES OVER and fired: max |sum(SHAP) + base - raw
+  log-odds| = 3.58e-14, well inside the 1e-4 refusal.
+  SHAP IS ON THE RAW LOG-ODDS, NEVER THE CALIBRATED DISPLAY VALUE. The
+  calibrated number is a monotone relabelling; attributions do not survive it
+  and would not sum to it.
+  PERCENTILES RANK AGAINST THE 2019 TEST SET, the same reference the archive
+  uses. Ranking a live value against the live cycle's own distribution would be
+  refitting on operational data — the leak the stored climatology exists to
+  prevent — and would make "94th percentile" mean two different things in two
+  files one page reads.
+  --from-parquet REBUILDS THE EXPORT FROM A STORED CYCLE WITH NO FETCH, so the
+  JSON can be regenerated without 211 MB of S3 and without re-scoring anything.
+  It re-asserts that stored verdicts reproduce from stored raw scores, and it
+  does NOT claim the five transfer-time guards, which cannot apply to a rebuild.
+
+ONE SCHEMA, DECLARED RATHER THAN INFERRED — 2026-09-09 (P40).
+Position 5 means AN ARRAY OF SHAP TRIPLES in the archive file and AN INTEGER
+DOMAIN FLAG in the operational one. Any renderer branching on cell.length > 4
+reads a domain marker as an explanation. That is a latent bug in a product with
+two data files and one page.
+  THE FIX IS SELF-DESCRIPTION, NOT REGENERATION. Regenerating the archive would
+  redeploy the dashboard mid-flight, which is what the region-label work exists
+  to avoid. The operational export now declares
+      meta.schema = {"version": "vishwas.oper.cells/1",
+                     "fields": ["ix","iy","p_display","verdict","domain","drivers"],
+                     "required": 5, "optional_tail": "drivers"}
+  and check_declared_schema() in the SHARED writer refuses to emit any cell
+  whose length is not in {required, len(fields)}. Verified by construction: a
+  4-length cell exits non-zero and NO FILE IS WRITTEN.
+  THE ARCHIVE FILE, site/dashboard-data.json, HAS NO meta.schema YET. It gains
+  one THE NEXT TIME IT IS LEGITIMATELY REGENERATED — not before, and not as a
+  side effect of anything else. Until then the writer prints "meta.schema
+  ABSENT" on every write of it, and NO RENDERER MAY INFER LAYOUT FROM ARRAY
+  LENGTH. Bump the version string whenever the field list or required count
+  changes.
+
+THE CAP SENTENCE, TIGHTENED 2026-09-09. It read "the highest bust rate ever
+observed in held-out data", which invites a judge to ask whether nothing
+anywhere busted more often. It is the top isotonic block's rate on the
+validation slice, so it is the highest rate for any COMPARABLE GROUP. It now
+reads: "Risk is capped at 75%: that is the highest rate observed for any
+comparable group of forecasts in held-out data, so the system does not display
+a confidence it has not earned." Lives in CAP_SENTENCE and reaches every
+interface through the export's meta block.
+
 MODEL METADATA — CORRECTED 2026-09-08. logs/p37_oper.log printed
     model : vishwas_model.joblib (23 features, trained ['2018-01-01', '2019-12-31'])
 which reads as though the model saw its own test year. THE BUNDLE FIELD IS

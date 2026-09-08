@@ -1,0 +1,20 @@
+==============================================================================
+VISHWAS OPERATIONAL — REBUILD from operational_20260908.parquet
+==============================================================================
+  cycle gefs.20260908/00Z, 50,410 rows read back unchanged
+  NOT re-scored: model_score, verdict, p_calibrated, p_display
+  and domain are the stored values. The five transfer-time
+  guards do not apply to a rebuild and are not claimed.
+  stored verdicts reproduce from stored raw scores.
+
+  SHAP: 8,044 of 34,220 cells are not reliable and get explained (23.5%)
+  percentile reference: 651,040 test rows (2019), NOT the live cycle
+  shap 0.49.1 — TreeExplainer on 8,044 uncertain cells
+  additivity: max |sum(SHAP) + base - raw log-odds| = 3.58e-14
+  meta.schema 'vishwas.oper.cells/1': 6 fields, 5 required -> cell lengths 5x26,176, 6x8,044
+  wrote /Users/devansh/vishwas/data/operational_20260908.json  (937,310 bytes)
+  cells with a SHAP array: 8,044 of 34,220
+  explain-rule violations (not-reliable without SHAP, or reliable with): 0
+  every driver indexes meta.features and carries a 0-100 percentile.
+
+  TIMING plan 0.0 s, transfer 0.0 s, total 4.5 s

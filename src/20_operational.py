@@ -108,10 +108,29 @@ DISPLAY_STEP = 0.01
 # TASK 1: the two domain states. Never merged into one population.
 VERIFIED, UNVERIFIED = 1, 0
 
+# TASK 4: the cell layout is DECLARED, never inferred from array length.
+# Bump the version whenever the field list or the required count changes.
+CELL_SCHEMA = {
+    "version": "vishwas.oper.cells/1",
+    "fields": ["ix", "iy", "p_display", "verdict", "domain", "drivers"],
+    "required": 5,
+    "optional_tail": "drivers",
+    "drivers": "top three SHAP drivers as [feature_index, shap_log_odds, "
+               "percentile], present exactly when verdict >= 1 (not reliable). "
+               "feature_index indexes meta.features. SHAP is computed on the "
+               "RAW log-odds, never on the calibrated display value.",
+    "note": "A cell carries the first 5 fields always, and all 6 when the "
+            "optional tail is present. Read meta.schema; never branch on "
+            "cell.length.",
+}
+
+# "ever observed" invites the question of whether nothing anywhere busted more
+# often. The cap is the top isotonic block's rate on the validation slice, so
+# it is the highest rate for any COMPARABLE GROUP, which is what this now says.
 CAP_SENTENCE = (
-    "Risk is capped at 75%: that is the highest bust rate ever observed in "
-    "held-out data, so the system does not display a confidence it has not "
-    "earned.")
+    "Risk is capped at 75%: that is the highest rate observed for any "
+    "comparable group of forecasts in held-out data, so the system does not "
+    "display a confidence it has not earned.")
 
 DOMAIN_SENTENCE = (
     "The model was trained only where IMD has rain gauges: 1,252 of 5,041 "
@@ -178,6 +197,68 @@ def check_message_count(wanted):
           .format(len(wanted)))
 
 
+def explain(rows, model, features, labels_path):
+    """TASK 3: the top three SHAP drivers, on the archive export's own rule.
+
+    THE SELECTION RULE IS COPIED, NOT INVENTED. 15_dashboard_export.py explains
+    every cell whose STORED VERDICT is not "reliable", and so does this. A
+    second rule would mean the deck's "why this gridpoint" panel answers a
+    different question on the live product than on the archive it was captured
+    from -- and that panel is the image on slide 3.
+
+    PERCENTILES ARE AGAINST THE 2019 TEST SET, the same reference the archive
+    uses. Ranking a live value against the live cycle's own distribution would
+    be refitting on operational data, which is the leak the stored climatology
+    exists to avoid, and it would make "94th percentile" mean two different
+    things in two files a single page reads.
+
+    SHAP IS COMPUTED ON THE RAW LOG-ODDS. The calibrated display value is a
+    monotone relabelling; attributions do not survive it, and summing them
+    against it would not reconstruct anything.
+    """
+    uncertain = rows["verdict"].to_numpy() >= confidence.UNCERTAIN
+    block = rows[uncertain]
+    print()
+    print("  SHAP: {:,} of {:,} cells are not reliable and get explained "
+          "({:.1%})".format(len(block), len(rows), uncertain.mean()))
+    if not len(block):
+        return {}
+
+    if not os.path.exists(labels_path):
+        sys.exit("no labelled table at {} -- percentiles are ranked against "
+                 "the 2019 test set and cannot be built without it. Refusing "
+                 "to publish explanations on a live-only reference."
+                 .format(labels_path))
+    ref = pd.read_parquet(labels_path, columns=list(features) + ["split"])
+    ref = ref[ref["split"] == "test"]
+    print("  percentile reference: {:,} test rows (2019), NOT the live cycle"
+          .format(len(ref)))
+    lookups = {f: EXPORT.percentile_lookup(ref[f].to_numpy()) for f in features}
+
+    # GUARD: the same additivity assertion the archive makes. If sum(SHAP) plus
+    # the base value does not reconstruct the model's own log-odds, the
+    # explanations describe some other function and must not ship.
+    values = EXPORT.shap_for(model, features, block)
+
+    order = np.argsort(-np.abs(values), axis=1)[:, :3]
+    pct = np.empty_like(order)
+    for slot in range(3):
+        fi = order[:, slot]
+        for j, feature in enumerate(features):
+            hit = fi == j
+            if hit.any():
+                pct[hit, slot] = lookups[feature](block[feature].to_numpy()[hit])
+
+    drivers = {}
+    for row, idx in enumerate(block.index):
+        drivers[idx] = [
+            [int(order[row, s]),
+             round(float(values[row, order[row, s]]), 4),
+             int(pct[row, s])]
+            for s in range(3)]
+    return drivers
+
+
 def main():
     ap = argparse.ArgumentParser(description="Score one live GEFS cycle.")
     ap.add_argument("--date", default=None, help="YYYYMMDD (00Z assumed)")
@@ -189,9 +270,45 @@ def main():
     ap.add_argument("--climatology", default=os.path.join(_ROOT, "data", "climatology.parquet"))
     ap.add_argument("--out-dir", default=os.path.join(_ROOT, "data"))
     ap.add_argument("--out-json", default=None)
+    ap.add_argument("--labels", default=os.path.join(_ROOT, "data", "labelled.parquet"),
+                    help="percentile reference for SHAP drivers (2019 test split)")
+    ap.add_argument("--from-parquet", default=None,
+                    help="rebuild the export from a stored cycle parquet, with "
+                         "no fetch. Scores, verdicts and the domain flag are "
+                         "read back exactly as written; nothing is re-scored.")
     args = ap.parse_args()
 
     check_cycle_hour(args.cycle_hour)
+
+    if args.from_parquet:
+        rows = pd.read_parquet(args.from_parquet)
+        date = str(rows["init"].iloc[0])
+        bundle = joblib.load(args.model)
+        model, features = bundle["model"], bundle["features"]
+        cal_bundle = joblib.load(args.calibrator)
+        print("=" * 78)
+        print("VISHWAS OPERATIONAL — REBUILD from {}".format(
+            os.path.basename(args.from_parquet)))
+        print("=" * 78)
+        print("  cycle gefs.{}/{}Z, {:,} rows read back unchanged".format(
+            date, CYCLE_HOUR, len(rows)))
+        print("  NOT re-scored: model_score, verdict, p_calibrated, p_display")
+        print("  and domain are the stored values. The five transfer-time")
+        print("  guards do not apply to a rebuild and are not claimed.")
+        for col in ("model_score", "verdict", "p_display", "domain"):
+            if col not in rows.columns:
+                sys.exit("stored parquet lacks {} -- not a scored cycle".format(col))
+        # The stored verdict must still reproduce from the stored raw score,
+        # or the parquet and confidence.py have drifted apart.
+        want = confidence.verdicts_of(rows["model_score"].to_numpy())
+        if not (want == rows["verdict"].to_numpy()).all():
+            sys.exit("stored verdicts do not reproduce from stored raw scores.")
+        print("  stored verdicts reproduce from stored raw scores.")
+        planned = transfer = 0.0
+        clock = time.time()
+        write_export(rows, date, model, features, cal_bundle, args,
+                     planned, transfer, clock)
+        return
 
     fs = FETCH.connect()
     if args.latest or not args.date:
@@ -271,6 +388,14 @@ def main():
     rows.to_parquet(out_parquet, index=False, compression="zstd")
     print("\n  wrote {}".format(out_parquet))
 
+    write_export(rows, date, model, features, cal_bundle, args,
+                 planned, transfer, clock)
+
+
+def write_export(rows, date, model, features, cal_bundle, args,
+                 planned, transfer, clock):
+    """Assemble and write the operational JSON. Shared by a live run and a
+    --from-parquet rebuild so both emit byte-identical structure."""
     # ---- JSON, in dashboard-data.json's shape, via 15's own writer -------
     ix = np.rint((rows["lon"].to_numpy() - EXPORT.LON0) / EXPORT.STEP).astype(int)
     iy = np.rint((rows["lat"].to_numpy() - EXPORT.LAT0) / EXPORT.STEP).astype(int)
@@ -278,12 +403,19 @@ def main():
     show = rows[keep].copy()
     show["ix"], show["iy"] = ix[keep], iy[keep]
 
+    # TASK 3: SHAP, on the archive's own selection rule and its own code path.
+    drivers = explain(show, model, features, args.labels)
+
     leads = {}
     for lead, part in show.groupby("lead_day"):
-        leads[str(int(lead))] = [
-            [int(r["ix"]), int(r["iy"]), round(float(r["p_display"]), 2),
-             int(r["verdict"]), int(r["domain"])]
-            for _, r in part.iterrows()]
+        cells = []
+        for idx, r in part.iterrows():
+            cell = [int(r["ix"]), int(r["iy"]), round(float(r["p_display"]), 2),
+                    int(r["verdict"]), int(r["domain"])]
+            if idx in drivers:
+                cell.append(drivers[idx])
+            cells.append(cell)
+        leads[str(int(lead))] = cells
 
     stamp = datetime.datetime.strptime(date, "%Y%m%d")
     payload = {
@@ -309,7 +441,10 @@ def main():
                 "unverified": int((rows["domain"] == UNVERIFIED).sum()),
                 "note": DOMAIN_SENTENCE,
             },
-            "cell_format": ["ix", "iy", "p_display", "verdict", "domain"],
+            "schema": CELL_SCHEMA,
+            "cell_format": CELL_SCHEMA["fields"],
+            "features": list(features),
+            "labels": {f: EXPORT.LABELS[f] for f in features},
             "truth": None,
             "truth_note": "No truth exists for a live cycle. Nothing here is "
                           "an accuracy claim.",
@@ -331,6 +466,31 @@ def main():
         args.out_dir, "operational_{}.json".format(date))
     size = EXPORT.write_payload(out_json, payload)
     print("  wrote {}  ({:,} bytes)".format(out_json, size))
+
+    # ---- the explain rule, checked in BOTH directions -------------------
+    # Same assertion the archive makes: a cell carries drivers exactly when its
+    # STORED verdict is not "reliable". Keyed off the stored verdict, never off
+    # the displayed number.
+    cells = [c for d in payload["dates"] for cs in d["leads"].values() for c in cs]
+    full = len(CELL_SCHEMA["fields"])
+    broken = [c for c in cells
+              if (len(c) == full) != (c[3] >= confidence.UNCERTAIN)]
+    with_shap = sum(1 for c in cells if len(c) == full)
+    print("  cells with a SHAP array: {:,} of {:,}".format(with_shap, len(cells)))
+    print("  explain-rule violations (not-reliable without SHAP, or reliable "
+          "with): {}".format(len(broken)))
+    if broken:
+        sys.exit("EXPLAIN RULE VIOLATED — not shipping this to an interface.")
+
+    # Every driver triple must index a real feature and carry a real percentile.
+    for c in cells:
+        if len(c) != full:
+            continue
+        for fi, _, pc in c[-1]:
+            if not 0 <= fi < len(features) or not 0 <= pc <= 100:
+                sys.exit("driver triple out of range: {}".format(c[-1]))
+    print("  every driver indexes meta.features and carries a 0-100 percentile.")
+
     print("\n  TIMING plan {:.1f} s, transfer {:.1f} s, total {:.1f} s".format(
         planned, transfer, time.time() - clock + planned))
 

@@ -285,6 +285,49 @@ def shap_for(model, features, frame):
 # main
 # --------------------------------------------------------------------------
 
+def check_declared_schema(payload):
+    """Refuse to emit a cell whose length disagrees with meta.schema.
+
+    WHY THIS EXISTS. Two files share this writer and one page reads both.
+    Position 5 means an ARRAY OF SHAP TRIPLES in the archive file and, before
+    this guard, an INTEGER DOMAIN FLAG in the operational one. Any renderer
+    branching on `cell.length > 4` would read a domain marker as an
+    explanation. Layout is therefore DECLARED in meta.schema and checked here,
+    never inferred downstream from an array length.
+
+    meta.schema is {"version": str, "fields": [...], "required": int}. A cell
+    carries the first `required` fields always, and the full `fields` list when
+    the optional tail is present. Any other length is a bug, not a variant.
+    """
+    schema = payload.get("meta", {}).get("schema")
+    if schema is None:
+        # The archive file predates this guard and is NOT regenerated here --
+        # doing so would redeploy the dashboard. It gains meta.schema the next
+        # time it is legitimately rebuilt. Until then the absence is announced
+        # on every write so it cannot pass unnoticed.
+        print("  meta.schema ABSENT — cell layout is undeclared for this "
+              "payload. No renderer may infer layout from array length.")
+        return
+    fields, required = schema["fields"], int(schema["required"])
+    if not 0 < required <= len(fields):
+        sys.exit("meta.schema: required={} outside 1..{}".format(
+            required, len(fields)))
+    allowed = {required, len(fields)}
+    counts = {}
+    for date in payload.get("dates", []):
+        for cells in date.get("leads", {}).values():
+            for cell in cells:
+                counts[len(cell)] = counts.get(len(cell), 0) + 1
+    bad = {n: c for n, c in counts.items() if n not in allowed}
+    print("  meta.schema '{}': {} fields, {} required -> cell lengths {}"
+          .format(schema["version"], len(fields), required,
+                  ", ".join("{}x{:,}".format(n, c) for n, c in sorted(counts.items()))))
+    if bad:
+        sys.exit("SCHEMA VIOLATION: cell lengths {} are not in {} declared by "
+                 "meta.schema '{}'. Refusing to write."
+                 .format(sorted(bad), sorted(allowed), schema["version"]))
+
+
 def write_payload(path, payload):
     """The one writer for this JSON shape.
 
@@ -293,6 +336,7 @@ def write_payload(path, payload):
     could drift. Separators are compact and deliberate: the published file is
     read over the network by the dashboard.
     """
+    check_declared_schema(payload)
     with open(path, "w") as handle:
         json.dump(payload, handle, separators=(",", ":"))
     return os.path.getsize(path)
