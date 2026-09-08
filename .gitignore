@@ -55,3 +55,12 @@ checkpoints/
 *.npy
 *.npz
 
+
+# Scratch folder of session outputs: drafts, duplicates and superseded copies.
+# Deliberately NOT tracked. It holds LATER but UNRENDERED variants of the deck
+# figure generators (deck_fig*.py, 5 Sep 04:05) whose canonical, committed
+# versions live in src/deck_figures/ (5 Sep 03:58). The shipped deck assets in
+# deck/assets/ are 03:58 and therefore came from the COMMITTED generators.
+# If you are looking for the generator for a deck figure, it is in
+# src/deck_figures/ and nowhere else.
+Claude outputs/

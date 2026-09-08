@@ -39,6 +39,12 @@ WHAT IS DONE AND SHIPPABLE
   REPRODUCE   Every figure has a committed generator; every published number
               has a script. models/ is gitignored, so a fresh clone must refit
               via src/07_model.py before 09/10 will run.
+  DECK FIGS   src/deck_figures/ is the ONLY home for the deck's figure
+              generators. A local, untracked "Claude outputs/" folder holds
+              LATER but never-rendered variants of them (5 Sep 04:05, against
+              the committed 03:58). deck/assets/ is 03:58, so the shipped deck
+              came from the COMMITTED generators. That folder is gitignored on
+              purpose; do not treat anything in it as canonical.
 
 WHAT IS OPEN — each with enough context to act without asking anyone
   1. WHERE THE DAILY RUN LIVES. 20_operational.py is a one-shot command, NOT a
