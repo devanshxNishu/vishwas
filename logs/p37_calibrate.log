@@ -1,0 +1,32 @@
+validation slice: 162,760 rows / 13 dates, base rate 5.426%
+isotonic: 77 distinct output levels, max output 0.752381
+
+==========================================================================
+THE TAIL — what the isotonic map does to a displayed certainty
+==========================================================================
+  live raw maximum      0.9999997898  (displays as 1.0000)
+  isotonic sends it to  0.752381
+  isotonic(1.0)       = 0.752381   <- the hard cap; PAVA pools the
+                                     violating top region downward,
+                                     so nothing can be published above it
+
+  raw cells >= 0.9           7
+  calibrated >= 0.9          0
+  highest calibrated    0.752381
+
+==========================================================================
+FLAGGED-CELL COUNT — does adopting the calibrated score move it?
+==========================================================================
+  raw threshold        p >= 0.1534712256035554
+  maps to calibrated   p >= 0.1262833675564682
+  flagged, raw scale     5,512 of 50,410  (10.93%)
+  flagged, calibrated    5,752 of 50,410  (11.41%)
+  cells gained 240, lost 0
+  THE SET MOVES. A flat run straddles the threshold; adopting the
+  calibrated score would republish the count. Decide deliberately.
+
+VERDICT BANDS, raw vs calibrated-with-mapped-thresholds:
+  reliable   raw 39,062   calibrated 38,932
+  uncertain  raw  5,836   calibrated  5,726
+  high_risk  raw  5,512   calibrated  5,752
+  bands identical: False

@@ -279,6 +279,15 @@ logs/p37_oper.log.
   every one of 50,410 live rows matched a group in data/climatology.parquet.
   It is LOADED, never refitted — refitting on operational data is the leak
   finalize() was rewritten to prevent.
+  THE MATCH COUNT NAMES THE EXACT SHAPE OF THE DOMAIN GAP. 201,640 groups is
+  5,041 x 10 x 4 — every gridpoint in the full 71 x 71 India box, every lead
+  day, every season. FEATURES AND CLIMATOLOGY COVER THE WHOLE DOMAIN. It is
+  only LABELS and BUST THRESHOLDS that stop at 1,252 gridpoints, because those
+  need IMD gauge truth and the IMD land/no-gauge mask is what cuts 5,041 down
+  to 24.8%. A live cycle therefore produces a confidence value at all 50,410
+  (gridpoint, lead day) cells — the 1,252 figure is a limit on what can be
+  SCORED, never on what can be PREDICTED. Do not quote 1,252 as the size of
+  the operational product.
   USE THE 00Z CYCLE. The reforecast is all 00Z inits, so a 06Z cycle is a
   quiet mismatch: over India the diurnal cycle makes a 06Z-06Z daily
   accumulation a different quantity from 00Z-00Z. Measured, not assumed — the
@@ -288,13 +297,41 @@ logs/p37_oper.log.
   transfer 73.0, features+score 2.2). A daily job is trivially affordable.
   DISTRIBUTIONS: on 00Z no feature puts more than 1% of live values outside
   the training range. The model is interpolating, not guessing.
-  DEPLOY THE CALIBRATED SCORE, NOT THE RAW ONE. The live tail reproduces the
-  known saturation: p >= 0.9 on 7 of 50,410 cells (0.014%), against 72 of
-  651,040 (0.011%) on the test set. P12 showed those leaves are overconfident.
+  DEPLOY THE CALIBRATED SCORE FOR DISPLAY, BUT BAND ON THE RAW ONE.
+  MEASURED 2026-09-07, src/21_oper_calibrate.py, logs/p37_calibrate.log.
+  The live tail reproduces the known saturation: p >= 0.9 on 7 of 50,410 cells
+  (0.014%), against 72 of 651,040 (0.011%) on the test set, and the live raw
+  maximum is 0.9999997898 — which DISPLAYS AS 1.0000. An operational product
+  must never show a bust probability of exactly 1 days before anything can be
+  observed. The isotonic map fixes the display: it sends that value, and 1.0
+  itself, to 0.752381, its hard cap, and NO live cell calibrates above 0.9.
+  BUT IT DOES NOT PRESERVE THE OPERATING POINT, AND THIS WAS CHECKED RATHER
+  THAN ASSUMED. "Isotonic is monotone so the ranking is safe" is the trap:
+  monotone NON-DECREASING allows flat runs, and one of them straddles the
+  threshold. Isotonic maps the whole raw interval [0.147189, 0.176311] onto
+  the single value 0.126283, and THRESHOLD = 0.15347 sits inside it. 995 live
+  cells land on that run; 240 of them are below the raw threshold and a
+  >= test on calibrated scores cannot tell them apart from the cells above it.
+      flagged, raw scale     5,512  (10.93%)
+      flagged, calibrated    5,752  (11.41%)   +240 gained, 0 lost
+  SO THE BANDING DECISION STAYS ON THE RAW SCORE. This is exactly the doctrine
+  src/confidence.py already states one level down — publish the number, store
+  the verdict, and never let a consumer re-derive a class from a lossy
+  representation. The calibrated probability is another such representation.
+  Adopting it as the banding input would republish every count deliberately;
+  it must not happen as a side effect of improving the display.
   NO TRUTH, SO NO ACCURACY. IMD gauge rainfall lags far beyond this horizon.
   A live run yields a confidence FIELD and nothing that can be scored.
   10.93% of cells crossed the FIXED threshold p >= 0.153 on 7 Sep 2026. The
   threshold is NOT recomputed per cycle; the crossed fraction is the signal.
+  THE LEAD-DAY PROFILE RISES THROUGH DAY 9 AND EASES AT DAY 10. Write it that
+  way; NEVER call it monotonic. High risk by lead day, 00Z 7 Sep 2026:
+      D1 3.59  D2 5.08  D3 7.78  D4 10.24  D5 10.65
+      D6 10.75  D7 13.15  D8 15.69  D9 17.50  D10 14.92
+  Mean p turns TWICE, not once: it dips at 5 -> 6 (0.0725 -> 0.0716) before
+  climbing to its Day 9 peak of 0.1041 and falling back to 0.0979 at Day 10.
+  One cycle is one weather situation, so do not build a lead-time story on
+  this shape — but do not smooth it into "increases with lead time" either.
 
 ARCHIVE RANGE IS 2000-2019. reforecast/2020/ holds one misfiled 2010
 date. Never write range(2000, 2021).
