@@ -1,0 +1,43 @@
+==============================================================================
+TWO GRIDS, NAMED  (live cycle 20260908)
+==============================================================================
+  ANALYSIS BOX   5.0-40.0N, 65.0-100.0E at 0.5 deg = 71 x 71 = 5,041 gridpoints
+                 EVERY point in the box, land and ocean alike. This is
+                 the domain features and climatology cover, and it is
+                 what 5,041 means. It is NOT 'land gridpoints'.
+  SHIPPED GRID   8.5-37.0N, 68.0-97.0E = nx 59 x ny 58 = 3,422 gridpoints
+                 The crop the map draws. 1,619 analysis points fall outside it.
+  GAUGE POINTS   1,252 of the analysis box carry an IMD gauge and can be
+                 LABELLED. 24.8% of 5,041. This is the only domain any
+                 accuracy number has ever been computed on.
+
+==============================================================================
+DO ALL 1,252 GAUGE POINTS SURVIVE THE CROP?
+==============================================================================
+  gauge points inside the shipped grid : 1,252
+  gauge points OUTSIDE it              : 0
+  ALL 1,252 SURVIVE. The verified figure is therefore computed on
+  exactly the points the map draws, and holds unchanged.
+
+==============================================================================
+HIGH-RISK FRACTION, BOTH GRIDS, DOMAINS NEVER MERGED
+==============================================================================
+  grid                       domain                    points      rows   high risk
+  ANALYSIS BOX (5,041 pts)   verified (gauge)           1,252    12,520       7.78%
+  ANALYSIS BOX (5,041 pts)   unverified (no gauge)      3,789    37,890      13.16%
+  ANALYSIS BOX (5,041 pts)   POOLED (reference only)    5,041    50,410      11.82%
+  SHIPPED GRID (3,422 pts)   verified (gauge)           1,252    12,520       7.78%
+  SHIPPED GRID (3,422 pts)   unverified (no gauge)      2,170    21,700      14.06%
+  SHIPPED GRID (3,422 pts)   POOLED (reference only)    3,422    34,220      11.77%
+
+  WHICH NUMBER BELONGS TO THE PRODUCT:
+    the VERIFIED figure is identical on both grids (7.78%) because every
+    gauge point survives the crop. Quote it, and say 'gauge domain'.
+    the UNVERIFIED figure MOVES: 13.16% on the analysis box, 14.06% on the
+    shipped grid. The analysis-box value describes points the map never
+    draws, so the SHIPPED value is the one a viewer could check.
+
+  NEITHER POOLED FIGURE IS A HEADLINE. Both are printed so the ratio is
+  visible, never so it can be quoted as one population.
+
+wrote /Users/devansh/vishwas/data/grid_reconcile.csv

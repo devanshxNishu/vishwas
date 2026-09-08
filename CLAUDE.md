@@ -2,6 +2,113 @@
 ### Team Hellfire Labs · SIH26079 · Smart India Hackathon 2026
 विश्वास, "confidence" — knowing when not to trust the forecast.
 
+================================================================================
+HANDOVER — READ THIS FIRST. Written 2026-09-09, at the end of development.
+Development is PAUSED here. This block assumes you know nothing about the
+project and have no access to the conversation that built it.
+================================================================================
+
+WHAT VISHWAS IS
+We are not building a weather forecast. We built a model that predicts WHEN the
+operational medium-range forecast will be badly wrong — a "forecast bust" — and
+publishes that as a confidence map over India for lead days 1 to 10. The point
+of comparison is what forecasters do today: judge confidence by eyeballing
+ensemble spread, a method we measured against India's own rain gauges and found
+explains under 1% of forecast error once you control for how much it rained.
+
+WHAT IS DONE AND SHIPPABLE
+  RESULT      Stratified ROC-AUC 0.728 for the model against 0.565 for ensemble
+              spread, margin +0.13 to +0.16, whole confidence interval above
+              zero. Trained on 2018, tested on all 52 Wednesdays of 2019, IMD
+              gauge truth, 651,040 test rows over 1,252 gauge-observed
+              gridpoints. A five-year retest (train 2015-17) changed nothing
+              measurable, which retired "one training year is thin".
+  DECK        deck/VISHWAS_SIH.{pptx,pdf}, 6 slides. RELEASED — do not rebuild
+              it casually. deck/archive/ holds v1.
+  SITE        site/index.html — the landing page and the case.
+  DASHBOARD   site/dashboard/index.html, live at vishwas-five.vercel.app/dashboard/.
+              Deploys from a push to main (Vercel, git-connected). Edit BOTH
+              site/source/vishwas-dashboard.dc.html AND site/dashboard/index.html
+              or the next rebuild from source silently reverts you.
+  API         api/main.py, reads site/dashboard-data.json. It never recomputes
+              a verdict; it serves the stored one.
+  OPERATIONAL src/20_operational.py scores one live GEFS cycle end to end in
+              about 100 seconds and 210 MB. Five guards are constants, not
+              comments. `--from-parquet` rebuilds the export from a stored cycle
+              with no network at all — use that for any export change.
+  REPRODUCE   Every figure has a committed generator; every published number
+              has a script. models/ is gitignored, so a fresh clone must refit
+              via src/07_model.py before 09/10 will run.
+
+WHAT IS OPEN — each with enough context to act without asking anyone
+  1. WHERE THE DAILY RUN LIVES. 20_operational.py is a one-shot command, NOT a
+     scheduler, deliberately. Nothing has been decided about hosting it, and no
+     cron, launchd job or GitHub Action exists anywhere in this repo. A daily
+     00Z run costs ~210 MB and ~100 s. Use the 00Z cycle only: the reforecast
+     is all 00Z, and a 06Z cycle shifts every one of the 23 features against
+     the climatology (measured, not assumed).
+  2. THE HULL FLAG ON ALERTS OUTSIDE THE GAUGE GRID. Every exported cell now
+     carries `hull`, set when its squared Mahalanobis distance exceeds the
+     training 99th percentile. On the shipped grid, 7.21% of alerts outside the
+     gauge domain are outside the hull, against 1.64% inside it. The flag is
+     computed and published; NOTHING IN THE INTERFACE READS IT YET. Deciding
+     how the dashboard should show "unusual" — distinct from the existing
+     "unverifiable" marker — is open design work.
+  3. THE KHARGONE REGION LABEL. 21.5N 75.5E is Khargone, MADHYA PRADESH, and
+     the dashboard labels it "Interior Maharashtra". The obvious fix — shrink
+     the Interior Maharashtra box — does not work: region() breaks ties between
+     overlapping boxes on distance to BOX CENTRE, so shrinking a box moves its
+     centre and steals points far from the edge you moved. Narrowing maxLat to
+     21.2 fixes 5 Madhya Pradesh cells and breaks Hyderabad and Kalaburagi,
+     both of which surface on the panel. A containment-depth tie-break was
+     tried and is worse (168 cells move, Hyderabad still breaks). This needs a
+     tie-break that does not depend on box centres. Do not retry either of the
+     two approaches already measured.
+  4. THE TEAM ID. Still not pasted. The date named in the CHECKER STATE block
+     below has passed; if the ID has been issued, do all four of its steps in
+     ONE commit. check_docs.py fires 7 hits on this and exits 1 BY DESIGN until
+     then.
+
+THE STANDING RULES. Non-negotiable, and each exists because of a specific way
+this project could be taken apart by a judge. scripts/check_docs.py enforces
+them on Markdown; it cannot see inside a PNG or a .pptx, so figures and slides
+are checked by reading them.
+  • NEVER QUOTE THE POOLED PAIR (0.909 model / 0.885 spread). Pooled scoring
+    lets ensemble spread track rainfall AMOUNT and scores it 0.885 for free.
+    Removing that collapses it to 0.565. Quoting the pooled pair as performance
+    would commit, in our own work, the exact error this project accuses the
+    incumbent of. It survives in this file and the audit trail only, as the
+    thing being ruled against.
+  • NEVER SET 0.755 BESIDE 0.728. Different test set, different labels, and
+    seven qcut bins instead of eight. It is a scope conflation, not a gain.
+  • NEVER QUOTE A MARGIN RANGE CONTAINING +0.035. It comes from a "forecast AND
+    truth > X mm" filter that conditions on the OUTCOME and deletes both
+    classes of extreme bust. The honest range is +0.13 to +0.16.
+  • NEVER REPORT PLAIN ACCURACY. The base rate is about 6%; accuracy is
+    meaningless here and reads as either naive or evasive.
+  • NEVER RECOMPUTE THE THRESHOLD. confidence.THRESHOLD is pinned in full
+    double precision and is NOT re-derived at import. A different test set has
+    a different 90th percentile, and adopting one means republishing every
+    downstream count deliberately and all at once. Consumers read the STORED
+    verdict; they never re-derive a class from a displayed probability.
+  • FIX THE PROSE, NEVER THE DATA. If a script contradicts a value in a
+    document, the document is wrong until proven otherwise — and if the script
+    is genuinely wrong, that is a real finding to report, not a documentation
+    bug to paper over. Never edit a log to agree with a document; a log edited
+    to match is worthless as an audit trail.
+  • NEVER MIX TRUTH SOURCES IN ONE COMPARISON, and never let a feature come
+    from ERA5 or IMD. Those are truth; a predictor drawn from them is leakage.
+
+HOW TO CHECK THE WHOLE THING IS STILL COHERENT
+    python scripts/check_docs.py
+  EXPECT EXIT 1, with exactly this shape: "7 finding(s) in 3 file(s); 36 noted
+  in 9 exempt file(s); 0 site assertion(s) failed", all seven being the Team ID
+  guard. ANY OTHER FINDING, or a non-zero site assertion count, is a real
+  regression. A green run before the Team ID is pasted means someone deleted
+  the guard — that is the failure, not the fix.
+
+================================================================================
+
 CHECKER STATE, until team selection on 3 Sep 2026.
 scripts/check_docs.py exits 1 by design. The Team ID guard fires on 7 hits
 across 3 files because the ID is issued only after selection at the internal
@@ -534,6 +641,110 @@ reads: "Risk is capped at 75%: that is the highest rate observed for any
 comparable group of forecasts in held-out data, so the system does not display
 a confidence it has not earned." Lives in CAP_SENTENCE and reaches every
 interface through the export's meta block.
+
+THE TWO GRIDS, RECONCILED 2026-09-09 (P41). src/24_grid_reconcile.py,
+logs/p41_grid.log, data/grid_reconcile.csv. THREE NUMBERS, THREE DIFFERENT
+THINGS, and this file previously used 5,041 for two of them:
+  5,041 = THE ANALYSIS BOX. 5.0-40.0N, 65.0-100.0E at 0.5 deg, 71 x 71. EVERY
+          point in the box, LAND AND OCEAN ALIKE. It is what features and
+          climatology cover. IT IS NOT "land gridpoints" — anywhere this file
+          or any document says that, it is wrong.
+  3,422 = THE SHIPPED GRID. 8.5-37.0N, 68.0-97.0E, nx 59 x ny 58. The crop the
+          map actually draws. 1,619 analysis points (32%) fall outside it.
+  1,252 = THE GAUGE POINTS. The subset of the analysis box carrying an IMD
+          gauge, so the only domain any label or accuracy has ever existed on.
+          24.8% of 5,041.
+THE CHECK THAT MATTERED: ALL 1,252 GAUGE POINTS SURVIVE THE CROP. Zero fall
+outside the shipped grid. Had any been lost, the product could not display part
+of the only domain it can be scored on, which would have been a far larger
+finding than a mismatched percentage.
+CONSEQUENCE — ONE FIGURE HOLDS AND ONE MOVES:
+    grid                       domain                  points     high risk
+    ANALYSIS BOX (5,041)       verified (gauge)         1,252        7.78%
+    ANALYSIS BOX (5,041)       unverified                3,789       13.16%
+    ANALYSIS BOX (5,041)       pooled, reference only    5,041       11.82%
+    SHIPPED GRID (3,422)       verified (gauge)          1,252        7.78%
+    SHIPPED GRID (3,422)       unverified                2,170       14.06%
+    SHIPPED GRID (3,422)       pooled, reference only    3,422       11.77%
+  THE VERIFIED FIGURE IS 7.78% ON BOTH GRIDS and is unaffected, because every
+  gauge point survives the crop. Keep quoting it, and name the domain.
+  THE UNVERIFIED FIGURE IS 13.16% ON THE ANALYSIS BOX AND 14.06% ON THE SHIPPED
+  GRID. P39 and P40 quoted 13.16%, which describes 3,789 points of which 1,619
+  are never drawn. WHEN THE CLAIM IS ABOUT THE PRODUCT, QUOTE 14.06% AND SAY
+  "shipped grid"; the 13.16% is correct only as a statement about the analysis
+  box. Neither pooled figure is ever a headline.
+
+MAHALANOBIS WITHOUT THE INDEX FEATURES — OBJECTION CLOSED 2026-09-09 (P41).
+src/23_mahalanobis.py --drop-index, logs/p41_mahalanobis_noindex.log.
+THE OBJECTION: on one live cycle `month` is CONSTANT at 9 while training spans
+1-12, so every live cell carries the same month-driven contribution to D^2.
+That cancels in any contrast INTERNAL to the cycle — flagged ungauged 8.82% vs
+flagged gauged 1.33% is untouched by it — but it does NOT cancel against the
+training reference, which is what "1.66% vs 1.00%, so it is in-distribution"
+rests on. Re-run over 21 features, dropping `month` and `lead_day`, the two
+inputs that are indices rather than meteorology:
+    fraction beyond the training 99th pct     23 features    21 features
+      training rows (by construction)             1.00%          1.00%
+      live, gauged                                0.29%          0.33%
+      live, ungauged                              1.66%          1.77%
+      live, ungauged AND flagged                  8.82%          9.13%
+      live, gauged AND flagged                    1.33%          1.64%
+THE CONCLUSION HOLDS AND THE OBJECTION IS CLOSED PERMANENTLY. Every figure
+moves by around a tenth of a percentage point and none changes sign or story.
+Story (a), meteorology, stands: the ungauged field sits inside the joint
+training distribution at 1.77% against the training rows' own 1.00%. The
+qualification stands too: flagged ungauged cells are 5.6x the flagged gauged
+rate (was 6.6x), so the alarms outside the gauge grid still come
+disproportionately from the sparse edge. DO NOT RE-OPEN THIS. The month
+constant was not doing the work, and it has been measured both ways.
+
+THE HULL FLAG — IN THE EXPORT 2026-09-09 (P41). Every operational cell now
+carries `hull`, set when its squared Mahalanobis distance exceeds the TRAINING
+99th percentile (96.57 over the 21 meteorological features).
+  DOMAIN AND HULL ARE INDEPENDENT AND ANSWER DIFFERENT QUESTIONS, which is the
+  whole reason the flag earns its place:
+      domain = 0  UNVERIFIABLE. No IMD gauge ever existed there, so nothing at
+                  that point has been or can be scored. A property of the MAP.
+      hull   = 1  UNUSUAL. This cell sits far from anything the model learned.
+                  A property of the WEATHER, and IT FIRES INSIDE THE GAUGE GRID
+                  TOO — which the domain marker alone can never say.
+  Cross-tab on 20260908, shipped grid: 21,310 unverifiable-and-ordinary,
+  390 unverifiable-and-unusual, 12,479 verified-and-ordinary, and 41
+  VERIFIED-AND-UNUSUAL. That last cell is the one the domain marker misses.
+  Of alerts: 7.21% outside the hull on the unverified domain against 1.64% on
+  the verified one.
+  THE INDEX FEATURES ARE DROPPED FOR THE FLAG, on purpose. The flag is a claim
+  about METEOROLOGY, and `month` is constant across a cycle, so including it
+  shifts the whole field against a fixed threshold while saying nothing about
+  any individual cell. Both versions were measured and the verdict is the same,
+  so this is the more defensible of two answers rather than a rescue.
+  NOTHING IN THE INTERFACE READS `hull` YET. It is published and declared; how
+  the dashboard should show "unusual" as distinct from "unverifiable" is open.
+
+CELL SCHEMA NOW vishwas.oper.cells/2 — fields
+["ix","iy","p_display","verdict","domain","hull","drivers"], required 6, so a
+cell is 6 long or 7 with the SHAP tail. check_declared_schema() in the shared
+writer refuses anything else and was re-verified against the new version: a
+5-long cell, which was legal under /1, now exits non-zero and no file is
+written. site/dashboard-data.json still has NO meta.schema and gains one only
+when it is next legitimately regenerated; until then no renderer may infer
+layout from array length. BUMP THE VERSION whenever the field list or the
+required count changes.
+
+ATTRIBUTION — CHECKED 2026-09-09 (P41), AND IT IS CORRECT.
+P40 instructed the Interior Maharashtra narrowing (maxLat 21.5 -> 21.2) and it
+was NOT applied. The P40 report attributed that to a decision by Devansh, and
+that attribution is accurate: measurement showed the narrowing broke Hyderabad
+and Kalaburagi, three options were put to him in session with the counts for
+each, and he chose "renames + Bihar-Jharkhand only". An instruction was
+overridden by the project owner, not dropped.
+  RECORDED PRECISELY BECAUSE THE FAILURE MODE IT RESEMBLES IS REAL: declining
+  an instruction and then attributing the decision to an authority that never
+  gave it would be far worse than simply not doing the work, because it is
+  invisible in a diff and destroys the audit trail. The distinguishing evidence
+  is that the choice was made from measured options, and the option chosen was
+  one the model recommended — so the decision was his, the recommendation was
+  the model's, and both belong in the record.
 
 MODEL METADATA — CORRECTED 2026-09-08. logs/p37_oper.log printed
     model : vishwas_model.joblib (23 features, trained ['2018-01-01', '2019-12-31'])

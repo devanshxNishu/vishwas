@@ -83,6 +83,7 @@ def _load(name, filename):
 FETCH = _load("fetch01", "01_fetch.py")
 PROBE = _load("probe20", "20_oper_probe.py")
 EXPORT = _load("export15", "15_dashboard_export.py")
+MAHAL = _load("mahal23", "23_mahalanobis.py")
 
 # --- GUARD 1 -------------------------------------------------------------
 CYCLE_HOUR = "00"
@@ -111,10 +112,21 @@ VERIFIED, UNVERIFIED = 1, 0
 # TASK 4: the cell layout is DECLARED, never inferred from array length.
 # Bump the version whenever the field list or the required count changes.
 CELL_SCHEMA = {
-    "version": "vishwas.oper.cells/1",
-    "fields": ["ix", "iy", "p_display", "verdict", "domain", "drivers"],
-    "required": 5,
+    "version": "vishwas.oper.cells/2",
+    "fields": ["ix", "iy", "p_display", "verdict", "domain", "hull", "drivers"],
+    "required": 6,
     "optional_tail": "drivers",
+    "domain_values": {"0": "outside the verified domain (no IMD gauge, never "
+                           "scoreable)", "1": "verified domain (IMD gauge)"},
+    "hull_values": {"0": "inside the training distribution",
+                    "1": "squared Mahalanobis distance above the TRAINING 99th "
+                         "percentile -- unusual against what the model learned"},
+    "hull_note": "domain and hull are INDEPENDENT and answer different "
+                 "questions. domain=0 means UNVERIFIABLE: no gauge ever existed "
+                 "there, so nothing can be scored. hull=1 means UNUSUAL: this "
+                 "cell sits far from anything in training, and it happens "
+                 "INSIDE the gauge grid too. A cell can be verified and "
+                 "unusual, or unverifiable and perfectly ordinary.",
     "drivers": "top three SHAP drivers as [feature_index, shap_log_odds, "
                "percentile], present exactly when verdict >= 1 (not reliable). "
                "feature_index indexes meta.features. SHAP is computed on the "
@@ -403,7 +415,37 @@ def write_export(rows, date, model, features, cal_bundle, args,
     show = rows[keep].copy()
     show["ix"], show["iy"] = ix[keep], iy[keep]
 
-    # TASK 3: SHAP, on the archive's own selection rule and its own code path.
+    # TASK 3 (P41): the hull flag. Separates UNVERIFIABLE from UNUSUAL.
+    #
+    # WHY THE INDEX FEATURES ARE DROPPED HERE. The flag is a statement about
+    # METEOROLOGY -- "this cell is far from anything the model learned" -- and
+    # `month` and `lead_day` are indices, not weather. On a single cycle `month`
+    # is CONSTANT, so including it adds the same offset to every cell's D^2 and
+    # shifts the whole field against a fixed training threshold without saying
+    # anything about any individual cell. Measured both ways in P41: the verdict
+    # is unchanged, so this is the more defensible of two answers, not a rescue.
+    ref = MAHAL.fit_reference(args.labels, args.model, MAHAL.INDEX_FEATURES)
+    d2 = MAHAL.distances(show, ref)
+    show["hull"] = (d2 > ref["p99"]).astype(int)
+    print()
+    print("  HULL: D^2 over {} features (dropped {}), reference = the {:,} fitted "
+          "training rows".format(len(ref["features"]), ", ".join(ref["dropped"]),
+                                 ref["n_fitted"]))
+    print("    training 99th percentile D^2 = {:.2f}  (empirical, never chi-squared)"
+          .format(ref["p99"]))
+    for dom, label in ((VERIFIED, "verified  "), (UNVERIFIED, "unverified")):
+        sub = show[show["domain"] == dom]
+        if not len(sub):
+            continue
+        alerts = sub[sub["verdict"] == confidence.HIGH_RISK]
+        print("    {} {:,} cells, {:.2f}% outside the hull; of its {:,} alerts, "
+              "{:.2f}% outside".format(
+                  label, len(sub), 100 * sub["hull"].mean(), len(alerts),
+                  100 * alerts["hull"].mean() if len(alerts) else float("nan")))
+    print("    domain and hull are INDEPENDENT: unverifiable is not unusual, and")
+    print("    an alert inside the gauge grid can still be far from training.")
+
+    # TASK 3 (P40): SHAP, on the archive's own selection rule and its own code path.
     drivers = explain(show, model, features, args.labels)
 
     leads = {}
@@ -411,7 +453,7 @@ def write_export(rows, date, model, features, cal_bundle, args,
         cells = []
         for idx, r in part.iterrows():
             cell = [int(r["ix"]), int(r["iy"]), round(float(r["p_display"]), 2),
-                    int(r["verdict"]), int(r["domain"])]
+                    int(r["verdict"]), int(r["domain"]), int(r["hull"])]
             if idx in drivers:
                 cell.append(drivers[idx])
             cells.append(cell)
@@ -440,6 +482,17 @@ def write_export(rows, date, model, features, cal_bundle, args,
                 "verified": int((rows["domain"] == VERIFIED).sum()),
                 "unverified": int((rows["domain"] == UNVERIFIED).sum()),
                 "note": DOMAIN_SENTENCE,
+            },
+            "hull": {
+                "features": list(ref["features"]),
+                "dropped": list(ref["dropped"]),
+                "train_p99": round(float(ref["p99"]), 4),
+                "outside": int(show["hull"].sum()),
+                "note": "Squared Mahalanobis distance against the 488,280 rows "
+                        "the model was fitted on, thresholded at their own 99th "
+                        "percentile. It marks cells that are UNUSUAL, which is a "
+                        "different question from the domain marker's "
+                        "UNVERIFIABLE, and it fires inside the gauge grid too.",
             },
             "schema": CELL_SCHEMA,
             "cell_format": CELL_SCHEMA["fields"],

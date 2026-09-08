@@ -62,6 +62,65 @@ def mahalanobis(X, mu, chol_inv):
     return np.einsum("ij,ij->i", Z, Z)
 
 
+# The two features that are not meteorology. `month` is a calendar index and
+# `lead_day` a forecast-horizon index; both are legitimate model inputs, but on
+# a single live cycle `month` is CONSTANT (every cell shares one value) while
+# training spans 1-12. That constant offset lands in every live D^2 identically.
+# It cancels in any contrast INTERNAL to the cycle -- flagged ungauged vs
+# flagged gauged -- but it does not cancel against the training reference,
+# which is exactly what "1.66% vs 1.00%, so it is in-distribution" rests on.
+INDEX_FEATURES = ("month", "lead_day")
+
+
+def fit_reference(labels_path, model_path, drop=()):
+    """Mean, scale and inverse-covariance from the rows the estimator SAW.
+
+    Returned as a dict so the operational export can reuse this exact fit
+    rather than growing a second implementation that could drift from it.
+    """
+    bundle = joblib.load(model_path)
+    cfg = bundle["config"]
+    features = [f for f in bundle["features"] if f not in set(drop)]
+    val_dates = set(str(d) for d in cfg["validation_dates"])
+
+    lab = pd.read_parquet(labels_path, columns=list(features) + ["split", "init"])
+    train = lab[lab["split"] == "train"]
+    fitted = train[~train["init"].astype(str).isin(val_dates)]
+    if len(fitted) != cfg["n_train_rows"]:
+        raise SystemExit(
+            "fitted rows {:,} disagree with the bundle's n_train_rows {:,}; stop."
+            .format(len(fitted), cfg["n_train_rows"]))
+
+    X = fitted[features].to_numpy(dtype=float)
+    if np.isnan(X).any():
+        raise SystemExit("NaN in training features; Mahalanobis needs complete rows.")
+    mu = X.mean(axis=0)
+    sd = X.std(axis=0, ddof=1)
+    if (sd <= 0).any():
+        raise SystemExit("zero-variance feature: {}".format(
+            [f for f, s in zip(features, sd) if s <= 0]))
+    Z = (X - mu) / sd
+    C = np.cov(Z, rowvar=False)
+    cond_raw = float(np.linalg.cond(np.cov(X, rowvar=False)))
+    cond = float(np.linalg.cond(C))
+    ridged = cond > RIDGE_TRIGGER
+    if ridged:
+        lam = 1e-6 * np.trace(C) / C.shape[0]
+        C = C + lam * np.eye(C.shape[0])
+    chol_inv = np.linalg.inv(np.linalg.cholesky(C)).T
+    d_train = mahalanobis(Z, np.zeros(len(features)), chol_inv)
+    return {"features": features, "mu": mu, "sd": sd, "chol_inv": chol_inv,
+            "d_train": d_train, "p99": float(np.percentile(d_train, 99)),
+            "cond": cond, "cond_raw": cond_raw, "ridged": ridged,
+            "n_fitted": len(fitted), "dropped": list(drop)}
+
+
+def distances(frame, ref):
+    """Squared Mahalanobis distance of each row of `frame` against `ref`."""
+    Z = (frame[ref["features"]].to_numpy(dtype=float) - ref["mu"]) / ref["sd"]
+    return mahalanobis(Z, np.zeros(len(ref["features"])), ref["chol_inv"])
+
+
 def describe(name, d, ref_p99, n_total=None):
     n = len(d)
     return {
@@ -81,65 +140,31 @@ def main():
     ap.add_argument("--labels", default=os.path.join(_ROOT, "data", "labelled.parquet"))
     ap.add_argument("--model", default=os.path.join(_ROOT, "models", "vishwas_model.joblib"))
     ap.add_argument("--out", default=os.path.join(_ROOT, "data", "mahalanobis.csv"))
+    ap.add_argument("--drop-index", action="store_true",
+                    help="exclude month and lead_day, the two features that are "
+                         "not meteorology, and re-test the conclusion")
     args = ap.parse_args()
+    drop = INDEX_FEATURES if args.drop_index else ()
 
-    bundle = joblib.load(args.model)
-    features = bundle["features"]
-    cfg = bundle["config"]
-    val_dates = set(str(d) for d in cfg["validation_dates"])
-
-    # ---- the reference: the rows the estimator actually saw ----
-    lab = pd.read_parquet(args.labels, columns=features + ["split", "init"])
-    train = lab[lab["split"] == "train"]
-    fitted = train[~train["init"].astype(str).isin(val_dates)]
-    print("labelled table            {:,} rows".format(len(lab)))
-    print("  split == train          {:,} rows over {} dates".format(
-        len(train), train["init"].nunique()))
-    print("  minus 13 validation     {:,} rows over {} dates  <- the fitted set".format(
-        len(fitted), fitted["init"].nunique()))
-    print("  bundle n_train_rows     {:,}{}".format(
-        cfg["n_train_rows"],
-        "   MATCH" if len(fitted) == cfg["n_train_rows"] else "   *** MISMATCH ***"))
-    if len(fitted) != cfg["n_train_rows"]:
-        raise SystemExit("fitted row count disagrees with the model bundle; stop.")
-
-    Xtr = fitted[features].to_numpy(dtype=float)
-    if np.isnan(Xtr).any():
-        raise SystemExit("NaN in training features; Mahalanobis needs complete rows.")
-
-    # ---- mean, scale, covariance ----
-    mu = Xtr.mean(axis=0)
-    sd = Xtr.std(axis=0, ddof=1)
-    if (sd <= 0).any():
-        raise SystemExit("zero-variance feature: {}".format(
-            [f for f, s in zip(features, sd) if s <= 0]))
-    Ztr = (Xtr - mu) / sd
-    C = np.cov(Ztr, rowvar=False)                      # correlation matrix
-    C_raw = np.cov(Xtr, rowvar=False)                  # reported for contrast only
-
-    cond = float(np.linalg.cond(C))
-    cond_raw = float(np.linalg.cond(C_raw))
+    ref = fit_reference(args.labels, args.model, drop)
+    features = ref["features"]
+    print("fitted reference rows      {:,}  (split==train minus the 13 "
+          "validation dates)".format(ref["n_fitted"]))
+    print("features in the distance   {}{}".format(
+        len(features),
+        "   DROPPED {}".format(", ".join(ref["dropped"])) if ref["dropped"] else ""))
     print()
-    print("condition number, raw covariance          {:.3e}".format(cond_raw))
-    print("condition number, standardised (used)     {:.3e}".format(cond))
-
-    ridged = cond > RIDGE_TRIGGER
-    if ridged:
-        lam = 1e-6 * np.trace(C) / C.shape[0]
-        C = C + lam * np.eye(C.shape[0])
-        print("  ill-conditioned above {:.0e} -> ridge {:.3e} added to the diagonal"
-              .format(RIDGE_TRIGGER, lam))
-        print("  condition number after ridge            {:.3e}".format(np.linalg.cond(C)))
+    print("condition number, raw covariance          {:.3e}".format(ref["cond_raw"]))
+    print("condition number, standardised (used)     {:.3e}".format(ref["cond"]))
+    if ref["ridged"]:
+        print("  ill-conditioned above {:.0e} -> ridge added to the diagonal"
+              .format(RIDGE_TRIGGER))
     else:
-        print("  below the {:.0e} trigger -> NO regularisation applied".format(RIDGE_TRIGGER))
+        print("  below the {:.0e} trigger -> NO regularisation applied"
+              .format(RIDGE_TRIGGER))
 
-    # Cholesky of the inverse: D^2 = || (x-mu) L^-T ||^2, numerically safer
-    # than forming the inverse and sandwiching it.
-    L = np.linalg.cholesky(C)
-    chol_inv = np.linalg.inv(L).T
-
-    d_train = mahalanobis(Ztr, np.zeros(len(features)), chol_inv)
-    ref_p99 = float(np.percentile(d_train, 99))
+    d_train = ref["d_train"]
+    ref_p99 = ref["p99"]
 
     # ---- the live cycle ----
     live = pd.read_parquet(args.live)
@@ -150,8 +175,7 @@ def main():
     gauged = mask[lat_slot, lon_slot]
     flagged = live["model_score"].to_numpy() >= confidence.THRESHOLD
 
-    Zlive = (live[features].to_numpy(dtype=float) - mu) / sd
-    d_live = mahalanobis(Zlive, np.zeros(len(features)), chol_inv)
+    d_live = distances(live, ref)
 
     groups = [
         ("training rows (reference)", d_train),
@@ -164,7 +188,9 @@ def main():
 
     print()
     print("=" * 86)
-    print("SQUARED MAHALANOBIS DISTANCE, 23 features, live cycle {}".format(init))
+    print("SQUARED MAHALANOBIS DISTANCE, {} features{}, live cycle {}".format(
+        len(features),
+        " (index features dropped)" if ref["dropped"] else "", init))
     print("reference = the 488,280 fitted training rows; quantiles are EMPIRICAL")
     print("=" * 86)
     print("  {:<28} {:>9} {:>9} {:>9} {:>10} {:>11}".format(
@@ -231,9 +257,11 @@ def main():
     print("  there, so nothing at those points has been or can be scored. A cell")
     print("  can sit at the centre of the training cloud and still be wrong.")
 
-    table["cond_standardised"] = cond
-    table["cond_raw"] = cond_raw
-    table["ridged"] = ridged
+    table["n_features"] = len(features)
+    table["dropped"] = ",".join(ref["dropped"]) or "none"
+    table["cond_standardised"] = ref["cond"]
+    table["cond_raw"] = ref["cond_raw"]
+    table["ridged"] = ref["ridged"]
     table["train_p99"] = ref_p99
     table["init"] = init
     table.to_csv(args.out, index=False)
