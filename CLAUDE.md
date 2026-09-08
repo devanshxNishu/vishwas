@@ -333,6 +333,73 @@ logs/p37_oper.log.
   One cycle is one weather situation, so do not build a lead-time story on
   this shape — but do not smooth it into "increases with lead time" either.
 
+OPERATIONAL RUNNER AND ITS TWO MEASUREMENTS — 2026-09-08 (P39).
+src/20_operational.py scores one live cycle in one command. NOT a scheduler:
+where it runs is the next decision. Five guards are CONSTANTS, not comments —
+00Z only, surface CAPE from pgrb2bp5 by exact level match, 11 members, the
+fixed raw threshold, EXPECTED_MESSAGES + GRIB/7777 before transfer.
+Verified on gefs.20260908/00Z: 211.6 MB, 104 s, all five guards fired.
+
+THE DOMAIN SPLIT — MEASURED, src/22_domain_check.py, logs/p39_domain.log.
+The model learned ONLY at the 1,252 gauge points; features and climatology
+cover all 5,041. Splitting the live grid and re-running the out-of-range check
+on each subset SEPARATELY (P37's number pooled them, so 75% of the domain was
+averaged against the 25% carrying the training footprint):
+    worst feature, gauged 1,252     0.008%
+    worst feature, ungauged 3,789   0.158%   (precip_anomaly)
+    features over 1% on the ungauged subset: NONE
+So the ungauged points are NOT out of distribution, and the decision is SCORE
+ALL 5,041 BUT MARK THE 3,789 as a distinct state, excluded from every headline
+count. They are never merged into one population; slide 4 promises the gauge
+domain is stated and an unmarked full-grid count breaks that promise.
+  IN-RANGE IS NOT VERIFIED, and this is the sentence to keep. The check says
+  live features sit inside the training hull. It says NOTHING about accuracy
+  there, because no gauge means no label ever existed, so nothing at those
+  points has been or can be scored.
+  THE MARKING EARNED ITSELF IMMEDIATELY. On 20260908 the ungauged domain
+  flagged high risk 13.16% against 7.78% on the verified grid — 1.69x. The
+  pooled figure, 11.82%, is dominated by the three quarters of the domain that
+  can never be checked. QUOTE 7.78%. The full-grid number is reference only.
+
+ISOTONIC QUANTISATION — WHY THE DISPLAY IS ROUNDED. src/21_oper_calibrate.py.
+PAVA fits a step function, so the calibrated field is a small set of levels,
+not a continuous probability:
+    live cycle    110 distinct calibrated values from 42,891 distinct raw;
+                  largest block 7.22% of the grid; ten largest cover 50.50%;
+                  97.80% of cells sit in blocks of 100+
+    2019 test     445 distinct from 456,678 raw; largest block 10.90%;
+                  ten largest cover 53.98%
+DECISION: DISPLAY THE CALIBRATED PROBABILITY ROUNDED TO 1 PERCENTAGE POINT
+(DISPLAY_STEP = 0.01), which is option (b) but at 1% and NOT the 5% first
+suggested — 5% is too coarse where the mass is. 86.4% of the live grid sits
+below p = 0.10 and the median cell is 0.0339, so a 5% grid would round the
+median to 0.05, a ~47% relative shift, while wasting resolution over 0.3-0.75
+where almost nothing lands. Measured distortion: 5% max shift 0.0248, 1% max
+shift 0.0050 against blocks far wider than that.
+  COARSER DISPLAY MEANS MORE CELLS SHARE A NUMBER, AND THAT IS ACCEPTED:
+    raw at 4dp        22 cells (0.04%) share a printed number with a
+                      different verdict
+    calibrated full   2,017 (4.00%)
+    calibrated at 1%  4,106 (8.15%)
+  No display precision drives it to zero, which is exactly why THE VERDICT IS
+  STORED AND BANDED ON THE RAW SCORE. A coarse number also discourages the
+  false belief that two cells showing the same value can be ranked.
+  THE CAP NEEDS WORDS, and they live in the export's meta block so no
+  interface can omit them: "Risk is capped at 75%: that is the highest bust
+  rate ever observed in held-out data, so the system does not display a
+  confidence it has not earned."
+
+MODEL METADATA — CORRECTED 2026-09-08. logs/p37_oper.log printed
+    model : vishwas_model.joblib (23 features, trained ['2018-01-01', '2019-12-31'])
+which reads as though the model saw its own test year. THE BUNDLE FIELD IS
+HONEST — config["study_window"] is [date_min, date_max], the span of the
+SOURCE TABLE handed to 07_model.load(), and it spans both years because the
+table holds the training year and the held-out test year together. The word
+"trained" was the probe's own label and was wrong. 20_oper_probe.py now prints
+the span as "source table spans ... <- DATA span, not the training period",
+alongside the fitted row count and the held-out test rows. No model, metric or
+published number was affected; only the log line.
+
 ARCHIVE RANGE IS 2000-2019. reforecast/2020/ holds one misfiled 2010
 date. Never write range(2000, 2021).
 

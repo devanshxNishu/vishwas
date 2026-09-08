@@ -1,5 +1,6 @@
 validation slice: 162,760 rows / 13 dates, base rate 5.426%
 isotonic: 77 distinct output levels, max output 0.752381
+wrote /Users/devansh/vishwas/models/isotonic_oper.joblib
 
 ==========================================================================
 THE TAIL — what the isotonic map does to a displayed certainty
@@ -30,3 +31,47 @@ VERDICT BANDS, raw vs calibrated-with-mapped-thresholds:
   uncertain  raw  5,836   calibrated  5,726
   high_risk  raw  5,512   calibrated  5,752
   bands identical: False
+
+==========================================================================
+QUANTISATION — live cycle (50,410 cells)
+==========================================================================
+  distinct calibrated values             110
+  distinct raw values                 42,891
+  largest block                        3,642 cells (7.22% of grid)
+  median block                            93 cells
+  cells in blocks of 100+             49,302 (97.80%)
+  ten largest blocks cover            25,456 (50.50%)
+
+  the ten largest, value -> cells:
+    0.033912      3,642  (7.22%)
+    0.046334      3,368  (6.68%)
+    0.000100      3,009  (5.97%)
+    0.023967      2,826  (5.61%)
+    0.050438      2,762  (5.48%)
+    0.007820      2,452  (4.86%)
+    0.062242      1,963  (3.89%)
+    0.083524      1,901  (3.77%)
+    0.023835      1,770  (3.51%)
+    0.028656      1,763  (3.50%)
+
+==========================================================================
+QUANTISATION — 2019 test set (651,040 cells)
+==========================================================================
+  distinct calibrated values             445
+  distinct raw values                456,678
+  largest block                       70,981 cells (10.90% of grid)
+  median block                             1 cells
+  cells in blocks of 100+            650,541 (99.92%)
+  ten largest blocks cover           351,449 (53.98%)
+
+  the ten largest, value -> cells:
+    0.000100     70,981  (10.90%)
+    0.000279     61,227  (9.40%)
+    0.007820     46,898  (7.20%)
+    0.001766     32,392  (4.98%)
+    0.000000     31,929  (4.90%)
+    0.033912     27,741  (4.26%)
+    0.023967     25,270  (3.88%)
+    0.046334     19,979  (3.07%)
+    0.050438     17,574  (2.70%)
+    0.013574     17,458  (2.68%)

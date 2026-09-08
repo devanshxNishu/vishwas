@@ -350,9 +350,23 @@ def main():
 
     bundle = joblib.load(args.model)
     model, features = bundle["model"], bundle["features"]
-    print("\nmodel   : {} ({} features, trained {})".format(
-        os.path.basename(args.model), len(features),
-        bundle["config"]["study_window"]))
+    cfg = bundle["config"]
+    # NOT "trained <study_window>". The bundle's study_window is the date span
+    # of the SOURCE TABLE handed to 07_model.load() -- 2018-2019 for the
+    # published model, because the table holds both the training year and the
+    # held-out test year. Printing it under the word "trained" made the log
+    # read as though the model had seen its own test year, which is the one
+    # thing it must not have done. The split itself comes from the `split`
+    # column that 06_label.py fitted at --train-end 2018-12-31.
+    print("\nmodel   : {} ({} features, seed {}, sklearn {})".format(
+        os.path.basename(args.model), len(features), cfg["seed"], cfg["sklearn"]))
+    print("          source table spans {} .. {}  <- DATA span, not the "
+          "training period".format(*cfg["study_window"]))
+    print("          fitted on {:,} rows (bust rate {:.2f}%); {:,} test rows "
+          "held out".format(cfg["n_train_rows"], 100 * cfg["train_bust_rate"],
+                            cfg["n_test_rows"]))
+    print("          {} validation dates also held out".format(
+        len(cfg["validation_dates"])))
 
     missing = [f for f in features if f not in rows.columns]
     if missing:

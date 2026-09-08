@@ -1,0 +1,26 @@
+==============================================================================
+VISHWAS OPERATIONAL — gefs.20260908/00Z
+==============================================================================
+  guard 1  cycle hour 00Z accepted
+  guard 3  members: 11 of 31 available -- c00, p01, p02, p03, p04, p05, p06, p07, p08, p09, p10
+           SUBSAMPLED because a 31-member spread is a sharper
+           estimate than anything in training, and spread is the
+           model's most important feature family.
+  guard 5  1210 messages planned, matching EXPECTED_MESSAGES
+  guard 2  CAPE: 110 messages, all pgrb2bp5, exact level 'CAPE:surface'
+  fetched 211.6 MB in 53.2 s
+  every row matched a stored climatology group (201640 groups, keyed on lat, lon, lead_day, season)
+  calibrator loaded from isotonic_oper.joblib (cap 0.752381), NOT refitted
+
+  DOMAIN: 12,520 verified rows (1,252 gridpoints), 37,890 outside (3,789 gridpoints)
+
+  HEADLINE COUNT IS THE VERIFIED DOMAIN ONLY:
+    high risk 974 of 12,520 = 7.78%  (p >= 0.153, fixed)
+    full grid, for reference only: 11.82%
+
+  NO TRUTH EXISTS for this cycle. Nothing above is an accuracy.
+
+  wrote /Users/devansh/vishwas/data/operational_20260908.parquet
+  wrote /Users/devansh/vishwas/data/operational_20260908.json  (566,818 bytes)
+
+  TIMING plan 47.1 s, transfer 53.2 s, total 104.4 s

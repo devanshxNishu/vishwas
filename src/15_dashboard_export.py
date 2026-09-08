@@ -285,6 +285,19 @@ def shap_for(model, features, frame):
 # main
 # --------------------------------------------------------------------------
 
+def write_payload(path, payload):
+    """The one writer for this JSON shape.
+
+    Extracted so the operational export (src/20_operational.py) emits the
+    SAME shape from the SAME code rather than a second implementation that
+    could drift. Separators are compact and deliberate: the published file is
+    read over the network by the dashboard.
+    """
+    with open(path, "w") as handle:
+        json.dump(payload, handle, separators=(",", ":"))
+    return os.path.getsize(path)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--pred", default=DEFAULT_PRED)
@@ -427,8 +440,7 @@ def main():
         "dates": dates,
     }
 
-    with open(a.out, "w") as handle:
-        json.dump(payload, handle, separators=(",", ":"))
+    write_payload(a.out, payload)
     size = os.path.getsize(a.out)
     print()
     print("wrote {}  ({:,} bytes, {:.2f} MB)".format(a.out, size, size / 1e6))

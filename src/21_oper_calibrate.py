@@ -50,11 +50,50 @@ def _load(name, filename):
     return mod
 
 
+def quantisation(iso, raw, label):
+    """How many DISTINCT numbers can a calibrated display actually show?
+
+    PAVA fits a step function: every raw score inside one pooled block maps to
+    the same calibrated value. So the calibrated field is not a continuous
+    probability, it is a small set of levels, and cells printing an identical
+    number can carry different verdicts anywhere a block spans the threshold --
+    not only at 0.126283. This measures how coarse the steps really are before
+    a calibrated number goes on a map.
+    """
+    cal = iso.predict(raw)
+    values, counts = np.unique(cal, return_counts=True)
+    order = np.argsort(counts)[::-1]
+    top10 = counts[order][:10].sum()
+
+    print()
+    print("=" * 74)
+    print("QUANTISATION — {} ({:,} cells)".format(label, len(raw)))
+    print("=" * 74)
+    print("  distinct calibrated values      {:>10,}".format(len(values)))
+    print("  distinct raw values             {:>10,}".format(len(np.unique(raw))))
+    print("  largest block                   {:>10,} cells ({:.2f}% of grid)"
+          .format(int(counts.max()), 100.0 * counts.max() / len(raw)))
+    print("  median block                    {:>10,} cells".format(int(np.median(counts))))
+    print("  cells in blocks of 100+         {:>10,} ({:.2f}%)".format(
+        int(counts[counts >= 100].sum()),
+        100.0 * counts[counts >= 100].sum() / len(raw)))
+    print("  ten largest blocks cover        {:>10,} ({:.2f}%)".format(
+        int(top10), 100.0 * top10 / len(raw)))
+    print()
+    print("  the ten largest, value -> cells:")
+    for v, c in zip(values[order][:10], counts[order][:10]):
+        print("    {:.6f} {:>10,}  ({:.2f}%)".format(v, int(c), 100.0 * c / len(raw)))
+    return len(values), counts
+
+
 def main():
     ap = argparse.ArgumentParser(description="Isotonic on the live cycle tail.")
     ap.add_argument("--model", default=os.path.join(_ROOT, "models", "vishwas_model.joblib"))
     ap.add_argument("--labels", default=os.path.join(_ROOT, "data", "labelled.parquet"))
     ap.add_argument("--live", default=os.path.join(_ROOT, "data", "features_oper.parquet"))
+    ap.add_argument("--save", default=os.path.join(_ROOT, "models", "isotonic_oper.joblib"),
+                    help="persist the fitted calibrator so the operational "
+                         "runner LOADS it instead of refitting")
     args = ap.parse_args()
 
     m07 = _load("model07", "07_model.py")
@@ -72,6 +111,26 @@ def main():
     iso.fit(p_val, validation["bust"].to_numpy().astype(int))
     print("isotonic: {} distinct output levels, max output {:.6f}".format(
         len(np.unique(iso.y_thresholds_)), float(iso.predict([1.0])[0])))
+
+    # Persist it. The operational runner must never refit -- a calibrator
+    # refitted per cycle would move the display under the reader, and one
+    # refitted on operational data would have no labels to fit against at all.
+    os.makedirs(os.path.dirname(args.save), exist_ok=True)
+    joblib.dump({
+        "isotonic": iso,
+        "fitted_on": {
+            "labels": args.labels,
+            "study_window": config["study_window"],
+            "validation_every": config["validation_every"],
+            "validation_dates": config["validation_dates"],
+            "n_rows": int(len(validation)),
+            "base_rate": float(validation["bust"].mean()),
+        },
+        "cap": float(iso.predict([1.0])[0]),
+        "note": "Fitted on the VALIDATION slice only, reproducing "
+                "10_calibration.py. Never refit on operational data.",
+    }, args.save)
+    print("wrote {}".format(args.save))
 
     live = pd.read_parquet(args.live)
     raw = live["model_score"].to_numpy()
@@ -127,6 +186,10 @@ def main():
         print("  {:<10} raw {:>6,}   calibrated {:>6,}".format(
             name, int((v_raw == code).sum()), int((v_cal == code).sum())))
     print("  bands identical: {}".format(bool((v_raw == v_cal).all())))
+
+    quantisation(iso, raw, "live cycle")
+    test = pd.read_parquet(os.path.join(_ROOT, "data", "model_predictions.parquet"))
+    quantisation(iso, test["model_score"].to_numpy(), "2019 test set")
 
 
 if __name__ == "__main__":

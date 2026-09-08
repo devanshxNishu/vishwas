@@ -1,0 +1,54 @@
+live rows 50,410 over 5,041 gridpoints
+  gauge-observed  1,252 points -> 12,520 rows
+  unobserved      3,789 points -> 37,890 rows
+training rows 651,040 over 52 dates
+
+==============================================================================
+OUT-OF-TRAINING-RANGE, BY SUBSET  (the pooled P37 number hid this)
+==============================================================================
+  feature                  gauged 1,252   ungauged 3,789      ratio
+  lead_day                       0.000%           0.000% 
+  gh500_mean                     0.008%           0.008%        1.0x
+  gh500_spread                   0.000%           0.000% 
+  u500_mean                      0.000%           0.000% 
+  u500_spread                    0.000%           0.000% 
+  v500_mean                      0.000%           0.000% 
+  v500_spread                    0.000%           0.000% 
+  pwat_mean                      0.000%           0.000% 
+  pwat_spread                    0.000%           0.000% 
+  cape_mean                      0.000%           0.000% 
+  cape_spread                    0.000%           0.000% 
+  precip_mean                    0.000%           0.000% 
+  precip_spread                  0.000%           0.000% 
+  gh500_gradient                 0.008%           0.000%        0.0x
+  wind500_speed                  0.000%           0.000% 
+  u850_mean                      0.000%           0.000% 
+  v850_mean                      0.000%           0.000% 
+  shear_500_850                  0.000%           0.000% 
+  flow500_deformation            0.000%           0.000% 
+  month                          0.000%           0.000% 
+  pwat_anomaly                   0.000%           0.000% 
+  cape_anomaly                   0.000%           0.000% 
+  precip_anomaly                 0.000%           0.158% 
+
+  worst feature, gauged subset   : 0.008%
+  worst feature, ungauged subset : 0.158%
+  features over 1% on the ungauged subset: 0
+
+==============================================================================
+DECISION
+==============================================================================
+  SCORE ALL 5,041, MARK THE 3,789. The ungauged subset is not
+  materially out-of-distribution -- worst feature 0.158%, against
+  0.008% on the gauge grid itself. But it is still unverifiable:
+  no IMD gauge means no label ever existed there, so nothing about
+  those points has been or can be scored. They get a DISTINCT
+  STATE, 'outside the verified domain', and are excluded from
+  every headline count.
+
+  IN-RANGE IS NOT VERIFIED. This check says the live features sit
+  inside the training hull; it says NOTHING about whether the model
+  is accurate there, because no truth has ever existed at those
+  points. Do not let 'in distribution' be read as 'validated'.
+
+wrote /Users/devansh/vishwas/data/domain_check.csv
