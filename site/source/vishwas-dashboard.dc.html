@@ -992,13 +992,13 @@ class Component extends DCLogic {
   region(lon, lat) {
     const R = [
       ['Western Himalaya', 29, 37, 72, 81], ['Punjab–Haryana plains', 28.5, 32.5, 73.5, 77.5],
-      ['West Rajasthan', 23, 30, 68, 75.5], ['Gangetic plain (UP)', 24.5, 29, 77, 84.5],
-      ['Bihar–Jharkhand', 21.5, 27.5, 83, 88.5], ['Northeast India', 23, 29.5, 88.5, 97],
-      ['Bengal–Odisha coast', 17.5, 23.5, 84, 89], ['Gujarat–Saurashtra', 20, 24.5, 68, 74.5],
-      ['Central India (MP–Chhattisgarh)', 20.5, 26, 74.5, 84], ['Konkan–Goa coast', 14.5, 20.5, 72.5, 74.5],
+      ['Rajasthan', 23, 30, 68, 75.5], ['Gangetic plain (UP)', 24.5, 29, 77, 84.5],
+      ['Bihar–Jharkhand', 22.5, 27.5, 83, 88.5], ['Northeast India', 23, 29.5, 88.5, 97],
+      ['Bengal–Odisha', 17.5, 23.5, 84, 89], ['Gujarat', 20, 24.5, 68, 74.5],
+      ['Central India', 20.5, 26, 74.5, 84], ['Konkan coast', 14.5, 20.5, 72.5, 74.5],
       ['Interior Maharashtra', 16, 21.5, 74.5, 80.5], ['Telangana–Vidarbha', 16, 20.5, 76.5, 82],
       ['Coastal Andhra', 13, 19, 79.5, 85.5], ['Interior Karnataka', 12, 18, 74.5, 78.5],
-      ['Kerala–coastal Karnataka', 8, 14.5, 74, 77.5], ['Tamil Nadu', 8, 13.5, 77, 80.5]
+      ['Kerala–Karnataka', 8, 14.5, 74, 77.5], ['Tamil Nadu', 8, 13.5, 77, 80.5]
     ];
     let best = null, bd = Infinity, near = null, nd = Infinity;
     for (const r of R) {
