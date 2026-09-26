@@ -4,6 +4,49 @@ Forecast Confidence Intelligence for SIH26079.
 
 VISHWAS does not generate a new weather forecast. It predicts when an existing medium-range ensemble forecast is likely to be badly wrong, so forecasters can see low-confidence regions before acting on the forecast.
 
+## What a fresh clone can run
+
+`data/` is 3.4 GB and gitignored, so a clone gets the code, the models, the
+figure generators, the logs and the docs -- and no input data. Read the
+**HANDOVER block at the top of `CLAUDE.md`** first; it is written for someone
+who has never seen this project and it is not repeated here.
+
+Runs with only the repo:
+
+- `scripts/check_docs.py` -- the health check, below.
+- `site/index.html` and `site/dashboard/index.html` -- open either in a
+  browser. Both are self-contained; the dashboard's data is inlined.
+- The tracked result tables in `data/*.csv`, and `logs/` and `ablations/`,
+  which are the record behind every published number.
+- `models/*.joblib` -- the published model, the five-year retest and the
+  operational calibrator all load as they are.
+
+Needs `data/` regenerated first, because each reads a gitignored parquet:
+
+- `api/main.py` -- `data/model_predictions.parquet` and `data/labelled.parquet`,
+  both at import, so the API does not start without them.
+- `src/15_dashboard_export.py` -- the same two, plus the model.
+- `src/20_operational.py` -- a live cycle needs network and
+  `data/climatology.parquet`; `--from-parquet` needs a stored cycle parquet.
+- `src/21_oper_calibrate.py` -- `data/labelled.parquet` and
+  `data/features_oper.parquet`.
+
+Regenerating means a fetch with `src/01_fetch.py`: **50.3 GB** for the published
+study (104 dates, 2018-2019) and **124.5 GB** for the five-year window
+(2015-2019). Refitting the model is a separate step, `src/07_model.py`, and the
+tracked `.joblib` means you only need it if you are changing the model.
+
+The one command that proves the clone is healthy:
+
+```bash
+python scripts/check_docs.py
+```
+
+It must exit **1**, reporting **7 findings in 3 files** -- all seven being the
+Team ID guard, which fires by design until the ID is issued. A green run is the
+failure, not the fix: it means the guard was deleted. Any other finding, or a
+non-zero site-assertion count, is a real regression. `CLAUDE.md` explains why.
+
 ## Problem Statement
 
 - SIH: SIH26079
@@ -117,7 +160,11 @@ python scripts/check_docs.py     # exits 0 if clean, 1 if anything is found
 
 It reports and never rewrites. See `docs/CONSISTENCY-AUDIT.md`.
 
-Generated datasets, IMD cache files, raw forecast files, virtual environments, models, and outputs are intentionally excluded from git.
+Generated datasets, IMD cache files, raw forecast files, virtual environments,
+and outputs are intentionally excluded from git. The fitted models in `models/`
+are the exception and **are** tracked -- they are the artefact this project
+produces, they total under 600 KB, and without them a clone cannot score
+anything without re-running the fetch. See "What a fresh clone can run" above.
 
 ## Setup
 
