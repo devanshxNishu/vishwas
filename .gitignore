@@ -22,9 +22,11 @@ temp/
 # logs/*.log is the only record of how the five-year numbers were produced.
 # Blanket *.log had been excluding all of them silently.
 # These negations work only because neither parent directory is itself
-# excluded -- `git check-ignore -v logs ablations` exits 1. Do NOT copy this
-# pattern under models/, which IS excluded as a directory, so a negation there
-# would never be reached.
+# excluded -- `git check-ignore -v logs ablations` exits 1. A negation under a
+# directory excluded as `dir/` is never reached at all, because git stops at the
+# directory and never looks inside it. models/ used to be excluded that way; it
+# is now excluded per-entry, as `models/*`, precisely so that the negation on it
+# below is reachable.
 !ablations/*.log
 !logs/*.log
 
@@ -46,8 +48,20 @@ data/raw/*
 
 # Large generated outputs
 outputs/
-models/
 checkpoints/
+
+# models/ is excluded PER-ENTRY rather than as `models/`, so that the negation
+# below is reachable -- see the note above. The fitted models are the artefact
+# this project exists to produce, and they are small: ~600 KB for all three
+# against 3.4 GB of data/, which stays ignored. Without them a fresh clone has
+# the code but no way to produce a model except re-running a 50 GB fetch, so
+# the API, the dashboard export and the operational scorer are all dead on
+# arrival. Tracking them is what makes a clone useful to somebody else.
+# Written as a negation, not `git add -f`, so the NEXT model is tracked
+# automatically instead of depending on somebody remembering the flag.
+# Everything else in models/ stays ignored, subdirectories included.
+models/*
+!models/*.joblib
 *.grib
 *.grib2
 *.idx
