@@ -115,7 +115,7 @@ presentational, not substantive.
 
 ## Ranked fixes before 31 Aug
 
-1. Paste the **Team ID** — the only placeholder left.
+1. ~~Team ID~~ — **done 28 Sep**: **183568**, on slide 1.
 2. ~~Run the **`month` ablation**~~ — **done 29 Aug and passed** (−0.0059
    against a 0.02 tolerance). 0.728 stands. Three cards and
    `figures/fig4_inversion.png` carry the number.
@@ -155,5 +155,6 @@ Two of the five ranked fixes are done.
   slide except 6 now carries a figure or a diagram, and slide 6 is a reference
   list, where prose is correct.
 
-Remaining from the ranked list: paste the Team ID, and confirm the PS title
-against the portal. The `month` ablation has run and passed.
+Remaining from the ranked list: confirm the PS title against the portal. The
+Team ID is done — **183568**, on slide 1 — and the `month` ablation has run
+and passed.

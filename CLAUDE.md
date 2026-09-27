@@ -70,10 +70,13 @@ WHAT IS OPEN — each with enough context to act without asking anyone
      tried and is worse (168 cells move, Hyderabad still breaks). This needs a
      tie-break that does not depend on box centres. Do not retry either of the
      two approaches already measured.
-  4. THE TEAM ID. Still not pasted. The date named in the CHECKER STATE block
-     below has passed; if the ID has been issued, do all four of its steps in
-     ONE commit. check_docs.py fires 7 hits on this and exits 1 BY DESIGN until
-     then.
+  4. THE TEAM ID — CLOSED 28 Sep 2026, issued as 183568. All four steps of the
+     old CHECKER STATE block were done in one commit: the ID is on slide 1 of
+     deck/VISHWAS_SIH.{pptx,pdf}; a new Team ID line in the site footer carries
+     it, in BOTH site/index.html and site/source/vishwas-site.dc.html;
+     SITE_ASSERTIONS pins it as PRESENT on the case page, so from here its
+     ABSENCE fails; and that block is deleted. The guard's meaning has
+     inverted — a hit is no longer expected, it is a real finding.
 
 THE STANDING RULES. Non-negotiable, and each exists because of a specific way
 this project could be taken apart by a judge. scripts/check_docs.py enforces
@@ -107,31 +110,15 @@ are checked by reading them.
 
 HOW TO CHECK THE WHOLE THING IS STILL COHERENT
     python scripts/check_docs.py
-  EXPECT EXIT 1, with exactly this shape: "7 finding(s) in 3 file(s); 36 noted
-  in 9 exempt file(s); 0 site assertion(s) failed", all seven being the Team ID
-  guard. ANY OTHER FINDING, or a non-zero site assertion count, is a real
-  regression. A green run before the Team ID is pasted means someone deleted
-  the guard — that is the failure, not the fix.
+  EXPECT EXIT 0, with exactly this shape: "0 finding(s) in 0 file(s); 36 noted
+  in 9 exempt file(s); 0 site assertion(s) failed". The Team ID was issued on
+  28 Sep, so A GREEN RUN IS NOW THE CORRECT STATE and exit 1 is a regression —
+  the exact inverse of the rule that stood until then. ANY finding, or a
+  non-zero site assertion count, is real. The 36 noted are hits in EXEMPT
+  files; two are the Team ID guard firing on docs/DECK-VERIFICATION.md, which
+  records the pre-issue state as an audit trail and is left alone on purpose.
 
 ================================================================================
-
-CHECKER STATE, until team selection on 3 Sep 2026.
-scripts/check_docs.py exits 1 by design. The Team ID guard fires on 7 hits
-across 3 files because the ID is issued only after selection at the internal
-hackathon. This is the rule working. DO NOT delete it, and do not "fix" the
-placeholders by inventing an ID.
-
-AFTER SELECTION, in ONE commit — these four changes only make sense
-together, and split apart there is a window where this file and the
-checker disagree:
-  1. Paste the real Team ID into the deck, slide 1.
-  2. ADD a Team ID line to the site footer. It does not exist yet — this
-     is a new element, not a blank to fill. The site guard catches a blank
-     field, not a missing one, so nothing will remind you.
-  3. Flip the site assertion from "not blank" to "present", so from then
-     on absence is a failure.
-  4. Delete this block. The guard's meaning inverts here: a hit stops
-     being expected and becomes a real finding.
 
 PROBLEM-STATEMENT FIDELITY — FOUR OPEN ITEMS, RAISED 2026-08-27.
 

@@ -297,16 +297,18 @@ FORBIDDEN = [
      "Ankit's. See the TEAM ROLES AND CREDIT block in CLAUDE.md.",
      None),
 
-    # TEAM ID GUARD - P24, 1 Sep. The ID is issued after team selection on
-    # 3 Sep, so until then these rules FIRE ON PURPOSE and the run exits 1.
-    # That is the guard working, not a bug. DO NOT DELETE THESE RULES TO GET
-    # A GREEN RUN - the whole point is that a build still carrying the blank
-    # cannot reach the 20 September submission unnoticed. After the ID is
-    # pasted in, they go quiet on their own.
+    # TEAM ID GUARD - P24, 1 Sep; MEANING INVERTED 28 Sep. The ID was issued,
+    # 183568, and is on slide 1, in the site footer, and pinned PRESENT by
+    # SITE_ASSERTIONS below. Until it was issued these rules FIRED ON PURPOSE
+    # and the run exited 1; that window is closed, so a hit is now a REAL
+    # FINDING - a document has gone back to recording the ID as unfilled. The
+    # patterns are deliberately UNCHANGED. DO NOT DELETE THEM TO GET A GREEN
+    # RUN: they are what stops a build that has lost the ID from reaching the
+    # submission unnoticed.
     (r"paste (the )?\*{0,2}Team ID",
-     "Team ID placeholder. The ID is issued after team selection on 3 Sep; "
-     "paste it into slide 1 and this goes quiet. Expected to fire before "
-     "3 Sep - see the TEAM ID banner at the end of the run.",
+     "Team ID recorded as not yet filled in. It was issued 28 Sep, 183568, "
+     "and is on slide 1, so this is a document gone stale rather than a task "
+     "still pending - see the TEAM ID banner at the end of the run.",
      None),
 
     (r"Team ID\s*[–—-]\s*$",
@@ -315,8 +317,8 @@ FORBIDDEN = [
      None),
 
     (r"Team ID[^\n]{0,40}(blank|placeholder)",
-     "Team ID still recorded as blank or a placeholder. Issued 3 Sep; paste "
-     "it into slide 1.",
+     "Team ID recorded as unfilled. It was issued 28 Sep, 183568, and is on "
+     "slide 1; the document is stale.",
      None),
 
     (r"catches X%|current method's Y%|X% of busts",
@@ -460,6 +462,17 @@ SITE_ASSERTIONS = [
      "Flagged count derived from the outcome column: one span, one "
      "querySelector. The label is rebuilt as alerts + ' of ' + cells + "
      "' flagged', so the published 547 of 1,252 cannot drift. CASE ONLY."),
+
+    # THE TEAM ID IS PINNED AS PRESENT, NOT AS "NOT BLANK". Issued 183568 and
+    # added to the footer 28 Sep. Until then the only cover was
+    # TEAM_ID_PATTERNS in TABLE 1, which fires on a line RECORDING the ID as
+    # unfilled -- it can never fire on a footer that does not mention a Team ID
+    # at all, which is exactly the state the site was in. A positive count
+    # inverts that: delete the line, or change the digits, and this fails.
+    (r"TEAM ID 183568", {CASE: 1},
+     "Team ID present in the site footer. CASE ONLY -- the console carries no "
+     "footer credit. ABSENCE fails, which is the thing the pre-issue guard "
+     "could not express."),
 ]
 
 # ---------------------------------------------------------------------------
@@ -727,12 +740,12 @@ def main():
     if team_hits:
         print("")
         print("-" * 72)
-        print("TEAM ID GUARD FIRED — %d hit(s). THIS IS EXPECTED UNTIL 3 SEP." % team_hits)
-        print("The ID is issued after team selection on 3 September 2026. Until")
-        print("then this check exits 1 on purpose, so that a build still carrying")
-        print("the blank cannot reach the 20 September submission unnoticed.")
-        print("DO NOT delete the rule to get a green run. Paste the ID into")
-        print("slide 1 and the guard goes quiet on its own.")
+        print("TEAM ID GUARD FIRED — %d hit(s). THIS IS A REAL FINDING." % team_hits)
+        print("The ID was issued on 28 September 2026: 183568. It is on slide 1,")
+        print("in the site footer, and pinned PRESENT by SITE_ASSERTIONS, so these")
+        print("rules should be silent. A hit means a document has gone back to")
+        print("recording the ID as unfilled — fix the document.")
+        print("DO NOT delete the rule to get a green run.")
         print("-" * 72)
 
     if site_problems:

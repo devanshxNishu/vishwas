@@ -187,9 +187,9 @@ mode. Report it as its own finding rather than burying it in the headline.
 
 Items 1–3 (slide 3's figure, slide 4's figure, slide 6's wording) were **all
 done in deck v17, built 30 Aug 15:59** — re-verified by hashing the deck's
-embedded media. Two remain:
+embedded media. One remains:
 
-1. Paste the **Team ID** (slide 1, still a red placeholder).
+1. ~~Team ID~~ — **done 28 Sep**: **183568**, on slide 1.
 2. Confirm the **PS title** against the portal wording.
 
 **Present from `deck/VISHWAS_SIH.pdf`.** The superseded 29 Aug build has been

@@ -69,6 +69,6 @@ template prompt the deck had not explicitly answered.
 
 ## Before submitting
 
-1. Paste the **Team ID** (slide 1, currently red placeholder).
+1. ~~Team ID~~ — **done 28 Sep**: **183568**, on slide 1.
 2. Confirm the **Problem Statement title** against the portal wording.
 3. Upload **the PDF**, not the PPTX.
